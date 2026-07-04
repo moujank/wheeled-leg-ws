@@ -87,10 +87,10 @@ class Sim2SimConfig:
     enable_wheel_balance_feedback: bool = True
     pitch_feedback_kp: float = 2.0
     pitch_rate_feedback_kd: float = 0.35
-    yaw_feedback_kp: float = 0.80
-    yaw_rate_feedback_kd: float = 0.12
-    wheel_feedback_limit: float = 3.0
-    pitch_cmd_attenuation_start_deg: float = 2.0
+    yaw_feedback_kp: float = 0.95
+    yaw_rate_feedback_kd: float = 0.14
+    wheel_feedback_limit: float = 3.6
+    pitch_cmd_attenuation_start_deg: float = 3.0
     pitch_cmd_attenuation_full_deg: float = 6.0
     yaw_cmd_attenuation_start_deg: float = 8.0
     yaw_cmd_attenuation_full_deg: float = 25.0
@@ -99,14 +99,20 @@ class Sim2SimConfig:
     heading_hold_kp: float = 0.7
     heading_hold_rate_kd: float = 0.10
     heading_hold_wz_limit: float = 0.35
-    wheel_cmd_attenuation_start: float = 1.5
-    wheel_cmd_attenuation_full: float = 2.6
+    wheel_cmd_attenuation_start: float = 1.3
+    wheel_cmd_attenuation_full: float = 2.4
     high_speed_cmd_start: float = 0.10
     high_speed_cmd_gain: float = 2.4
-    wheel_speed_soft_limit: float = 1.7
-    wheel_speed_brake_gain: float = 3.0
-    yaw_feedback_gain_scale: float = 2.0
-    pitch_feedback_gain_scale: float = 1.5
+    forward_speed_cmd_attenuation_start: float = 0.22
+    forward_speed_cmd_attenuation_full: float = 0.42
+    wheel_speed_soft_limit: float = 1.55
+    wheel_speed_brake_gain: float = 3.8
+    forward_speed_soft_limit: float = 0.18
+    forward_speed_brake_gain: float = 4.0
+    brake_rise_time: float = 0.08
+    brake_fall_time: float = 0.35
+    yaw_feedback_gain_scale: float = 4.0
+    pitch_feedback_gain_scale: float = 1.8
     log_path: Path | None = None
     verbose_obs: bool = False
     handoff_window_s: float = 0.5
@@ -215,6 +221,7 @@ class BaseLockedSim2Sim:
         self.tether_anchor_pos = np.zeros(3, dtype=np.float64)
         self.tether_anchor_quat = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float64)
         self.heading_reference_yaw = 0.0
+        self.pitch_brake_state = 0.0
         self.reset_episode_state()
         if self.cfg.log_path is not None:
             self.cfg.log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -279,6 +286,7 @@ class BaseLockedSim2Sim:
         self.last_action[:] = 0.0
         self.last_ctrl[:] = 0.0
         self.handoff_logged = False
+        self.pitch_brake_state = 0.0
         self.clear_external_wrench()
         self._refresh_startup_references()
 
@@ -312,6 +320,11 @@ class BaseLockedSim2Sim:
 
     def _get_base_ang_vel_body(self) -> np.ndarray:
         return np.array(self.data.sensor("imu_gyro").data, dtype=np.float32)
+
+    def _get_base_lin_vel_body(self) -> np.ndarray:
+        quat_wxyz = np.array(self.data.qpos[3:7], dtype=np.float64)
+        rotmat = quat_wxyz_to_rotmat(quat_wxyz)
+        return (rotmat.T @ np.array(self.data.qvel[0:3], dtype=np.float64)).astype(np.float32)
 
     def _get_projected_gravity(self) -> np.ndarray:
         quat_wxyz = np.array(self.data.qpos[3:7], dtype=np.float64)
@@ -487,6 +500,13 @@ class BaseLockedSim2Sim:
             self.cfg.wheel_cmd_attenuation_start,
             self.cfg.wheel_cmd_attenuation_full,
         )
+        base_linvel_body = self._get_base_lin_vel_body()
+        forward_speed = max(0.0, drive_sign * float(base_linvel_body[0]))
+        forward_speed_cmd_scale = self._attenuation_scale(
+            forward_speed,
+            self.cfg.forward_speed_cmd_attenuation_start,
+            self.cfg.forward_speed_cmd_attenuation_full,
+        )
 
         requested_speed_abs = abs(self.cfg.cmd_vx)
         if requested_speed_abs <= self.cfg.high_speed_cmd_start:
@@ -496,7 +516,7 @@ class BaseLockedSim2Sim:
                 1.0 + self.cfg.high_speed_cmd_gain * (requested_speed_abs - self.cfg.high_speed_cmd_start)
             )
 
-        linear_cmd_scale = pitch_cmd_scale * wheel_cmd_scale * requested_speed_scale
+        linear_cmd_scale = pitch_cmd_scale * wheel_cmd_scale * forward_speed_cmd_scale * requested_speed_scale
         if self.cfg.attenuate_linear_cmd_on_heading_error:
             linear_cmd_scale *= yaw_cmd_scale
 
