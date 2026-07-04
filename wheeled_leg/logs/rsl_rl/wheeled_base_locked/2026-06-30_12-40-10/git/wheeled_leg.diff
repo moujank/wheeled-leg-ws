@@ -1,0 +1,840 @@
+--- git status ---
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   scripts/list_envs.py
+	modified:   scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc
+	modified:   source/wheeled_leg/setup.py
+	modified:   source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/__init__.py
+	modified:   source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/__init__.py
+	modified:   source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/rewards.py
+	modified:   source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_leg_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/arm_free_locomotion_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/arm_free_obstacle_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/arm_free_recovery_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/asset/
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/base_locked_locomotion_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/cartesian_grasp_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/grasp_pose_locomotion_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/loaded_grasp_obstacle_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/actions.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/commands.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/events.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/observation.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/observations.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/terminations.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/terrains/
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/usd/
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_arm_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_glab_env_cfg.py
+	source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_leg_stair_env_cfg.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/scripts/list_envs.py b/scripts/list_envs.py
+index 6ded870..233af5c 100644
+--- a/scripts/list_envs.py
++++ b/scripts/list_envs.py
+@@ -10,7 +10,7 @@ The script iterates over all registered environments and stores the details in a
+ It prints the name of the environment, the entry point and the config file.
+ 
+ All the environments are registered in the `wheeled_leg` extension. They start
+-with `Isaac` in their name.
++with `Wheeled-` in their name.
+ """
+ 
+ """Launch Isaac Sim Simulator first."""
+@@ -42,9 +42,9 @@ def main():
+ 
+     # count of environments
+     index = 0
+-    # acquire all Isaac environments names
++    # acquire all wheeled-leg environment names
+     for task_spec in gym.registry.values():
+-        if "Template-" in task_spec.id:
++        if task_spec.id.startswith("Wheeled-"):
+             # add details to table
+             table.add_row([index + 1, task_spec.id, task_spec.entry_point, task_spec.kwargs["env_cfg_entry_point"]])
+             # increment count
+diff --git a/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc b/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc
+index 6977988..24f5ed6 100644
+Binary files a/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc and b/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc differ
+diff --git a/source/wheeled_leg/setup.py b/source/wheeled_leg/setup.py
+index 2ac3bf8..45ca60e 100644
+--- a/source/wheeled_leg/setup.py
++++ b/source/wheeled_leg/setup.py
+@@ -8,7 +8,7 @@
+ import os
+ import toml
+ 
+-from setuptools import setup
++from setuptools import find_packages, setup
+ 
+ # Obtain the extension data from the extension.toml file
+ EXTENSION_PATH = os.path.dirname(os.path.realpath(__file__))
+@@ -24,7 +24,7 @@ INSTALL_REQUIRES = [
+ # Installation operation
+ setup(
+     name="wheeled_leg",
+-    packages=["wheeled_leg"],
++    packages=find_packages(),
+     author=EXTENSION_TOML_DATA["package"]["author"],
+     maintainer=EXTENSION_TOML_DATA["package"]["maintainer"],
+     url=EXTENSION_TOML_DATA["package"]["repository"],
+@@ -34,6 +34,9 @@ setup(
+     install_requires=INSTALL_REQUIRES,
+     license="Apache-2.0",
+     include_package_data=True,
++    package_data={
++        "wheeled_leg.tasks.manager_based.wheeled_leg.agents": ["*.yaml"],
++    },
+     python_requires=">=3.10",
+     classifiers=[
+         "Natural Language :: English",
+@@ -43,4 +46,4 @@ setup(
+         "Isaac Sim :: 5.0.0",
+     ],
+     zip_safe=False,
+-)
+\ No newline at end of file
++)
+diff --git a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/__init__.py b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/__init__.py
+index 45d7016..a8d7e2b 100644
+--- a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/__init__.py
++++ b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/__init__.py
+@@ -6,21 +6,86 @@
+ import gymnasium as gym
+ 
+ from . import agents
++from . import arm_free_locomotion_env_cfg
++from . import arm_free_obstacle_env_cfg
++from . import arm_free_recovery_env_cfg
++from . import base_locked_locomotion_env_cfg
++from . import cartesian_grasp_env_cfg
++from . import grasp_pose_locomotion_env_cfg
++from . import loaded_grasp_obstacle_env_cfg
+ 
+ ##
+ # Register Gym environments.
+ ##
+ 
++_RSL_RL_CFG_ENTRY_POINT = f"{agents.__name__}.rsl_rl_ppo_cfg:PPORunnerCfg"
+ 
+-gym.register(
+-    id="Template-Wheeled-Leg-v0",
+-    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+-    disable_env_checker=True,
+-    kwargs={
+-        "env_cfg_entry_point": f"{__name__}.wheeled_leg_env_cfg:WheeledLegEnvCfg",
+-        "rl_games_cfg_entry_point": f"{agents.__name__}:rl_games_ppo_cfg.yaml",
+-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:PPORunnerCfg",
+-        "skrl_amp_cfg_entry_point": f"{agents.__name__}:skrl_amp_cfg.yaml",
+-        "skrl_cfg_entry_point": f"{agents.__name__}:skrl_ppo_cfg.yaml",
+-    },
+-)
+\ No newline at end of file
++
++def _register_rsl_rl_task(task_id: str, env_cfg_entry_point) -> None:
++    gym.register(
++        id=task_id,
++        entry_point="isaaclab.envs:ManagerBasedRLEnv",
++        disable_env_checker=True,
++        kwargs={
++            "env_cfg_entry_point": env_cfg_entry_point,
++            "rsl_rl_cfg_entry_point": _RSL_RL_CFG_ENTRY_POINT,
++        },
++    )
++
++
++_register_rsl_rl_task(
++    "Wheeled-Base-Locked-v0",
++    f"{__name__}.base_locked_locomotion_env_cfg:BaseLockedLocomotionEnvCfg",
++)
++_register_rsl_rl_task(
++    "Wheeled-Base-Locked-Play-v0",
++    base_locked_locomotion_env_cfg.BaseLockedLocomotionEnvCfg_PLAY,
++)
++_register_rsl_rl_task(
++    "Wheeled-Arm-Free-Locomotion-v0",
++    f"{__name__}.arm_free_locomotion_env_cfg:ArmFreeLocomotionEnvCfg",
++)
++_register_rsl_rl_task(
++    "Wheeled-Arm-Free-Locomotion-Play-v0",
++    arm_free_locomotion_env_cfg.ArmFreeLocomotionEnvCfg_PLAY,
++)
++_register_rsl_rl_task(
++    "Wheeled-Arm-Free-Recovery-v0",
++    f"{__name__}.arm_free_recovery_env_cfg:ArmFreeRecoveryEnvCfg",
++)
++_register_rsl_rl_task(
++    "Wheeled-Arm-Free-Recovery-Play-v0",
++    arm_free_recovery_env_cfg.ArmFreeRecoveryEnvCfg_PLAY,
++)
++_register_rsl_rl_task(
++    "Wheeled-Arm-Free-Obstacle-v0",
++    f"{__name__}.arm_free_obstacle_env_cfg:ArmFreeObstacleEnvCfg",
++)
++_register_rsl_rl_task(
++    "Wheeled-Arm-Free-Obstacle-Play-v0",
++    arm_free_obstacle_env_cfg.ArmFreeObstacleEnvCfg_PLAY,
++)
++_register_rsl_rl_task(
++    "Wheeled-Grasp-Pose-Locomotion-v0",
++    f"{__name__}.grasp_pose_locomotion_env_cfg:GraspPoseLocomotionEnvCfg",
++)
++_register_rsl_rl_task(
++    "Wheeled-Grasp-Pose-Locomotion-Play-v0",
++    grasp_pose_locomotion_env_cfg.GraspPoseLocomotionEnvCfg_PLAY,
++)
++_register_rsl_rl_task(
++    "Wheeled-Cartesian-Grasp-v0",
++    f"{__name__}.cartesian_grasp_env_cfg:CartesianGraspEnvCfg",
++)
++_register_rsl_rl_task(
++    "Wheeled-Cartesian-Grasp-Play-v0",
++    cartesian_grasp_env_cfg.CartesianGraspEnvCfg_PLAY,
++)
++_register_rsl_rl_task(
++    "Wheeled-Loaded-Grasp-Obstacle-v0",
++    f"{__name__}.loaded_grasp_obstacle_env_cfg:LoadedGraspObstacleEnvCfg",
++)
++_register_rsl_rl_task(
++    "Wheeled-Loaded-Grasp-Obstacle-Play-v0",
++    loaded_grasp_obstacle_env_cfg.LoadedGraspObstacleEnvCfg_PLAY,
++)
+diff --git a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/__init__.py b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/__init__.py
+index 6b43c27..dceb537 100644
+--- a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/__init__.py
++++ b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/__init__.py
+@@ -7,4 +7,9 @@
+ 
+ from isaaclab.envs.mdp import *  # noqa: F401, F403
+ 
++from .actions import *  # noqa: F401, F403
++from .commands import *  # noqa: F401, F403
++from .events import *  # noqa: F401, F403
++from .observations import *  # noqa: F401, F403
+ from .rewards import *  # noqa: F401, F403
++from .terminations import *  # noqa: F401, F403
+diff --git a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/rewards.py b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/rewards.py
+index ceb3956..bfbfcb9 100644
+--- a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/rewards.py
++++ b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/mdp/rewards.py
+@@ -10,12 +10,21 @@ from typing import TYPE_CHECKING
+ 
+ from isaaclab.assets import Articulation
+ from isaaclab.managers import SceneEntityCfg
+-from isaaclab.utils.math import wrap_to_pi
++from isaaclab.utils.math import combine_frame_transforms, wrap_to_pi
++from isaaclab.sensors import ContactSensor
+ 
+ if TYPE_CHECKING:
+     from isaaclab.envs import ManagerBasedRLEnv
+ 
+ 
++# Add custom reward terms in this module.
++# Example future categories:
++# - staged locomotion rewards
++# - recovery progress rewards
++# - obstacle traversal rewards
++# - grasp stability and object transport rewards
++
++
+ def joint_pos_target_l2(env: ManagerBasedRLEnv, target: float, asset_cfg: SceneEntityCfg) -> torch.Tensor:
+     """Penalize joint position deviation from a target value."""
+     # extract the used quantities (to enable type-hinting)
+@@ -24,3 +33,118 @@ def joint_pos_target_l2(env: ManagerBasedRLEnv, target: float, asset_cfg: SceneE
+     joint_pos = wrap_to_pi(asset.data.joint_pos[:, asset_cfg.joint_ids])
+     # compute the reward
+     return torch.sum(torch.square(joint_pos - target), dim=1)
++
++def feet_air_time(
++    env: ManagerBasedRLEnv, command_name: str, sensor_cfg: SceneEntityCfg, threshold: float
++) -> torch.Tensor:
++    """Reward long steps taken by the feet using L2-kernel.
++
++    This function rewards the agent for taking steps that are longer than a threshold. This helps ensure
++    that the robot lifts its feet off the ground and takes steps. The reward is computed as the sum of
++    the time for which the feet are in the air.
++
++    If the commands are small (i.e. the agent is not supposed to take a step), then the reward is zero.
++    """
++    # extract the used quantities (to enable type-hinting)
++    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
++    # compute the reward
++    first_contact = contact_sensor.compute_first_contact(env.step_dt)[:, sensor_cfg.body_ids]
++    last_air_time = contact_sensor.data.last_air_time[:, sensor_cfg.body_ids]
++    reward = torch.sum((last_air_time - threshold) * first_contact, dim=1)
++    # no reward for zero command
++    reward *= torch.norm(env.command_manager.get_command(command_name)[:, :2], dim=1) > 0.1
++    return reward
++
++
++def feet_air_time_positive_biped(
++    env: ManagerBasedRLEnv, command_name: str, threshold: float, sensor_cfg: SceneEntityCfg
++) -> torch.Tensor:
++    """Reward long steps taken by the feet for bipeds.
++
++    This function rewards the agent for taking steps up to a specified threshold and also keep one foot at
++    a time in the air.
++
++    If the commands are small (i.e. the agent is not supposed to take a step), then the reward is zero.
++    """
++    contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
++    # compute the reward
++    air_time = contact_sensor.data.current_air_time[:, sensor_cfg.body_ids]
++    contact_time = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids]
++    in_contact = contact_time > 0.0
++    in_mode_time = torch.where(in_contact, contact_time, air_time)
++    single_stance = torch.sum(in_contact.int(), dim=1) == 1
++    reward = torch.min(torch.where(single_stance.unsqueeze(-1), in_mode_time, 0.0), dim=1)[0]
++    reward = torch.clamp(reward, max=threshold)
++    # no reward for zero command
++    reward *= torch.norm(env.command_manager.get_command(command_name)[:, :2], dim=1) > 0.1
++    return reward
++
++
++def energy(env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
++    asset = env.scene[asset_cfg.name]
++    reward = torch.norm(torch.abs(asset.data.applied_torque * asset.data.joint_vel), dim=-1)
++    return reward
++
++
++def base_tilt_l2(env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
++    """Penalize base roll/pitch by using the lateral components of projected gravity."""
++    asset: Articulation = env.scene[asset_cfg.name]
++    return torch.sum(torch.square(asset.data.projected_gravity_b[:, :2]), dim=1)
++
++
++def mirrored_joint_deviation_l1(
++    env: ManagerBasedRLEnv,
++    left_asset_cfg: SceneEntityCfg,
++    right_asset_cfg: SceneEntityCfg,
++) -> torch.Tensor:
++    """Penalize deviation from mirrored left/right leg configurations."""
++    asset: Articulation = env.scene[left_asset_cfg.name]
++    left_joint_pos = wrap_to_pi(asset.data.joint_pos[:, left_asset_cfg.joint_ids])
++    right_joint_pos = wrap_to_pi(asset.data.joint_pos[:, right_asset_cfg.joint_ids])
++    return torch.sum(torch.abs(left_joint_pos + right_joint_pos), dim=1)
++
++
++def joint_vel_l2_selected(
++    env: ManagerBasedRLEnv,
++    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
++) -> torch.Tensor:
++    """Penalize the squared velocity of a selected joint subset."""
++    asset: Articulation = env.scene[asset_cfg.name]
++    joint_vel = asset.data.joint_vel[:, asset_cfg.joint_ids]
++    return torch.sum(torch.square(joint_vel), dim=1)
++
++
++def track_ee_pose_exp(
++    env: ManagerBasedRLEnv, 
++    std: float, 
++    command_name: str, 
++    asset_cfg: SceneEntityCfg
++) -> torch.Tensor:
++    """Reward end-effector position tracking for base-frame pose commands."""
++    asset: Articulation = env.scene[asset_cfg.name]
++    command = env.command_manager.get_command(command_name)
++    target_pos_b = command[:, :3]
++    target_pos_w, _ = combine_frame_transforms(
++        asset.data.root_state_w[:, :3], asset.data.root_state_w[:, 3:7], target_pos_b
++    )
++    ee_pos_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], :3]
++    distance_squared = torch.sum(torch.square(target_pos_w - ee_pos_w), dim=1)
++    return torch.exp(-distance_squared / std**2)
++
++
++def track_ee_position_tanh(
++    env: ManagerBasedRLEnv,
++    std: float,
++    command_name: str,
++    asset_cfg: SceneEntityCfg,
++) -> torch.Tensor:
++    """Reward end-effector position tracking using a smoother tanh kernel."""
++    asset: Articulation = env.scene[asset_cfg.name]
++    command = env.command_manager.get_command(command_name)
++    target_pos_b = command[:, :3]
++    target_pos_w, _ = combine_frame_transforms(
++        asset.data.root_state_w[:, :3], asset.data.root_state_w[:, 3:7], target_pos_b
++    )
++    ee_pos_w = asset.data.body_state_w[:, asset_cfg.body_ids[0], :3]
++    distance = torch.norm(target_pos_w - ee_pos_w, dim=1)
++    return 1 - torch.tanh(distance / std)
+diff --git a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_leg_env_cfg.py b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_leg_env_cfg.py
+index b0c1b78..e048ab2 100644
+--- a/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_leg_env_cfg.py
++++ b/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/wheeled_leg_env_cfg.py
+@@ -2,7 +2,33 @@
+ # All rights reserved.
+ #
+ # SPDX-License-Identifier: BSD-3-Clause
+-
++from __future__ import annotations
++'''
++import sys
++import os
++
++# 检查 ROS2 Jazzy 路径是否在环境变量中
++ros_path = '/opt/ros/jazzy/lib/python3.12/site-packages'
++if os.path.exists(ros_path):
++    if ros_path not in sys.path:
++        sys.path.append(ros_path)
++    print("✅ 已手动关联 ROS2 Jazzy 库路径")
++else:
++    print("❌ 未发现 ROS2 Jazzy 路径，请检查系统安装")
++
++from isaacsim import SimulationApp
++
++# 启动仿真应用
++simulation_app = SimulationApp({"headless": False})
++
++# 启用 ROS2 Bridge 扩展
++from isaacsim.core.utils.extensions import enable_extension
++enable_extension("isaacsim.ros2_bridge_wheeled")
++
++# 现在你可以安全地 import rclpy 或其他 ROS2 相关的包了
++import rclpy
++from rclpy.node import Node
++'''
+ import math
+ 
+ import isaaclab.sim as sim_utils
+@@ -15,53 +41,105 @@ from isaaclab.managers import RewardTermCfg as RewTerm
+ from isaaclab.managers import SceneEntityCfg
+ from isaaclab.managers import TerminationTermCfg as DoneTerm
+ from isaaclab.scene import InteractiveSceneCfg
++from isaaclab.sensors import ContactSensorCfg
++from isaaclab.terrains import TerrainImporterCfg
+ from isaaclab.utils import configclass
++from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
++from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
+ 
+-from . import mdp
+-
+-##
+-# Pre-defined configs
+-##
+-
+-from isaaclab_assets.robots.cartpole import CARTPOLE_CFG  # isort:skip
++from .asset.wheeled import WHEELED_CFG  
++from .asset.wheeled_arm import WHEELED_ARM_CFG
++from .terrains.terrains import GRAVEL_TERRAINS_CFG, ROUGH_TERRAINS_CFG, PYRAMID_TERRAINS_CFG
+ 
++from . import mdp
+ 
+ ##
+ # Scene definition
+ ##
+ 
+-
+ @configclass
+ class WheeledLegSceneCfg(InteractiveSceneCfg):
+     """Configuration for a cart-pole scene."""
+-
+-    # ground plane
+-    ground = AssetBaseCfg(
+-        prim_path="/World/ground",
+-        spawn=sim_utils.GroundPlaneCfg(size=(100.0, 100.0)),
++    terrain = TerrainImporterCfg(
++        prim_path="/World/terrain",
++        terrain_type="generator",
++        terrain_generator=GRAVEL_TERRAINS_CFG,
++        max_init_terrain_level=5,
++        collision_group=-1,
++        physics_material=sim_utils.RigidBodyMaterialCfg(
++            friction_combine_mode="multiply",
++            restitution_combine_mode="multiply",
++            static_friction=1.0,
++            dynamic_friction=1.0,
++        ),
++        visual_material=sim_utils.MdlFileCfg(
++            mdl_path=f"{ISAACLAB_NUCLEUS_DIR}/Materials/TilesMarbleSpiderWhiteBrickBondHoned/TilesMarbleSpiderWhiteBrickBondHoned.mdl",
++            project_uvw=True,
++            texture_scale=(0.25, 0.25),
++        ),
++        debug_vis=False,
+     )
+-
++   
+     # robot
+-    robot: ArticulationCfg = CARTPOLE_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
++    robot: ArticulationCfg = WHEELED_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
++
++    #sensor
++    contact_forces = ContactSensorCfg(
++        prim_path="{ENV_REGEX_NS}/Robot/.*",
++        debug_vis=False,
++        history_length=3, 
++        track_air_time=True
++        )
+ 
+     # lights
+-    dome_light = AssetBaseCfg(
+-        prim_path="/World/DomeLight",
+-        spawn=sim_utils.DomeLightCfg(color=(0.9, 0.9, 0.9), intensity=500.0),
++    sky_light = AssetBaseCfg(
++        prim_path="/World/skyLight",
++        spawn=sim_utils.DomeLightCfg(
++            intensity=750.0,
++            texture_file=f"{ISAAC_NUCLEUS_DIR}/Materials/Textures/Skies/PolyHaven/kloofendal_43d_clear_puresky_4k.hdr",
++        ),
+     )
+ 
+ 
+ ##
+ # MDP settings
+ ##
+-
++@configclass
++class CommandsCfg:
++    """Command specifications for the MDP."""
++
++    base_velocity = mdp.UniformVelocityCommandCfg(
++        asset_name="robot",
++        resampling_time_range=(10.0, 15.0),
++        rel_standing_envs=0.02,
++        rel_heading_envs=1.0,
++        heading_command=True,
++        heading_control_stiffness=0.5,
++        debug_vis=True,
++        ranges=mdp.UniformVelocityCommandCfg.Ranges(
++            lin_vel_x=(-0.5, 0.5), 
++            lin_vel_y=(0.0, 0.0), 
++            ang_vel_z=(0.0, 0.0), 
++            heading=(-math.pi, math.pi)
++        )
++    )
+ 
+ @configclass
+ class ActionsCfg:
+     """Action specifications for the MDP."""
+-
+-    joint_effort = mdp.JointEffortActionCfg(asset_name="robot", joint_names=["slider_to_cart"], scale=100.0)
+-
++    
++    joint_pos = mdp.JointPositionActionCfg(
++        asset_name="robot", 
++        joint_names=["Hip.*", "Knee.*"], 
++        scale=0.5, 
++        use_default_offset=True
++    )
++    joint_vel = mdp.JointVelocityActionCfg(
++        asset_name="robot", 
++        joint_names=["Hub.*"], 
++        scale=10.0, 
++        use_default_offset=True
++    )
+ 
+ @configclass
+ class ObservationsCfg:
+@@ -72,81 +150,201 @@ class ObservationsCfg:
+         """Observations for policy group."""
+ 
+         # observation terms (order preserved)
+-        joint_pos_rel = ObsTerm(func=mdp.joint_pos_rel)
+-        joint_vel_rel = ObsTerm(func=mdp.joint_vel_rel)
++        base_ang_vel = ObsTerm(
++            func=mdp.base_ang_vel, 
++            noise=Unoise(n_min=-0.2, n_max=0.2)
++        )
++        projected_gravity = ObsTerm(
++            func=mdp.projected_gravity,
++            noise=Unoise(n_min=-0.05, n_max=0.05),
++        )
++        velocity_commands = ObsTerm(
++            func=mdp.generated_commands, 
++            params={"command_name": "base_velocity"}
++        )
++        joint_pos = ObsTerm(
++            func=mdp.joint_pos_rel, 
++            noise=Unoise(n_min=-0.01, n_max=0.01)
++        )
++        joint_vel = ObsTerm(
++            func=mdp.joint_vel_rel, 
++            noise=Unoise(n_min=-0.1, n_max=0.1)
++        )
++        actions = ObsTerm(
++            func=mdp.last_action
++        )
++        
++        def __post_init__(self):
++            self.enable_corruption = True
++            self.concatenate_terms = True
++            # self.history_length = 10
++            # self.flatten_history_dim = False
+ 
+-        def __post_init__(self) -> None:
++    @configclass
++    class CriticCfg(ObsGroup):  
++        """Observations for critical group."""
++        base_lin_vel = ObsTerm(
++            func=mdp.base_lin_vel
++        )
++        body_contact = ObsTerm(
++            func=mdp.body_contact, 
++            params={"sensor_cfg": SceneEntityCfg("contact_forces")}
++        )
++
++        def __post_init__(self):
+             self.enable_corruption = False
+             self.concatenate_terms = True
+ 
+     # observation groups
+     policy: PolicyCfg = PolicyCfg()
+-
++    critic: CriticCfg = CriticCfg()
+ 
+ @configclass
+ class EventCfg:
+     """Configuration for events."""
+ 
++    # startup
++    physics_material = EventTerm(
++        func=mdp.randomize_rigid_body_material,
++        mode="startup",
++        params={
++            "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
++            "static_friction_range": (0.6, 1.0),
++            "dynamic_friction_range": (0.4, 0.8),
++            "restitution_range": (0.0, 0.005),
++            "num_buckets": 64,
++        },
++    )
++
++    add_base_mass = EventTerm(
++        func=mdp.randomize_rigid_body_mass,
++        mode="startup",
++        params={
++            "asset_cfg": SceneEntityCfg("robot", body_names="base_link"),
++            "mass_distribution_params": (0.0, 5.0),
++            "operation": "add",
++        },
++    )
++
+     # reset
+-    reset_cart_position = EventTerm(
+-        func=mdp.reset_joints_by_offset,
++    base_external_force_torque = EventTerm(
++        func=mdp.apply_external_force_torque,
+         mode="reset",
+         params={
+-            "asset_cfg": SceneEntityCfg("robot", joint_names=["slider_to_cart"]),
+-            "position_range": (-1.0, 1.0),
+-            "velocity_range": (-0.5, 0.5),
++            "asset_cfg": SceneEntityCfg("robot", body_names="base_link"),
++            "force_range": (0.0, 0.0),
++            "torque_range": (-0.0, 0.0),
+         },
+     )
+ 
+-    reset_pole_position = EventTerm(
+-        func=mdp.reset_joints_by_offset,
++    reset_base = EventTerm(
++        func=mdp.reset_root_state_uniform,
+         mode="reset",
+         params={
+-            "asset_cfg": SceneEntityCfg("robot", joint_names=["cart_to_pole"]),
+-            "position_range": (-0.25 * math.pi, 0.25 * math.pi),
+-            "velocity_range": (-0.25 * math.pi, 0.25 * math.pi),
++            "pose_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "yaw": (-3.14, 3.14)},
++            "velocity_range": {
++                "x": (-0.5, 0.5),
++                "y": (-0.5, 0.5),
++                "z": (-0.5, 0.5),
++                "roll": (-0.5, 0.5),
++                "pitch": (-0.5, 0.5),
++                "yaw": (-0.5, 0.5),
++            },
+         },
+     )
+ 
++    reset_robot_joints = EventTerm(
++        func=mdp.reset_joints_by_scale,
++        mode="reset",
++        params={
++            "position_range": (-0.5, 0.5),
++            "velocity_range": (0.0, 0.0),
++        },
++    )
++
++    # interval
++    push_robot = EventTerm(
++        func=mdp.push_by_setting_velocity,
++        mode="interval",
++        interval_range_s=(10.0, 15.0),
++        params={"velocity_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5)}},
++    )
+ 
+ @configclass
+ class RewardsCfg:
+     """Reward terms for the MDP."""
+ 
+-    # (1) Constant running reward
+-    alive = RewTerm(func=mdp.is_alive, weight=1.0)
+-    # (2) Failure penalty
+-    terminating = RewTerm(func=mdp.is_terminated, weight=-2.0)
+-    # (3) Primary task: keep pole upright
+-    pole_pos = RewTerm(
+-        func=mdp.joint_pos_target_l2,
++    # -- task
++    track_lin_vel_xy_exp = RewTerm(
++        func=mdp.track_lin_vel_xy_exp, 
++        weight=50.0, 
++        params={"command_name": "base_velocity", "std": 0.5}
++    )
++    track_ang_vel_z_exp = RewTerm(
++        func=mdp.track_ang_vel_z_exp, 
++        weight=0.5, 
++        params={"command_name": "base_velocity", "std": 0.5}
++    )
++    # -- penalties
++    termination_penalty = RewTerm(
++        func=mdp.is_terminated, 
++        weight=-200.0
++    )
++    lin_vel_z_l2 = RewTerm(
++        func=mdp.lin_vel_z_l2, 
++        weight=-2.0
++    )
++    ang_vel_xy_l2 = RewTerm(
++        func=mdp.ang_vel_xy_l2, 
++        weight=-0.05
++        )
++    energy = RewTerm(
++        func=mdp.energy, 
++        weight=-1e-3
++    )
++    dof_acc_l2 = RewTerm(
++        func=mdp.joint_acc_l2, 
++        weight=-2.5e-7
++    )
++    action_rate_l2 = RewTerm(
++        func=mdp.action_rate_l2, 
++        weight=-0.01
++    )
++    flat_orientation_l2 = RewTerm(
++        func=mdp.flat_orientation_l2, 
++        weight=-20.0
++    )
++    undesired_contacts = RewTerm(
++        func=mdp.undesired_contacts,
+         weight=-1.0,
+-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["cart_to_pole"]), "target": 0.0},
++        params={"sensor_cfg": SceneEntityCfg("contact_forces", body_names=[".*hip.*", ".*knee.*"]), "threshold": 1.0},
+     )
+-    # (4) Shaping tasks: lower cart velocity
+-    cart_vel = RewTerm(
+-        func=mdp.joint_vel_l1,
+-        weight=-0.01,
+-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["slider_to_cart"])},
++    dof_pos_limits = RewTerm(
++        func=mdp.joint_pos_limits, 
++        weight=-1.0
+     )
+-    # (5) Shaping tasks: lower pole angular velocity
+-    pole_vel = RewTerm(
+-        func=mdp.joint_vel_l1,
+-        weight=-0.005,
+-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["cart_to_pole"])},
++    
++    joint_deviation_legs = RewTerm(
++        func=mdp.joint_deviation_l1,
++        weight=-1.0,
++        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["Hip.*", "Knee.*"])},
+     )
++    
+ 
+ 
+ @configclass
+ class TerminationsCfg:
+     """Termination terms for the MDP."""
+ 
+-    # (1) Time out
+-    time_out = DoneTerm(func=mdp.time_out, time_out=True)
+-    # (2) Cart out of bounds
+-    cart_out_of_bounds = DoneTerm(
+-        func=mdp.joint_pos_out_of_manual_limit,
+-        params={"asset_cfg": SceneEntityCfg("robot", joint_names=["slider_to_cart"]), "bounds": (-3.0, 3.0)},
++    time_out = DoneTerm(
++        func=mdp.time_out, 
++        time_out=True
++    )
++    base_contact = DoneTerm(
++        func=mdp.illegal_contact,
++        params={
++            "sensor_cfg": SceneEntityCfg("contact_forces", body_names=["base_link", ".*hip.*", ".*knee.*"]), "threshold": 1.0
++        },
+     )
+ 
+ 
+@@ -158,7 +356,7 @@ class TerminationsCfg:
+ @configclass
+ class WheeledLegEnvCfg(ManagerBasedRLEnvCfg):
+     # Scene settings
+-    scene: WheeledLegSceneCfg = WheeledLegSceneCfg(num_envs=4096, env_spacing=4.0)
++    scene: WheeledLegSceneCfg = WheeledLegSceneCfg(num_envs=4096, env_spacing=2.5)
+     # Basic settings
+     observations: ObservationsCfg = ObservationsCfg()
+     actions: ActionsCfg = ActionsCfg()
+@@ -166,15 +364,44 @@ class WheeledLegEnvCfg(ManagerBasedRLEnvCfg):
+     # MDP settings
+     rewards: RewardsCfg = RewardsCfg()
+     terminations: TerminationsCfg = TerminationsCfg()
++    commands: CommandsCfg = CommandsCfg()
+ 
+     # Post initialization
+     def __post_init__(self) -> None:
+         """Post initialization."""
+         # general settings
+-        self.decimation = 2
+-        self.episode_length_s = 5
+-        # viewer settings
+-        self.viewer.eye = (8.0, 0.0, 5.0)
+-        # simulation settings
+-        self.sim.dt = 1 / 120
+-        self.sim.render_interval = self.decimation
+\ No newline at end of file
++        self.decimation = 4
++        self.episode_length_s = 20.0
++
++        self.sim.dt = 1/120
++        self.sim.render_interval = self.decimation
++        self.sim.disable_contact_processing = True
++        self.sim.physics_material = self.scene.terrain.physics_material
++        self.sim.physx.gpu_max_rigid_patch_count = 10 * 2**15
++
++        self.scene.contact_forces.update_period = self.sim.dt
++        self.scene.terrain.terrain_generator.curriculum = False
++
++@configclass
++class WheeledLegEnvCfg_PLAY(WheeledLegEnvCfg):
++    def __post_init__(self):
++        # post init of parent
++        super().__post_init__()
++
++        # make a smaller scene for play
++        self.scene.num_envs = 50
++        self.scene.env_spacing = 2.5
++        self.episode_length_s = 40.0
++        self.scene.terrain.max_init_terrain_level = None
++        self.scene.terrain.terrain_generator.num_rows = 5
++        self.scene.terrain.terrain_generator.num_cols = 5
++        self.scene.terrain.terrain_generator.curriculum = False
++
++        self.commands.base_velocity.ranges.lin_vel_x = (0.5, 0.5)
++        self.commands.base_velocity.ranges.lin_vel_y = (0.0, 0.0)
++        self.commands.base_velocity.ranges.heading = (0.0, 0.0)
++
++        self.observations.policy.enable_corruption = False
++
++        self.events.base_external_force_torque = None
++        self.events.push_robot = None
+\ No newline at end of file

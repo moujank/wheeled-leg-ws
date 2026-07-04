@@ -1,0 +1,54 @@
+--- git status ---
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc
+	modified:   source/wheeled_leg/setup.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc b/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc
+index 6977988..24f5ed6 100644
+Binary files a/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc and b/scripts/rsl_rl/__pycache__/cli_args.cpython-311.pyc differ
+diff --git a/source/wheeled_leg/setup.py b/source/wheeled_leg/setup.py
+index 2ac3bf8..45ca60e 100644
+--- a/source/wheeled_leg/setup.py
++++ b/source/wheeled_leg/setup.py
+@@ -8,7 +8,7 @@
+ import os
+ import toml
+ 
+-from setuptools import setup
++from setuptools import find_packages, setup
+ 
+ # Obtain the extension data from the extension.toml file
+ EXTENSION_PATH = os.path.dirname(os.path.realpath(__file__))
+@@ -24,7 +24,7 @@ INSTALL_REQUIRES = [
+ # Installation operation
+ setup(
+     name="wheeled_leg",
+-    packages=["wheeled_leg"],
++    packages=find_packages(),
+     author=EXTENSION_TOML_DATA["package"]["author"],
+     maintainer=EXTENSION_TOML_DATA["package"]["maintainer"],
+     url=EXTENSION_TOML_DATA["package"]["repository"],
+@@ -34,6 +34,9 @@ setup(
+     install_requires=INSTALL_REQUIRES,
+     license="Apache-2.0",
+     include_package_data=True,
++    package_data={
++        "wheeled_leg.tasks.manager_based.wheeled_leg.agents": ["*.yaml"],
++    },
+     python_requires=">=3.10",
+     classifiers=[
+         "Natural Language :: English",
+@@ -43,4 +46,4 @@ setup(
+         "Isaac Sim :: 5.0.0",
+     ],
+     zip_safe=False,
+-)
+\ No newline at end of file
++)
