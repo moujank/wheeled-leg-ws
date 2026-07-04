@@ -1,0 +1,207 @@
+<mujoco model="wheeled_arm">
+  <compiler angle="radian" autolimits="true"/>
+
+  <option timestep="0.002" iterations="80" solver="Newton" gravity="0 0 -9.81"/>
+
+  <visual>
+    <headlight diffuse="0.55 0.55 0.55" ambient="0.2 0.2 0.2" specular="0.1 0.1 0.1"/>
+    <rgba haze="0.15 0.2 0.25 1"/>
+  </visual>
+
+  <default>
+    <geom solimp="0.95 0.99 0.001" solref="0.004 1" friction="1.1 0.02 0.01"/>
+    <joint armature="0.01" damping="0.5" frictionloss="0.05"/>
+    <position ctrllimited="true" forcelimited="true" gear="1"/>
+    <velocity ctrllimited="true" forcelimited="true" gear="1"/>
+  </default>
+
+  <asset>
+    <texture name="texplane" type="2d" builtin="checker" rgb1="0.18 0.18 0.18" rgb2="0.28 0.3 0.32" width="512" height="512"/>
+    <material name="matplane" texture="texplane" texrepeat="6 6" reflectance="0.15" rgba="1 1 1 1"/>
+    <mesh name="base_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/base_link.STL"/>
+    <mesh name="left_hip_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/left_hip_link.STL"/>
+    <mesh name="left_knee_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/left_knee_link.STL"/>
+    <mesh name="left_wheel_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/left_wheel_link.STL"/>
+    <mesh name="right_hip_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/right_hip_link.STL"/>
+    <mesh name="right_knee_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/right_knee_link.STL"/>
+    <mesh name="right_wheel_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/right_wheel_link.STL"/>
+    <mesh name="armr_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/armr_link.STL"/>
+    <mesh name="arm1_link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/arm1_link.STL"/>
+    <mesh name="arm2_Link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/arm2_Link.STL"/>
+    <mesh name="arm3_Link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/arm3_Link.STL"/>
+    <mesh name="arm4_Link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/arm4_Link.STL"/>
+    <mesh name="claw_Link" file="/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_arm/meshes/claw_Link.STL"/>
+  </asset>
+
+  <worldbody>
+    <light name="key_light" pos="2.5 -2.0 4.5" dir="-0.3 0.2 -1.0" directional="true" diffuse="0.9 0.9 0.9" specular="0.18 0.18 0.18" castshadow="true"/>
+    <light name="fill_light" pos="-2.0 2.0 3.0" dir="0 0 -1" directional="true" diffuse="0.45 0.45 0.5" specular="0.05 0.05 0.05" castshadow="false"/>
+    <geom name="ground" type="plane" size="0 0 1" pos="0 0 0" material="matplane" condim="3"/>
+
+    <body name="base_link" pos="0 0 0.34">
+      <inertial pos="0.00122 3.9497e-05 0.0098153" quat="0.555683 0.437695 0.55785 0.4341" mass="7.7499" diaginertia="0.119554 0.111667 0.0673504"/>
+      <freejoint name="floating_base_joint"/>
+      <site name="imu" pos="0 0 0" size="0.01"/>
+      <site name="base_com" pos="0.00122 3.9497e-05 0.0098153" size="0.008"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="base_link"/>
+      <geom name="base_link_col" type="mesh" mesh="base_link" rgba="0.75294 0.75294 0.75294 1"/>
+
+      <body name="left_hip_link" pos="0.0082629 0.14034 0.059008" quat="0.707105 -0.707108 0 0">
+        <inertial pos="-0.10176 0.030151 0.027303" quat="0.989161 -0.141748 0.0370869 0.00958524" mass="2.2541" diaginertia="0.0232287 0.0217515 0.00251232"/>
+        <joint name="HipL" axis="0 0 -1" range="-3.14 3.14" damping="1.5" stiffness="20" armature="0.02" frictionloss="0.12"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="left_hip_link"/>
+        <geom name="left_hip_link_col" type="mesh" mesh="left_hip_link" rgba="0.75294 0.75294 0.75294 1"/>
+
+        <body name="left_knee_link" pos="-0.2302 0.067889 0.0285">
+          <inertial pos="0.064051 0.079816 0.030408" quat="0.901291 0.432348 0.0246933 0.011863" mass="0.8433" diaginertia="0.0116166 0.0109862 0.000759259"/>
+          <joint name="KneeL" axis="0 0 -1" range="-3.14 3.14" damping="1.8" stiffness="32" armature="0.015" frictionloss="0.12"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="left_knee_link"/>
+          <geom name="left_knee_link_col" type="mesh" mesh="left_knee_link" rgba="0.75294 0.75294 0.75294 1"/>
+
+          <body name="left_wheel_link" pos="0.17527 0.21842 0.054">
+            <inertial pos="-4.8422e-05 -3.1902e-05 0.02755" quat="0.961938 -0.273267 1.49322e-05 4.64242e-05" mass="1.86" diaginertia="0.0080683 0.00437156 0.00436954"/>
+            <joint name="HubL" axis="0 0 -1" damping="0.25" armature="0.005" frictionloss="0.02"/>
+            <site name="left_wheel_site" pos="0 0 0.02755" size="0.008"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="left_wheel_link"/>
+            <geom name="left_wheel_link_col" type="mesh" mesh="left_wheel_link" rgba="0.75294 0.75294 0.75294 1"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="right_hip_link" pos="0.0082629 -0.14066 0.059008" quat="0.707105 0.707108 0 0">
+        <inertial pos="-0.10213 -0.028901 0.027303" quat="0.989547 -0.139027 -0.0329526 0.0195419" mass="2.2541" diaginertia="0.0232287 0.0217515 0.00251236"/>
+        <joint name="HipR" axis="0 0 -1" range="-3.14 3.14" damping="1.5" stiffness="20" armature="0.02" frictionloss="0.12"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="right_hip_link"/>
+        <geom name="right_hip_link_col" type="mesh" mesh="right_hip_link" rgba="0.75294 0.75294 0.75294 1"/>
+
+        <body name="right_knee_link" pos="-0.23085 -0.065642 0.0285">
+          <inertial pos="0.063695 -0.080101 0.030408" quat="0.900327 0.434352 -0.0246652 -0.0119146" mass="0.8433" diaginertia="0.0116166 0.0109861 0.000759194"/>
+          <joint name="KneeR" axis="0 0 -1" range="-3.14 3.14" damping="1.8" stiffness="32" armature="0.015" frictionloss="0.12"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="right_knee_link"/>
+          <geom name="right_knee_link_col" type="mesh" mesh="right_knee_link" rgba="0.75294 0.75294 0.75294 1"/>
+
+          <body name="right_wheel_link" pos="0.1743 -0.21919 0.054">
+            <inertial pos="-2.0417e-05 5.4273e-05 0.02755" quat="0.92388 -0.382682 -2.71305e-05 -4.05209e-05" mass="1.86" diaginertia="0.0080683 0.0043715 0.0043695"/>
+            <joint name="HubR" axis="0 0 1" damping="0.25" armature="0.005" frictionloss="0.02"/>
+            <site name="right_wheel_site" pos="0 0 0.02755" size="0.008"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="right_wheel_link"/>
+            <geom name="right_wheel_link_col" type="mesh" mesh="right_wheel_link" rgba="0.75294 0.75294 0.75294 1"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="armr_link" pos="0.015253 -0.00016358 0.14131">
+        <inertial pos="2.2896e-10 -0.00043585 0.030444" quat="0.00144673 0.709061 -0.00140417 0.705144" mass="0.091576" diaginertia="5.83011e-05 4.70004e-05 2.21985e-05"/>
+        <joint name="ArmR" axis="0 0 -1" range="-6.28 6.28" damping="0.35" stiffness="6" armature="0.002" frictionloss="0.01"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="armr_link"/>
+        <geom name="armr_link_col" type="mesh" mesh="armr_link" rgba="0.75294 0.75294 0.75294 1"/>
+
+        <body name="arm1_link" pos="0 0 0.045759" quat="0.707099 -0.707101 -0.00308531 0.0030853">
+          <inertial pos="-0.088278 -0.083575 0.00067116" quat="0.652362 0.267486 -0.269807 0.655805" mass="0.061072" diaginertia="0.000331361 0.0003187 2.11385e-05"/>
+          <joint name="Arm1" axis="-0.30095 0 -0.95364" range="-3.14 3.14" damping="0.3" stiffness="8" armature="0.002" frictionloss="0.01"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="arm1_link"/>
+          <geom name="arm1_link_col" type="mesh" mesh="arm1_link" rgba="0.75294 0.75294 0.75294 1"/>
+
+          <body name="arm2_Link" pos="-0.1527 -0.18475 0.0024793" quat="0.940018 0.00386976 -0.00246098 0.341095">
+            <inertial pos="0.072209 -0.00098456 -0.0029552" quat="0.67265 0.242152 -0.24023 0.656654" mass="0.10131" diaginertia="0.000334197 0.000331207 1.36958e-05"/>
+            <joint name="Arm2" axis="-0.013962 0 -0.999903" range="-3.14 3.14" damping="0.28" stiffness="8" armature="0.002" frictionloss="0.01"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="arm2_Link"/>
+            <geom name="arm2_link_col" type="mesh" mesh="arm2_Link" rgba="0.75294 0.75294 0.75294 1"/>
+
+            <body name="arm3_Link" pos="0.14442 0 -0.0060058" quat="0.999936 0 0.0113443 0">
+              <inertial pos="0.026569 -0.02282 0.0019783" quat="0.68534 0.727723 0.025933 -0.00751223" mass="0.047304" diaginertia="1.32074e-05 1.10011e-05 9.39147e-06"/>
+              <joint name="Arm3" axis="-0.00872652 0 0.999962" range="-3.14 3.14" damping="0.2" stiffness="5" armature="0.0015" frictionloss="0.008"/>
+              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="arm3_Link"/>
+              <geom name="arm3_link_col" type="mesh" mesh="arm3_Link" rgba="0.75294 0.75294 0.75294 1"/>
+
+              <body name="arm4_Link" pos="0.05047 -0.024198 0.0023627" quat="0.305011 -0.299447 0.637953 -0.64056">
+                <inertial pos="0.00084151 -0.0017925 0.042382" quat="0.986141 0.00501415 0.128371 -0.104986" mass="0.055559" diaginertia="3.05477e-05 2.90647e-05 8.78761e-06"/>
+                <joint name="Arm4" axis="-0.00872652 0 -0.999962" range="-3.14 3.14" damping="0.2" stiffness="5" armature="0.0015" frictionloss="0.008"/>
+                <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="arm4_Link"/>
+                <geom name="arm4_link_col" type="mesh" mesh="arm4_Link" rgba="0.75294 0.75294 0.75294 1"/>
+
+                <body name="claw_Link" pos="-0.0011819 0 0.053263" quat="0.707105 0 -0.707108 0">
+                  <inertial pos="0.023352 0.00077653 0.0015622" quat="0.704632 0.704632 0.0591046 -0.0591046" mass="0.0045211" diaginertia="3.33379e-06 2.11621e-06 2.1e-06"/>
+                  <joint name="Claw" axis="-0.00872652 0 0.999962" range="-1.57 1.57" damping="0.08" stiffness="2" armature="0.0005" frictionloss="0.005"/>
+                  <site name="claw_tip" pos="0.023352 0.00077653 0.0015622" size="0.004"/>
+                  <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="claw_Link"/>
+                  <geom name="claw_link_col" type="mesh" mesh="claw_Link" rgba="0.75294 0.75294 0.75294 1"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="HipL_pos" joint="HipL" kp="24" ctrlrange="-3.14 3.14" forcerange="-150 150"/>
+    <position name="HipR_pos" joint="HipR" kp="24" ctrlrange="-3.14 3.14" forcerange="-150 150"/>
+    <position name="KneeL_pos" joint="KneeL" kp="30" ctrlrange="-3.14 3.14" forcerange="-150 150"/>
+    <position name="KneeR_pos" joint="KneeR" kp="30" ctrlrange="-3.14 3.14" forcerange="-150 150"/>
+    <velocity name="HubL_vel" joint="HubL" kv="1.5" ctrlrange="-115 115" forcerange="-17 17"/>
+    <velocity name="HubR_vel" joint="HubR" kv="1.5" ctrlrange="-115 115" forcerange="-17 17"/>
+    <position name="ArmR_pos" joint="ArmR" kp="10" ctrlrange="-6.28 6.28" forcerange="-4 4"/>
+    <position name="Arm1_pos" joint="Arm1" kp="12" ctrlrange="-3.14 3.14" forcerange="-4 4"/>
+    <position name="Arm2_pos" joint="Arm2" kp="12" ctrlrange="-3.14 3.14" forcerange="-4 4"/>
+    <position name="Arm3_pos" joint="Arm3" kp="8" ctrlrange="-3.14 3.14" forcerange="-4 4"/>
+    <position name="Arm4_pos" joint="Arm4" kp="8" ctrlrange="-3.14 3.14" forcerange="-4 4"/>
+    <position name="Claw_pos" joint="Claw" kp="6" ctrlrange="-1.57 1.57" forcerange="-4 4"/>
+  </actuator>
+
+  <sensor>
+    <gyro site="imu" name="imu_gyro" noise="0.005"/>
+    <velocimeter site="imu" name="imu_linear_velocity" noise="0.001"/>
+    <accelerometer site="imu" name="imu_linear_acceleration" noise="0.005"/>
+    <framequat objtype="site" objname="imu" name="imu_orientation" noise="0.001"/>
+    <framepos objtype="site" objname="imu" name="imu_position" noise="0.001"/>
+    <framezaxis objtype="site" objname="imu" name="imu_upvector"/>
+    <framelinvel objtype="site" objname="imu" name="imu_global_linvel"/>
+    <frameangvel objtype="site" objname="imu" name="imu_global_angvel"/>
+    <framepos objtype="site" objname="claw_tip" name="claw_tip_position"/>
+    <framelinvel objtype="site" objname="claw_tip" name="claw_tip_velocity"/>
+
+    <jointpos joint="HipL" name="HipL_pos_sens"/>
+    <jointvel joint="HipL" name="HipL_vel_sens"/>
+    <jointpos joint="HipR" name="HipR_pos_sens"/>
+    <jointvel joint="HipR" name="HipR_vel_sens"/>
+    <jointpos joint="KneeL" name="KneeL_pos_sens"/>
+    <jointvel joint="KneeL" name="KneeL_vel_sens"/>
+    <jointpos joint="KneeR" name="KneeR_pos_sens"/>
+    <jointvel joint="KneeR" name="KneeR_vel_sens"/>
+    <jointpos joint="HubL" name="HubL_pos_sens"/>
+    <jointvel joint="HubL" name="HubL_vel_sens"/>
+    <jointpos joint="HubR" name="HubR_pos_sens"/>
+    <jointvel joint="HubR" name="HubR_vel_sens"/>
+    <jointpos joint="ArmR" name="ArmR_pos_sens"/>
+    <jointvel joint="ArmR" name="ArmR_vel_sens"/>
+    <jointpos joint="Arm1" name="Arm1_pos_sens"/>
+    <jointvel joint="Arm1" name="Arm1_vel_sens"/>
+    <jointpos joint="Arm2" name="Arm2_pos_sens"/>
+    <jointvel joint="Arm2" name="Arm2_vel_sens"/>
+    <jointpos joint="Arm3" name="Arm3_pos_sens"/>
+    <jointvel joint="Arm3" name="Arm3_vel_sens"/>
+    <jointpos joint="Arm4" name="Arm4_pos_sens"/>
+    <jointvel joint="Arm4" name="Arm4_vel_sens"/>
+    <jointpos joint="Claw" name="Claw_pos_sens"/>
+    <jointvel joint="Claw" name="Claw_vel_sens"/>
+
+    <actuatorfrc actuator="HipL_pos" name="HipL_torque"/>
+    <actuatorfrc actuator="HipR_pos" name="HipR_torque"/>
+    <actuatorfrc actuator="KneeL_pos" name="KneeL_torque"/>
+    <actuatorfrc actuator="KneeR_pos" name="KneeR_torque"/>
+    <actuatorfrc actuator="HubL_vel" name="HubL_torque"/>
+    <actuatorfrc actuator="HubR_vel" name="HubR_torque"/>
+    <actuatorfrc actuator="ArmR_pos" name="ArmR_torque"/>
+    <actuatorfrc actuator="Arm1_pos" name="Arm1_torque"/>
+    <actuatorfrc actuator="Arm2_pos" name="Arm2_torque"/>
+    <actuatorfrc actuator="Arm3_pos" name="Arm3_torque"/>
+    <actuatorfrc actuator="Arm4_pos" name="Arm4_torque"/>
+    <actuatorfrc actuator="Claw_pos" name="Claw_torque"/>
+  </sensor>
+
+  <keyframe>
+    <key name="home" qpos="0 0 0.34 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0"/>
+  </keyframe>
+</mujoco>

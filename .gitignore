@@ -1,2 +1,4 @@
 .agents/
 .codex/
+.vscode/*.db
+.vscode/*.db-*

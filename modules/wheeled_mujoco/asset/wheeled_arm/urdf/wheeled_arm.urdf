@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="wheeled_arm">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.00122 3.9497E-05 0.0098153"
+        rpy="0 0 0" />
+      <mass
+        value="7.7499" />
+      <inertia
+        ixx="0.067352"
+        ixy="9.92E-05"
+        ixz="0.0002445"
+        iyy="0.1191"
+        iyz="-0.0018379"
+        izz="0.11212" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="left_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.10176 0.030151 0.027303"
+        rpy="0 0 0" />
+      <mass
+        value="2.2541" />
+      <inertia
+        ixx="0.023124"
+        ixy="-0.0003697"
+        ixz="-0.001413"
+        iyy="0.020231"
+        iyz="-0.0051775"
+        izz="0.0041375" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/left_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/left_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="HipL"
+    type="continuous">
+    <origin
+      xyz="0.0082629 0.14034 0.059008"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_hip_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="150"
+      velocity="50" />
+  </joint>
+  <link
+    name="left_knee_link">
+    <inertial>
+      <origin
+        xyz="0.064051 0.079816 0.030408"
+        rpy="0 0 0" />
+      <mass
+        value="0.8433" />
+      <inertia
+        ixx="0.011584"
+        ixy="0.0004631"
+        ixz="-0.0003716"
+        iyy="0.0047851"
+        iyz="0.0049762"
+        izz="0.0069929" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/left_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/left_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="KneeL"
+    type="continuous">
+    <origin
+      xyz="-0.2302 0.067889 0.0285"
+      rpy="0 0 0" />
+    <parent
+      link="left_hip_link" />
+    <child
+      link="left_knee_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="150"
+      velocity="50" />
+  </joint>
+  <link
+    name="left_wheel_link">
+    <inertial>
+      <origin
+        xyz="-4.8422E-05 -3.1902E-05 0.02755"
+        rpy="0 0 0" />
+      <mass
+        value="1.86" />
+      <inertia
+        ixx="0.0080683"
+        ixy="3E-07"
+        ixz="-2E-07"
+        iyy="0.004371"
+        iyz="-9E-07"
+        izz="0.0043701" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/left_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/left_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="HubL"
+    type="continuous">
+    <origin
+      xyz="0.17527 0.21842 0.054"
+      rpy="0 0 0" />
+    <parent
+      link="left_knee_link" />
+    <child
+      link="left_wheel_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      effort="17"
+      velocity="115" />
+  </joint>
+  <link
+    name="right_hip_link">
+    <inertial>
+      <origin
+        xyz="-0.10213 -0.028901 0.027303"
+        rpy="0 0 0" />
+      <mass
+        value="2.2541" />
+      <inertia
+        ixx="0.023124"
+        ixy="0.0004427"
+        ixz="0.0013918"
+        iyy="0.020312"
+        iyz="-0.0050495"
+        izz="0.0040566" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/right_hip_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/right_hip_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="HipR"
+    type="continuous">
+    <origin
+      xyz="0.0082629 -0.14066 0.059008"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_hip_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="150"
+      velocity="50" />
+  </joint>
+  <link
+    name="right_knee_link">
+    <inertial>
+      <origin
+        xyz="0.063695 -0.080101 0.030408"
+        rpy="0 0 0" />
+      <mass
+        value="0.8433" />
+      <inertia
+        ixx="0.011584"
+        ixy="-0.0004647"
+        ixz="0.0003695"
+        iyy="0.0047408"
+        iyz="0.0049662"
+        izz="0.0070371" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/right_knee_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/right_knee_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="KneeR"
+    type="continuous">
+    <origin
+      xyz="-0.23085 -0.065642 0.0285"
+      rpy="0 0 0" />
+    <parent
+      link="right_hip_link" />
+    <child
+      link="right_knee_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="150"
+      velocity="50" />
+  </joint>
+  <link
+    name="right_wheel_link">
+    <inertial>
+      <origin
+        xyz="-2.0417E-05 5.4273E-05 0.02755"
+        rpy="0 0 0" />
+      <mass
+        value="1.86" />
+      <inertia
+        ixx="0.0080683"
+        ixy="-2E-07"
+        ixz="3E-07"
+        iyy="0.0043705"
+        iyz="-1E-06"
+        izz="0.0043705" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/right_wheel_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/right_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="HubR"
+    type="continuous">
+    <origin
+      xyz="0.1743 -0.21919 0.054"
+      rpy="0 0 0" />
+    <parent
+      link="right_knee_link" />
+    <child
+      link="right_wheel_link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      effort="17"
+      velocity="115" />
+  </joint>
+  <link
+    name="armr_link">
+    <inertial>
+      <origin
+        xyz="2.2896E-10 -0.00043585 0.030444"
+        rpy="0 0 0" />
+      <mass
+        value="0.091576" />
+      <inertia
+        ixx="2.22E-05"
+        ixy="1E-07"
+        ixz="2E-07"
+        iyy="4.7E-05"
+        iyz="0"
+        izz="5.83E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/armr_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/armr_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ArmR"
+    type="continuous">
+    <origin
+      xyz="0.015253 -0.00016358 0.14131"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="armr_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-6.28"
+      upper="6.28"
+      effort="4"
+      velocity="10" />
+  </joint>
+  <link
+    name="arm1_link">
+    <inertial>
+      <origin
+        xyz="-0.088278 -0.083575 0.00067116"
+        rpy="0 0 0" />
+      <mass
+        value="0.061072" />
+      <inertia
+        ixx="0.0003187"
+        ixy="-3E-07"
+        ixz="2E-07"
+        iyy="0.0001781"
+        iyz="0.0001551"
+        izz="0.0001744" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm1_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm1_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Arm1"
+    type="continuous">
+    <origin
+      xyz="0 0 0.045759"
+      rpy="-1.5708 0 0.0087266" />
+    <parent
+      link="armr_link" />
+    <child
+      link="arm1_link" />
+    <axis
+      xyz="-0.30095 0 -0.95364" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="4"
+      velocity="10" />
+  </joint>
+  <link
+    name="arm2_Link">
+    <inertial>
+      <origin
+        xyz="0.072209 -0.00098456 -0.0029552"
+        rpy="0 0 0" />
+      <mass
+        value="0.10131" />
+      <inertia
+        ixx="0.0003312"
+        ixy="-1E-06"
+        ixz="1.3E-06"
+        iyy="0.0002024"
+        iyz="0.0001577"
+        izz="0.0001455" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm2_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm2_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Arm2"
+    type="continuous">
+    <origin
+      xyz="-0.1527 -0.18475 0.0024793"
+      rpy="0.0055966 -0.0072667 0.69615" />
+    <parent
+      link="arm1_link" />
+    <child
+      link="arm2_Link" />
+    <axis
+      xyz="-0.013962 0 -0.9999" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="4"
+      velocity="10" />
+  </joint>
+  <link
+    name="arm3_Link">
+    <inertial>
+      <origin
+        xyz="0.026569 -0.02282 0.0019783"
+        rpy="0 0 0" />
+      <mass
+        value="0.047304" />
+      <inertia
+        ixx="1.32E-05"
+        ixy="1E-07"
+        ixz="-1E-07"
+        iyy="9.4E-06"
+        iyz="-1E-07"
+        izz="1.1E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm3_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm3_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Arm3"
+    type="continuous">
+    <origin
+      xyz="0.14442 0 -0.0060058"
+      rpy="0 0.022689 0" />
+    <parent
+      link="arm2_Link" />
+    <child
+      link="arm3_Link" />
+    <axis
+      xyz="-0.0087265 0 0.99996" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="4"
+      velocity="10" />
+  </joint>
+  <link
+    name="arm4_Link">
+    <inertial>
+      <origin
+        xyz="0.00084151 -0.0017925 0.042382"
+        rpy="0 0 0" />
+      <mass
+        value="0.055559" />
+      <inertia
+        ixx="2.91E-05"
+        ixy="-1E-07"
+        ixz="-5.3E-06"
+        iyy="2.91E-05"
+        iyz="8E-07"
+        izz="1.02E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm4_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/arm4_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Arm4"
+    type="continuous">
+    <origin
+      xyz="0.05047 -0.024198 0.0023627"
+      rpy="-1.5641 0.0055378 -2.2583" />
+    <parent
+      link="arm3_Link" />
+    <child
+      link="arm4_Link" />
+    <axis
+      xyz="-0.0087265 0 -0.99996" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="4"
+      velocity="10" />
+  </joint>
+  <link
+    name="claw_Link">
+    <inertial>
+      <origin
+        xyz="0.023352 0.00077653 0.0015622"
+        rpy="0 0 0" />
+      <mass
+        value="0.0045211" />
+      <inertia
+        ixx="3.3E-06"
+        ixy="0"
+        ixz="-2E-07"
+        iyy="2.1E-06"
+        iyz="0"
+        izz="2.15E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/claw_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://wheeled_arm/meshes/claw_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Claw"
+    type="revolute">
+    <origin
+      xyz="-0.0011819 0 0.053263"
+      rpy="0 -1.5708 0" />
+    <parent
+      link="arm4_Link" />
+    <child
+      link="claw_Link" />
+    <axis
+      xyz="-0.0087265 0 0.99996" />
+    <limit
+      lower="-1.57"
+      upper="1.57"
+      effort="4"
+      velocity="10" />
+  </joint>
+</robot>

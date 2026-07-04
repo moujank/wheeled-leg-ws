@@ -57,3 +57,10 @@
 3. 运行 `./sync_to_github.sh` 将最新内容提交并推送到 GitHub。
 
 这样可以保证仓库中的历史日志文件和远程仓库内容保持同步。
+
+
+
+解决train的还是train到了默认文件夹
+重新转usd
+按视频解mujoco的xml
+按照humanoid sim2sim
