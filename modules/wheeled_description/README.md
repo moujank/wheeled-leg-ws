@@ -1,4 +1,17 @@
 # wheeled_description
 
-该目录用于保存机器人描述相关内容，是整个项目的统一资产真源入口。
-后续这里主要承载机器人结构定义、命名规范、模型资产及其派生关系说明。
+This directory is reserved for robot description source-of-truth data. It currently contains no implementation files beyond documentation.
+
+## Intended scope
+
+- canonical robot naming, frame conventions, and joint definitions
+- source CAD-to-URDF or source URDF-to-derived-asset relationships
+- documentation for how training, MuJoCo, and deployment assets are derived
+- versioned ownership of description changes before they are exported elsewhere
+
+## Current status
+
+- no source description package is stored here yet
+- exported assets currently live in `assets/` and `modules/wheeled_mujoco/asset/`
+
+If this module becomes active later, it should describe how those exported assets are generated and validated rather than duplicating derived files blindly.

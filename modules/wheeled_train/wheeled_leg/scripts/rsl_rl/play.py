@@ -54,9 +54,12 @@ simulation_app = app_launcher.app
 """Rest everything follows."""
 
 import gymnasium as gym
+import csv
 import os
 import time
 import torch
+from datetime import datetime
+from pathlib import Path
 
 from rsl_rl.runners import OnPolicyRunner
 
@@ -78,6 +81,41 @@ from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import wheeled_leg.tasks  # noqa: F401
+
+
+def _resolve_artifact_log_dir(resume_path: str, experiment_log_root: str) -> str:
+    """Resolve the directory where play artifacts should be stored.
+
+    If the selected checkpoint comes from ``logs/.../<experiment>/best/model.pt``, then the parent
+    directory is only the lightweight best-policy index. In that case, try to recover the original
+    source run from ``best/notes.md`` and place play artifacts under the real training run directory.
+    """
+
+    checkpoint_path = Path(resume_path).resolve()
+    checkpoint_parent = checkpoint_path.parent
+    experiment_root = Path(experiment_log_root).resolve()
+
+    if checkpoint_parent.name != "best":
+        return str(checkpoint_parent)
+
+    notes_path = checkpoint_parent / "notes.md"
+    if not notes_path.is_file():
+        return str(checkpoint_parent)
+
+    source_run = None
+    for line in notes_path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("source_run:"):
+            source_run = line.split(":", 1)[1].strip()
+            break
+
+    if not source_run or source_run == "TBD":
+        return str(checkpoint_parent)
+
+    candidate_dir = experiment_root / source_run
+    if candidate_dir.is_dir():
+        return str(candidate_dir)
+
+    return str(checkpoint_parent)
 
 
 @hydra_task_config(args_cli.task, args_cli.agent)
@@ -129,14 +167,16 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     else:
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 
-    log_dir = os.path.dirname(resume_path)
+    log_dir = _resolve_artifact_log_dir(resume_path, log_root_path)
 
     # create isaac environment
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
+    base_env = env.unwrapped
 
     # convert to single-agent instance if required by the RL algorithm
     if isinstance(env.unwrapped, DirectMARLEnv):
         env = multi_agent_to_single_agent(env)
+        base_env = env.unwrapped
 
     # wrap for video recording
     if args_cli.video:
@@ -152,6 +192,47 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # wrap around environment for rsl-rl
     env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
+
+    torque_log_file = None
+    torque_log_writer = None
+    torque_log_row_count = 0
+    torque_log_path = None
+    torque_log_env_index = 0
+    torque_joint_names: list[str] = []
+
+    if getattr(base_env.cfg, "torque_logging_enabled", False):
+        torque_log_env_index = int(getattr(base_env.cfg, "torque_log_env_index", 0))
+        torque_log_flush_interval = int(getattr(base_env.cfg, "torque_log_flush_interval", 50))
+        torque_log_folder_name = str(getattr(base_env.cfg, "torque_log_folder_name", "play_joint_torque"))
+        torque_log_root = Path(log_dir) / torque_log_folder_name
+        torque_log_root.mkdir(parents=True, exist_ok=True)
+        torque_run_dir = torque_log_root / datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        torque_run_dir.mkdir(parents=True, exist_ok=True)
+
+        robot = base_env.scene["robot"]
+        torque_joint_names = list(robot.joint_names)
+        torque_log_path = torque_run_dir / "joint_torque.csv"
+        torque_log_file = torque_log_path.open("w", encoding="utf-8", newline="")
+        torque_log_writer = csv.writer(torque_log_file)
+        torque_log_writer.writerow(["step", "sim_time_s", "env_index", *torque_joint_names])
+
+        metadata_path = torque_run_dir / "metadata.txt"
+        metadata_path.write_text(
+            "\n".join(
+                [
+                    f"task={args_cli.task}",
+                    f"checkpoint={resume_path}",
+                    f"log_dir={log_dir}",
+                    f"env_index={torque_log_env_index}",
+                    f"step_dt={base_env.step_dt}",
+                    f"num_joints={len(torque_joint_names)}",
+                    f"joint_names={','.join(torque_joint_names)}",
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        print(f"[INFO] Joint torque logging enabled: {torque_log_path}")
 
     print(f"[INFO]: Loading model checkpoint from: {resume_path}")
     # load previously trained model
@@ -183,27 +264,41 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     obs, _ = env.get_observations()
     timestep = 0
     # simulate environment
-    while simulation_app.is_running():
-        start_time = time.time()
-        # run everything in inference mode
-        with torch.inference_mode():
-            # agent stepping
-            actions = policy(obs)
-            # env stepping
-            obs, _, _, _ = env.step(actions)
-        if args_cli.video:
+    try:
+        while simulation_app.is_running():
+            start_time = time.time()
+            # run everything in inference mode
+            with torch.inference_mode():
+                # agent stepping
+                actions = policy(obs)
+                # env stepping
+                obs, _, _, _ = env.step(actions)
+
+            if torque_log_writer is not None:
+                robot = base_env.scene["robot"]
+                applied_torque = robot.data.applied_torque[torque_log_env_index].detach().cpu().tolist()
+                torque_log_writer.writerow([timestep, timestep * dt, torque_log_env_index, *applied_torque])
+                torque_log_row_count += 1
+                if torque_log_row_count % torque_log_flush_interval == 0:
+                    torque_log_file.flush()
+
             timestep += 1
-            # Exit the play loop after recording one video
-            if timestep == args_cli.video_length:
-                break
+            if args_cli.video:
+                # Exit the play loop after recording one video
+                if timestep == args_cli.video_length:
+                    break
 
-        # time delay for real-time evaluation
-        sleep_time = dt - (time.time() - start_time)
-        if args_cli.real_time and sleep_time > 0:
-            time.sleep(sleep_time)
-
-    # close the simulator
-    env.close()
+            # time delay for real-time evaluation
+            sleep_time = dt - (time.time() - start_time)
+            if args_cli.real_time and sleep_time > 0:
+                time.sleep(sleep_time)
+    finally:
+        if torque_log_file is not None:
+            torque_log_file.flush()
+            torque_log_file.close()
+            print(f"[INFO] Joint torque log saved to: {torque_log_path}")
+        # close the simulator
+        env.close()
 
 
 if __name__ == "__main__":

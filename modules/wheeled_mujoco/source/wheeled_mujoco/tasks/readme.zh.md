@@ -1,17 +1,23 @@
 # wheeled_mujoco.tasks
 
-该目录用 MuJoCo 侧的资产和环境配置去镜像 Isaac 训练任务名称。
+该目录保存与训练侧任务族对齐的 MuJoCo 任务元数据。
 
-当前范围：
+## 这些文件包含什么
 
-- 注册任务元数据、资产路径、默认导出策略路径和命令范围。
-- 让 `base_locked_locomotion` 通过已经验证过的 base-locked sim2sim 适配器可运行。
-- 为 arm/grasp/obstacle/recovery 任务预留明确的 MuJoCo 资产和 log 映射，但不假装它们的完整观测/动作部署已经实现。
+每个 `*_env_cfg.py` 文件都会定义：
 
-命名跟随训练侧目录：
+- 一个稳定的 MuJoCo 任务名，例如 `wheeled_base_locked`
+- 对应的训练环境配置引用
+- 期望的训练日志名
+- 默认 MuJoCo 资产路径
+- 默认导出策略路径
+- 名义控制命令范围
+- 执行该任务所需的 runner 类型
 
-```text
-wheeled_train/.../wheeled_leg/*_env_cfg.py
-```
+## 当前状态
 
-真正的 runner 分发发生在 `wheeled_mujoco.sim2sim`。
+- `wheeled_base_locked` 和 `wheeled_base_locked_hard` 已映射到 base-locked runner 类型
+- arm、grasp、obstacle、recovery 等任务目前只注册了资产 / 策略元数据
+- 注册表在 `__init__.py` 中组装，并通过 `TASK_REGISTRY` 暴露
+
+这一层只是元数据层，不负责真正执行 rollout。实际运行分发发生在 `wheeled_mujoco.sim2sim`。

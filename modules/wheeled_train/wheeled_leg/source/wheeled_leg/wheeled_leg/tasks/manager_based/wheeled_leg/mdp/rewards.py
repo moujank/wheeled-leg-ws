@@ -92,6 +92,17 @@ def base_tilt_l2(env, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> to
     return torch.sum(torch.square(asset.data.projected_gravity_b[:, :2]), dim=1)
 
 
+def base_height_l2(
+    env: ManagerBasedRLEnv,
+    target_height: float,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """Penalize deviation of the base height from a nominal target."""
+    asset: Articulation = env.scene[asset_cfg.name]
+    base_height = asset.data.root_pos_w[:, 2]
+    return torch.square(base_height - target_height)
+
+
 def mirrored_joint_deviation_l1(
     env: ManagerBasedRLEnv,
     left_asset_cfg: SceneEntityCfg,

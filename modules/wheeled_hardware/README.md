@@ -1,4 +1,16 @@
 # wheeled_hardware
 
-该目录用于保存未来硬件资料相关内容，是项目的硬件信息模块。
-后续这里主要承载机械结构、传感器安装、BOM、装配说明及硬件参数资料。
+This directory is reserved for hardware-facing project data. It currently contains documentation only.
+
+## Intended scope
+
+- mechanical assembly notes
+- BOMs and part substitutions
+- sensor placement, cable routing, and wiring references
+- calibration constants and hardware revision notes
+
+## Current status
+
+- no CAD exports, BOM sheets, or assembly guides have been added yet
+
+This module should become the place for physical platform documentation, not simulation or policy artifacts.

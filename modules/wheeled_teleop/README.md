@@ -1,4 +1,16 @@
 # wheeled_teleop
 
-该目录用于保存未来遥操作与可视化相关内容，是项目的人机交互扩展模块。
-后续这里主要承载手柄控制、键盘控制、状态回显、远程监控及调参界面实现。
+This directory is reserved for teleoperation and operator-facing tooling. It currently contains documentation only.
+
+## Intended scope
+
+- keyboard or gamepad teleoperation
+- remote monitoring dashboards
+- operator tuning panels and debug visualizations
+- lightweight demos that drive the robot or simulation manually
+
+## Current status
+
+- no teleop node, UI, or visualization tool has been committed yet
+
+Keep future work here focused on human interaction surfaces instead of embedding core robot logic.

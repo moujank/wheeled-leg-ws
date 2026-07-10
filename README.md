@@ -1,66 +1,94 @@
 # wheeled-leg-ws
 
-这是当前工作空间的 Git 仓库说明文档，用于记录仓库中的主要文件、常用操作方式，以及几个辅助脚本的用途说明。
+This repository is the main workspace for a wheeled-leg robot stack. It currently contains two active implementation tracks:
 
-## 仓库内容
+- `modules/wheeled_train/wheeled_leg`: Isaac Lab training tasks, scripts, and experiment outputs.
+- `modules/wheeled_mujoco`: MuJoCo assets and sim-to-sim validation tools that reuse policies exported from training.
 
-- `thinking.txt`
+The remaining `modules/wheeled_*` directories are present as reserved module boundaries for future hardware, deployment, navigation, teleoperation, and ROS bridge work. At the moment they only contain module-level README files.
 
-  当前工作空间中的主要文本内容文件。
+## Workspace layout
 
-- `GIT_HISTORY.md`
-
-  由 Git 历史自动生成的日志文件，用于快速查看历史提交记录、作者、提交时间以及每次提交对应的文件变更统计。
-
-- `sync_to_github.sh`
-
-  用于将当前工作空间中的全部改动快速同步到 GitHub。
-
-  中文说明：
-  该脚本会自动执行 `git add -A`、`git commit` 和 `git push`。如果你没有传入提交说明，它会自动使用当前时间生成一条提交信息。适合在你完成一轮修改后，快速将本地内容同步到远程仓库。
-
-- `update_git_history.sh`
-
-  用于根据当前仓库的 Git 提交历史重新生成 `GIT_HISTORY.md` 文件。
-
-  中文说明：
-  该脚本会读取当前仓库的提交记录，并把每次提交的哈希值、提交说明、作者、时间以及文件变更统计写入 `GIT_HISTORY.md`。适合在你提交新内容后刷新历史日志，方便后续查看和回顾。
-
-## 常用命令
-
-### 1. 同步当前修改到 GitHub
-
-```bash
-./sync_to_github.sh
+```text
+wheeled-leg-ws/
+├── assets/                         # USD/URDF exports and raw robot assets used outside MuJoCo
+├── modules/
+│   ├── wheeled_train/             # Isaac Lab training workspace
+│   ├── wheeled_mujoco/            # MuJoCo sim2sim workspace
+│   ├── wheeled_sim_bridge/        # Reserved ROS / system integration module
+│   ├── wheeled_deploy/            # Reserved on-robot deployment module
+│   ├── wheeled_description/       # Reserved source-of-truth description module
+│   ├── wheeled_navigation/        # Reserved navigation module
+│   ├── wheeled_teleop/            # Reserved teleoperation and UI module
+│   ├── wheeled_hardware/          # Reserved hardware data module
+│   └── wheeled_firmware/          # Reserved firmware module
+├── tools/                         # Small standalone analysis utilities
+├── sync_to_github.sh              # Push main + subtree split branches
+├── update_git_history.sh          # Regenerate GIT_HISTORY.md from git log
+├── GIT_HISTORY.md                 # Generated commit history snapshot
+└── SIM2SIM_DYNAMIC_FLOW.md        # Project notes for sim2sim work
 ```
 
-如果你想自定义本次提交说明，可以这样执行：
+## Active code areas
 
-```bash
-./sync_to_github.sh "update: 这里写本次修改说明"
-```
+### Training
 
-### 2. 更新 Git 历史日志文件
+`modules/wheeled_train/wheeled_leg` is the real Isaac Lab project in this workspace. It includes:
+
+- task registration under `source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg`
+- training and playback scripts for `rsl_rl`, `skrl`, and `rl_games`
+- experiment outputs under `logs/` and `outputs/`
+- helper scripts such as `scripts/list_envs.py` and `scripts/rsl_rl/update_best_policy.py`
+
+### MuJoCo
+
+`modules/wheeled_mujoco` is the real MuJoCo-side project. It includes:
+
+- MuJoCo MJCF and converted robot assets under `asset/`
+- a validated minimal base-locked rollout under `minimal_sim2sim/`
+- importable package code under `source/wheeled_mujoco/`
+- script entry points under `scripts/`
+
+At the moment, `wheeled_base_locked` is the only fully runnable MuJoCo path. Other task names are registered as reserved configs so the training and MuJoCo naming stays aligned.
+
+## Top-level assets and tools
+
+- `assets/`: exported USD, URDF, mesh, and package-style robot assets used by the Isaac-side workflow.
+- `tools/plot_joint_torque.py`: plotting utility for joint torque traces.
+- `tools/plot_mean_reward.py`: plotting utility for reward curves or aggregate reward logs.
+- `MUJOCO_LOG.TXT` and `thinking.txt`: working notes captured in the repository root.
+
+## Common workflows
+
+### Refresh the generated git history file
 
 ```bash
 ./update_git_history.sh
 ```
 
-执行后会重新生成 `GIT_HISTORY.md`。
+This rewrites `GIT_HISTORY.md` from the current local git history.
 
-## 使用建议
+### Sync the workspace to GitHub
 
-推荐使用顺序如下：
+```bash
+./sync_to_github.sh
+```
 
-1. 完成当前文件修改。
-2. 运行 `./update_git_history.sh` 更新历史日志。
-3. 运行 `./sync_to_github.sh` 将最新内容提交并推送到 GitHub。
+If no commit message is provided, the script generates one from the current timestamp. The script also:
 
-这样可以保证仓库中的历史日志文件和远程仓库内容保持同步。
+- removes tracked local VS Code database files from the git index
+- commits staged changes on `main`
+- pushes `main`
+- splits `modules/wheeled_train` to branch `wheeled_train`
+- splits `modules/wheeled_mujoco` to branch `wheeled_mujoco`
 
+Provide a custom message when needed:
 
+```bash
+./sync_to_github.sh "sync: describe the current change"
+```
 
-解决train的还是train到了默认文件夹
-重新转usd
-按视频解mujoco的xml
-按照humanoid sim2sim
+## Notes
+
+- This worktree is actively used for experimentation. Generated logs, checkpoints, exported policies, and local notes may coexist with source changes.
+- The repository already contains non-README technical notes such as `SIM2SIM_DYNAMIC_FLOW.md`, `modules/wheeled_mujoco/SIM2SIM_ARCHITECTURE.md`, and `modules/wheeled_mujoco/MUJOCO_DEBUG_HANDOFF.md`. Those files carry workflow state and should be read together with the module READMEs when working on sim2sim.

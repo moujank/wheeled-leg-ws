@@ -28,15 +28,17 @@ WHEELED_CFG = ArticulationCfg(
         ),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.34),
+        # Use a moderate crouched nominal pose so the robot starts from a drivable posture
+        # instead of a fully stretched configuration that hurts velocity tracking.
+        pos=(0.0, 0.0, 0.32),
         joint_pos={
             "HipL": 0.0,
-            "HipR": 0.0, 
+            "HipR": 0.0,
             "KneeL": 0.0,
             "KneeR": 0.0,
             "Hub.*": 0.0,
         }
-    ),  
+    ),
     soft_joint_pos_limit_factor=0.9,
     actuators={
         "hip_act": ImplicitActuatorCfg(

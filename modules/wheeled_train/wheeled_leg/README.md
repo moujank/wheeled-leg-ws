@@ -1,135 +1,139 @@
-# Template for Isaac Lab Projects
+# wheeled_leg Isaac Lab project
 
-## Overview
+This directory is the active Isaac Lab extension project for the wheeled-leg robot. It is no longer a generic template in practice, even though some package metadata still comes from the upstream Isaac Lab extension template.
 
-This project/repository serves as a template for building projects or extensions based on Isaac Lab.
-It allows you to develop in an isolated environment, outside of the core Isaac Lab repository.
+## Structure
 
-**Key Features:**
+```text
+modules/wheeled_train/wheeled_leg/
+├── source/wheeled_leg/
+│   ├── setup.py
+│   ├── config/extension.toml
+│   └── wheeled_leg/
+│       └── tasks/manager_based/wheeled_leg/
+├── scripts/
+│   ├── list_envs.py
+│   ├── zero_agent.py
+│   ├── random_agent.py
+│   ├── rsl_rl/
+│   ├── skrl/
+│   └── rl_games/
+├── logs/rsl_rl/
+├── outputs/
+├── tools/
+└── .vscode/tools/setup_vscode.py
+```
 
-- `Isolation` Work outside the core Isaac Lab repository, ensuring that your development efforts remain self-contained.
-- `Flexibility` This template is set up to allow your code to be run as an extension in Omniverse.
+## What is implemented
 
-**Keywords:** extension, template, isaaclab
+### Task package
+
+The main task package is:
+
+`source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg`
+
+It currently contains:
+
+- base-locked locomotion variants
+- arm-free locomotion, obstacle, and recovery tasks
+- grasp-pose locomotion
+- cartesian grasp
+- loaded grasp obstacle
+- terrain builders, assets, MDP fragments, and agent configs
+
+### Script entry points
+
+- `scripts/list_envs.py`: print all registered `Wheeled-...` environments
+- `scripts/zero_agent.py`: run a zero-action smoke test
+- `scripts/random_agent.py`: run a random-action smoke test
+- `scripts/rsl_rl/train.py`: RSL-RL training
+- `scripts/rsl_rl/play.py`: RSL-RL playback
+- `scripts/rsl_rl/update_best_policy.py`: update the `best/` pointer for a chosen experiment
+- `scripts/skrl/*.py` and `scripts/rl_games/*.py`: alternative RL library entry points
+
+### Checked-in experiment artifacts
+
+This repository already contains:
+
+- `logs/rsl_rl/*/best/` folders with selected policy pointers and notes
+- exported torch or ONNX policies for some experiments
+- `outputs/` directories from Isaac Lab or Hydra runs
+
+Treat those directories as working artifacts, not immutable release assets.
 
 ## Installation
 
-- Install Isaac Lab by following the [installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html).
-  We recommend using the conda installation as it simplifies calling Python scripts from the terminal.
-
-- Clone or copy this project/repository separately from the Isaac Lab installation (i.e. outside the `IsaacLab` directory):
-
-- Using a python interpreter that has Isaac Lab installed, install the library in editable mode using:
-
-    ```bash
-    # use 'PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-    python -m pip install -e source/wheeled_leg
-
-- Verify that the extension is correctly installed by:
-
-    - Listing the available tasks:
-
-        Note: It the task name changes, it may be necessary to update the search pattern `"Template-"`
-        (in the `scripts/list_envs.py` file) so that it can be listed.
-
-        ```bash
-        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-        python scripts/list_envs.py
-        ```
-
-    - Running a task:
-
-        ```bash
-        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-        python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME>
-        ```
-
-    - Running a task with dummy agents:
-
-        These include dummy agents that output zero or random agents. They are useful to ensure that the environments are configured correctly.
-
-        - Zero-action agent
-
-            ```bash
-            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-            python scripts/zero_agent.py --task=<TASK_NAME>
-            ```
-        - Random-action agent
-
-            ```bash
-            # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
-            python scripts/random_agent.py --task=<TASK_NAME>
-            ```
-
-### Set up IDE (Optional)
-
-To setup the IDE, please follow these instructions:
-
-- Run VSCode Tasks, by pressing `Ctrl+Shift+P`, selecting `Tasks: Run Task` and running the `setup_python_env` in the drop down menu.
-  When running this task, you will be prompted to add the absolute path to your Isaac Sim installation.
-
-If everything executes correctly, it should create a file .python.env in the `.vscode` directory.
-The file contains the python paths to all the extensions provided by Isaac Sim and Omniverse.
-This helps in indexing all the python modules for intelligent suggestions while writing code.
-
-### Setup as Omniverse Extension (Optional)
-
-We provide an example UI extension that will load upon enabling your extension defined in `source/wheeled_leg/wheeled_leg/ui_extension_example.py`.
-
-To enable your extension, follow these steps:
-
-1. **Add the search path of this project/repository** to the extension manager:
-    - Navigate to the extension manager using `Window` -> `Extensions`.
-    - Click on the **Hamburger Icon**, then go to `Settings`.
-    - In the `Extension Search Paths`, enter the absolute path to the `source` directory of this project/repository.
-    - If not already present, in the `Extension Search Paths`, enter the path that leads to Isaac Lab's extension directory directory (`IsaacLab/source`)
-    - Click on the **Hamburger Icon**, then click `Refresh`.
-
-2. **Search and enable your extension**:
-    - Find your extension under the `Third Party` category.
-    - Toggle it to enable your extension.
-
-## Code formatting
-
-We have a pre-commit template to automatically format your code.
-To install pre-commit:
+Use a Python environment that already has Isaac Lab installed, then install the local extension in editable mode:
 
 ```bash
-pip install pre-commit
+cd modules/wheeled_train/wheeled_leg
+python -m pip install -e source/wheeled_leg
 ```
 
-Then you can run pre-commit with:
+The package metadata in `source/wheeled_leg/config/extension.toml` still carries upstream template values such as `Extension Template`. That metadata does not change the runtime task registration, but it is worth cleaning up later.
+
+## Registered tasks
+
+The current registry in `source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/__init__.py` includes:
+
+- `Wheeled-Base-Locked-simple`
+- `Wheeled-Base-Locked-simple-Play`
+- `Wheeled-Base-Locked-Curriculum`
+- `Wheeled-Base-Locked-Curriculum-Play`
+- `Wheeled-Arm-Free-Locomotion-v0`
+- `Wheeled-Arm-Free-Locomotion-Play-v0`
+- `Wheeled-Arm-Free-Recovery-v0`
+- `Wheeled-Arm-Free-Recovery-Play-v0`
+- `Wheeled-Arm-Free-Obstacle-v0`
+- `Wheeled-Arm-Free-Obstacle-Play-v0`
+- `Wheeled-Grasp-Pose-Locomotion-v0`
+- `Wheeled-Grasp-Pose-Locomotion-Play-v0`
+- `Wheeled-Cartesian-Grasp-v0`
+- `Wheeled-Cartesian-Grasp-Play-v0`
+- `Wheeled-Loaded-Grasp-Obstacle-v0`
+- `Wheeled-Loaded-Grasp-Obstacle-Play-v0`
+
+## Typical commands
+
+### List environments
 
 ```bash
-pre-commit run --all-files
+cd modules/wheeled_train/wheeled_leg
+python scripts/list_envs.py
 ```
 
-## Troubleshooting
+### Train with RSL-RL
 
-### Pylance Missing Indexing of Extensions
-
-In some VsCode versions, the indexing of part of the extensions is missing.
-In this case, add the path to your extension in `.vscode/settings.json` under the key `"python.analysis.extraPaths"`.
-
-```json
-{
-    "python.analysis.extraPaths": [
-        "<path-to-ext-repo>/source/wheeled_leg"
-    ]
-}
+```bash
+cd modules/wheeled_train/wheeled_leg
+python scripts/rsl_rl/train.py \
+  --task=Wheeled-Base-Locked-simple \
+  --agent=rsl_rl_cfg_entry_point
 ```
 
-### Pylance Crash
+### Play a selected checkpoint
 
-If you encounter a crash in `pylance`, it is probable that too many files are indexed and you run out of memory.
-A possible solution is to exclude some of omniverse packages that are not used in your project.
-To do so, modify `.vscode/settings.json` and comment out packages under the key `"python.analysis.extraPaths"`
-Some examples of packages that can likely be excluded are:
-
-```json
-"<path-to-isaac-sim>/extscache/omni.anim.*"         // Animation packages
-"<path-to-isaac-sim>/extscache/omni.kit.*"          // Kit UI tools
-"<path-to-isaac-sim>/extscache/omni.graph.*"        // Graph UI tools
-"<path-to-isaac-sim>/extscache/omni.services.*"     // Services tools
-...
+```bash
+cd modules/wheeled_train/wheeled_leg
+python scripts/rsl_rl/play.py \
+  --task=Wheeled-Base-Locked-simple-Play \
+  --agent=rsl_rl_cfg_entry_point \
+  --experiment_name=wheeled_base_locked_simple \
+  --load_run=best \
+  --checkpoint=model.pt
 ```
+
+### Run quick environment smoke tests
+
+```bash
+python scripts/zero_agent.py --task=Wheeled-Base-Locked-simple
+python scripts/random_agent.py --task=Wheeled-Base-Locked-simple
+```
+
+## Logging conventions
+
+- training logs live under `logs/rsl_rl/<experiment_name>/`
+- manually selected checkpoint pointers live under `logs/rsl_rl/<experiment_name>/best/`
+- run-time outputs from Hydra or Isaac Lab live under `outputs/<date>/<time>/`
+
+If a training run still writes to an unexpected default directory, check the current working directory first. `scripts/rsl_rl/train.py` writes logs relative to the directory where the script is launched.

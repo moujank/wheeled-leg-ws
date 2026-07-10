@@ -1,4 +1,17 @@
 # wheeled_deploy
 
-该目录用于保存未来真机部署相关内容，是项目的部署扩展模块。
-后续这里主要承载真机控制接入、在线推理、安全状态机以及部署流程实现。
+This directory is reserved for on-robot deployment code. It does not yet contain runtime implementation files.
+
+## Intended scope
+
+- package the trained policy and runtime dependencies for robot-side execution
+- host deployment launchers, service wrappers, and startup scripts
+- implement safety state machines, watchdogs, and recovery hooks
+- bridge policy inference with hardware command/output interfaces
+
+## Current status
+
+- only documentation exists in this module
+- no deploy pipeline, runtime daemon, or launch entry point has been committed yet
+
+When deployment code is added later, keep this module focused on robot-side execution concerns rather than training or simulation utilities.

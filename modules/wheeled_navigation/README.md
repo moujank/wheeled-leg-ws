@@ -1,4 +1,16 @@
 # wheeled_navigation
 
-该目录用于保存未来导航相关内容，是项目的自主移动扩展模块。
-后续这里主要承载定位、里程计、地图、路径规划以及导航接口相关实现。
+This directory is reserved for navigation and autonomy work. It currently contains documentation only.
+
+## Intended scope
+
+- localization and odometry fusion
+- mapping and map-serving utilities
+- path planning and local motion planning
+- interfaces between navigation goals and locomotion/task controllers
+
+## Current status
+
+- no navigation stack, maps, or launch files are present yet
+
+When this module becomes active, keep it above raw locomotion control. It should consume robot state and produce higher-level mobility objectives.

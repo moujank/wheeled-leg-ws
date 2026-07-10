@@ -9,9 +9,13 @@
 
 from __future__ import annotations
 
+import math
+
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
+from isaaclab.managers import ObservationGroupCfg as ObsGroup
+from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.scene import InteractiveSceneCfg
@@ -19,9 +23,10 @@ from isaaclab.sensors import ContactSensorCfg
 from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR, ISAACLAB_NUCLEUS_DIR
+from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 from . import mdp
-from .arm_free_locomotion_env_cfg import ActionsCfg, CommandsCfg, EventCfg, ObservationsCfg, TerminationsCfg
+from .arm_free_locomotion_env_cfg import ActionsCfg, EventCfg, TerminationsCfg
 from .asset.wheeled_arm import WHEELED_ARM_CFG
 from .terrains.grasp_pose import GRASP_POSE_TERRAINS_CFG
 
@@ -53,6 +58,14 @@ class GraspPoseLocomotionSceneCfg(InteractiveSceneCfg):
 
     robot: ArticulationCfg = WHEELED_ARM_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
+    target_visual = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/Target",
+        spawn=sim_utils.SphereCfg(
+            radius=0.02,
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(1.0, 0.0, 0.0)),
+        ),
+    )
+
     contact_forces = ContactSensorCfg(
         prim_path="{ENV_REGEX_NS}/Robot/.*",
         debug_vis=False,
@@ -70,6 +83,84 @@ class GraspPoseLocomotionSceneCfg(InteractiveSceneCfg):
 
 
 @configclass
+class CommandsCfg:
+    """抓取准备姿态下的指令空间配置。"""
+
+    base_velocity = mdp.UniformVelocityCommandCfg(
+        asset_name="robot",
+        resampling_time_range=(8.0, 12.0),
+        rel_standing_envs=0.1,
+        rel_heading_envs=0.0,
+        heading_command=False,
+        heading_control_stiffness=0.5,
+        debug_vis=False,
+        ranges=mdp.UniformVelocityCommandCfg.Ranges(
+            lin_vel_x=(0.0, 0.8),
+            lin_vel_y=(0.0, 0.0),
+            ang_vel_z=(-0.2, 0.2),
+            heading=(0.0, 0.0),
+        ),
+    )
+    ee_pose = mdp.UniformPoseCommandCfg(
+        asset_name="robot",
+        body_name="claw_Link",
+        resampling_time_range=(4.0, 6.0),
+        debug_vis=True,
+        ranges=mdp.UniformPoseCommandCfg.Ranges(
+            # 缩小目标点采样范围，保证不同抓取准备姿态下都能覆盖。
+            pos_x=(0.36, 0.50),
+            pos_y=(-0.08, 0.08),
+            pos_z=(0.18, 0.30),
+            # 目标坐标系默认与 claw_Link 末端抓取朝向一致，并加入小角度扰动。
+            roll=(-0.10, 0.10),
+            pitch=(math.pi * 0.5 - 0.10, math.pi * 0.5 + 0.10),
+            yaw=(-0.12, 0.12),
+        ),
+    )
+
+
+@configclass
+class ObservationsCfg:
+    """抓取准备姿态下的观测空间配置。"""
+
+    @configclass
+    class PolicyCfg(ObsGroup):
+        """Actor 使用的观测。"""
+
+        base_ang_vel = ObsTerm(func=mdp.base_ang_vel, noise=Unoise(n_min=-0.2, n_max=0.2))
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.1, n_max=0.1))
+        projected_gravity = ObsTerm(func=mdp.projected_gravity, noise=Unoise(n_min=-0.05, n_max=0.05))
+        velocity_commands = ObsTerm(func=mdp.generated_commands, params={"command_name": "base_velocity"})
+        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
+        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.1, n_max=0.1))
+        actions = ObsTerm(func=mdp.last_action)
+        ee_position_to_target = ObsTerm(
+            func=mdp.ee_position_error_in_robot_frame,
+            params={"asset_cfg": SceneEntityCfg("robot", body_names=["claw_Link"]), "command_name": "ee_pose"},
+        )
+
+        def __post_init__(self):
+            self.enable_corruption = True
+            self.concatenate_terms = True
+            self.history_length = 3
+            self.flatten_history_dim = True
+
+    @configclass
+    class CriticCfg(ObsGroup):
+        """Critic 使用的特权观测。"""
+
+        base_lin_vel = ObsTerm(func=mdp.base_lin_vel)
+        body_contact = ObsTerm(func=mdp.body_contact, params={"sensor_cfg": SceneEntityCfg("contact_forces")})
+
+        def __post_init__(self):
+            self.enable_corruption = False
+            self.concatenate_terms = True
+
+    policy: PolicyCfg = PolicyCfg()
+    critic: CriticCfg = CriticCfg()
+
+
+@configclass
 class RewardsCfg:
     """抓取准备姿态下的稳定运动奖励函数。"""
 
@@ -80,6 +171,16 @@ class RewardsCfg:
         func=mdp.track_ang_vel_z_exp, weight=1.5, params={"command_name": "base_velocity", "std": 0.6}
     )
     termination_penalty = RewTerm(func=mdp.is_terminated, weight=-20.0)
+    approach_ee_target_exp = RewTerm(
+        func=mdp.track_ee_pose_exp,
+        weight=16.0,
+        params={"command_name": "ee_pose", "std": 0.28, "asset_cfg": SceneEntityCfg("robot", body_names=["claw_Link"])},
+    )
+    approach_ee_target_tanh = RewTerm(
+        func=mdp.track_ee_position_tanh,
+        weight=24.0,
+        params={"command_name": "ee_pose", "std": 0.16, "asset_cfg": SceneEntityCfg("robot", body_names=["claw_Link"])},
+    )
     lin_vel_z_l2 = RewTerm(func=mdp.lin_vel_z_l2, weight=-1.0)
     ang_vel_xy_l2 = RewTerm(func=mdp.ang_vel_xy_l2, weight=-0.15)
     flat_orientation_l2 = RewTerm(func=mdp.flat_orientation_l2, weight=-4.0)
@@ -132,7 +233,6 @@ class GraspPoseLocomotionEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.physx.gpu_max_rigid_patch_count = 10 * 2**15
         self.scene.contact_forces.update_period = self.sim.dt
         self.scene.terrain.terrain_generator.curriculum = True
-        self.commands.base_velocity.ranges.lin_vel_x = (0.0, 0.8)
 
 
 @configclass
@@ -151,6 +251,12 @@ class GraspPoseLocomotionEnvCfg_PLAY(GraspPoseLocomotionEnvCfg):
         self.commands.base_velocity.ranges.lin_vel_x = (0.4, 0.4)
         self.commands.base_velocity.ranges.lin_vel_y = (0.0, 0.0)
         self.commands.base_velocity.ranges.heading = (0.0, 0.0)
+        self.commands.ee_pose.ranges.pos_x = (0.43, 0.43)
+        self.commands.ee_pose.ranges.pos_y = (0.0, 0.0)
+        self.commands.ee_pose.ranges.pos_z = (0.24, 0.24)
+        self.commands.ee_pose.ranges.roll = (0.0, 0.0)
+        self.commands.ee_pose.ranges.pitch = (math.pi * 0.5, math.pi * 0.5)
+        self.commands.ee_pose.ranges.yaw = (0.0, 0.0)
         self.observations.policy.enable_corruption = False
         self.events.base_external_force_torque = None
         self.events.push_robot = None
