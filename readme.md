@@ -1,22 +1,65 @@
 # wheeled_mujoco
 
-This module contains MuJoCo assets, sim2sim runners, and future ROS/task orchestration scaffolding for the wheeled-leg workspace.
+This module contains the MuJoCo-side workspace for the wheeled-leg project.
 
-Current layout:
-
-- `asset/`: MuJoCo MJCF, URDF, mesh, texture, and related robot assets.
-- `minimal_sim2sim/`: current validated debug baseline. Keep this stable unless explicitly debugging the baseline.
-- `scripts/`: command-line entry points for running or inspecting sim2sim tasks.
-- `source/`: importable MuJoCo-side package with task configs, runner adapters, ROS interfaces, and task orchestration placeholders.
-- `MUJOCO_DEBUG_HANDOFF.md`: state file for the current MuJoCo sim2sim debugging status.
-
-Call order for new sim2sim work:
+## Structure
 
 ```text
-scripts/run_*.py
-  -> source/wheeled_mujoco/sim2sim
-  -> source/wheeled_mujoco/tasks
-  -> asset/ and wheeled_train logs
+modules/wheeled_mujoco/
+├── asset/                 # MJCF, URDF mirrors, mesh assets, and index helpers
+├── minimal_sim2sim/       # Validated minimal base-locked MuJoCo rollout
+├── scripts/               # Command-line entry points
+├── source/                # Importable Python package
+├── MUJOCO_DEBUG_HANDOFF.md
+├── MUJOCO_CONSISTENCY_CHECKLIST.md
+└── SIM2SIM_ARCHITECTURE.md
 ```
 
-The existing `minimal_sim2sim/run_base_locked.py` remains the behavior reference for base-locked startup and reset stability.
+## Current scope
+
+- provide MuJoCo robot assets for `wheeled_leg` and `wheeled_arm`
+- run exported policies from `modules/wheeled_train/wheeled_leg/logs/rsl_rl`
+- keep one validated, low-risk base-locked rollout path
+- reserve task metadata and script boundaries for future MuJoCo task coverage
+
+## Current runtime status
+
+- `wheeled_base_locked` is the only fully runnable task path today
+- `wheeled_base_locked_hard` reuses the same runner but should still be treated as a validation target, not a locked baseline
+- arm, grasp, obstacle, and recovery task names are registered only as reserved MuJoCo configs
+
+## Call flow
+
+```text
+scripts/run_task_sim2sim.py
+  -> source/wheeled_mujoco/sim2sim
+  -> source/wheeled_mujoco/tasks
+  -> minimal_sim2sim/run_base_locked.py
+  -> asset/ + wheeled_train exported policies
+```
+
+## Typical commands
+
+List the registered MuJoCo task configs:
+
+```bash
+python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --list-tasks
+```
+
+Run the validated base-locked path through the script wrapper:
+
+```bash
+python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py \
+  --task wheeled_base_locked \
+  --no-viewer \
+  --no-real-time \
+  --duration 5
+```
+
+Run the minimal baseline directly:
+
+```bash
+python3 modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py --duration 5
+```
+
+Use the more specific README files in `minimal_sim2sim/`, `scripts/`, and `source/` for details.

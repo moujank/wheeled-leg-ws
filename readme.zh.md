@@ -1,22 +1,65 @@
 # wheeled_mujoco
 
-该模块包含 wheeled-leg 工作空间在 MuJoCo 侧的资产、sim2sim 运行器，以及后续 ROS 和任务编排的预留结构。
+该模块是轮腿项目的 MuJoCo 侧工作区。
 
-当前目录结构：
-
-- `asset/`：MuJoCo MJCF、URDF、mesh、纹理和相关机器人资产。
-- `minimal_sim2sim/`：当前验证过的最小调试基线。除非明确在调这个基线，否则不要随意改动。
-- `scripts/`：运行或检查 sim2sim 任务的命令行入口。
-- `source/`：可导入的 MuJoCo 侧源码包，包含任务配置、运行适配器、ROS 接口和任务编排预留。
-- `MUJOCO_DEBUG_HANDOFF.md`：当前 MuJoCo sim2sim 调试状态文件。
-
-新的 sim2sim 工作调用顺序：
+## 目录结构
 
 ```text
-scripts/run_*.py
-  -> source/wheeled_mujoco/sim2sim
-  -> source/wheeled_mujoco/tasks
-  -> asset/ 和 wheeled_train logs
+modules/wheeled_mujoco/
+├── asset/                 # MJCF、URDF 镜像、mesh 资产和索引辅助脚本
+├── minimal_sim2sim/       # 已验证的 base-locked 最小 MuJoCo 闭环
+├── scripts/               # 命令行入口
+├── source/                # 可导入 Python 包
+├── MUJOCO_DEBUG_HANDOFF.md
+├── MUJOCO_CONSISTENCY_CHECKLIST.md
+└── SIM2SIM_ARCHITECTURE.md
 ```
 
-现有的 `minimal_sim2sim/run_base_locked.py` 仍然是 `base_locked` 启动和 reset 稳定性的行为参考。
+## 当前职责
+
+- 提供 `wheeled_leg` 与 `wheeled_arm` 的 MuJoCo 机器人资产
+- 运行 `modules/wheeled_train/wheeled_leg/logs/rsl_rl` 导出的策略
+- 保持一条已经验证过的、低风险的 base-locked rollout 路径
+- 为后续更多 MuJoCo 任务预留配置和脚本边界
+
+## 当前运行状态
+
+- 目前只有 `wheeled_base_locked` 这条任务路径完全可运行
+- `wheeled_base_locked_hard` 复用了同一个 runner，但仍应视为待验证对象，不是锁定基线
+- arm、grasp、obstacle、recovery 等任务名目前只是在 MuJoCo 配置层做了预留
+
+## 调用链路
+
+```text
+scripts/run_task_sim2sim.py
+  -> source/wheeled_mujoco/sim2sim
+  -> source/wheeled_mujoco/tasks
+  -> minimal_sim2sim/run_base_locked.py
+  -> asset/ + wheeled_train 导出策略
+```
+
+## 常用命令
+
+列出已注册的 MuJoCo 任务配置：
+
+```bash
+python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --list-tasks
+```
+
+通过脚本包装器运行已验证的 base-locked 路径：
+
+```bash
+python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py \
+  --task wheeled_base_locked \
+  --no-viewer \
+  --no-real-time \
+  --duration 5
+```
+
+直接运行最小基线：
+
+```bash
+python3 modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py --duration 5
+```
+
+更详细的说明请继续查看 `minimal_sim2sim/`、`scripts/` 和 `source/` 下的 README。

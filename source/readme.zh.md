@@ -1,12 +1,19 @@
 # wheeled_mujoco/source
 
-该目录是 MuJoCo 侧 sim2sim 代码的可导入源码工作区。
+该目录是 MuJoCo 侧 Python 代码的可导入源码树。
 
-职责划分：
+## 子包
 
-- `wheeled_mujoco/sim2sim`：可运行的 sim2sim 适配器和 CLI。
-- `wheeled_mujoco/tasks`：任务级 MuJoCo 资产/环境配置，命名与训练任务文件保持一致。
-- `wheeled_mujoco/ros`：后续机器人控制仿真的 ROS 节点和接口预留。
-- `wheeled_mujoco/orchestration`：后续任务切换和多任务耦合执行工具预留。
+- `wheeled_mujoco/tasks`：与训练侧命名和日志布局对齐的任务元数据
+- `wheeled_mujoco/sim2sim`：runner 适配层与 CLI 参数转发层
+- `wheeled_mujoco/ros`：预留的 ROS 接口骨架
+- `wheeled_mujoco/orchestration`：预留的任务切换与协调辅助层
+- `wheeled_mujoco/paths.py`：共享的仓库相对路径工具
 
-这个源码树之外的现有文件保持原样。当前稳定的 `minimal_sim2sim/run_base_locked.py` 仍然是行为基线。
+## 设计边界
+
+- 可复用 Python 逻辑应放在这里
+- 一次性执行入口应放在 `modules/wheeled_mujoco/scripts`
+- 低风险的 base-locked 行为基线仍位于 `modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py`
+
+当前这个包刻意保持精简。它的职责是包装已经验证过的基线，而不是直接取代它。

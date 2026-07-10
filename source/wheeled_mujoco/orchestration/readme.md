@@ -1,11 +1,22 @@
 # wheeled_mujoco.orchestration
 
-This folder reserves task switching and task coupling logic.
+This folder reserves task-selection and multi-task coordination logic.
 
-Current status:
+## Current files
 
-- `task_switcher.py` provides a small in-process registry wrapper and transition description.
-- It does not blend policies or modify MuJoCo control yet.
-- Future coupling between locomotion, grasp, obstacle traversal, and recovery should live here before being exposed to ROS nodes.
+- `task_switcher.py`: small in-process registry and transition description helpers
 
-The boundary is intentionally above individual sim2sim runners. A runner executes one task; the orchestration layer decides which task should be active.
+## Current status
+
+- no policy blending or task arbitration runtime is implemented yet
+- no direct MuJoCo control mutation happens here today
+
+## Intended role
+
+A single runner executes one task rollout. The orchestration layer should eventually decide:
+
+- when to switch tasks
+- how to represent task transitions
+- whether a higher-level controller should sequence locomotion, recovery, obstacle, and grasp behaviors
+
+Keep this boundary above individual runners.

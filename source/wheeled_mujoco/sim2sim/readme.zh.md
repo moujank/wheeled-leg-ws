@@ -1,10 +1,20 @@
 # wheeled_mujoco.sim2sim
 
-该目录包含 sim2sim 运行适配器。
+该目录包含 MuJoCo sim-to-sim 执行的 runner 适配层。
 
-当前实现：
+## 当前文件
 
-- `base_locked.py` 提供 source 层 API 和 argparse 构建器，对接现有的 base-locked MuJoCo rollout。
-- 它通过导入 `minimal_sim2sim/run_base_locked.py` 中已经验证过的实现来复用行为，而不是复制一份，因此默认参数与当前调试基线保持一致。
+- `base_locked.py`：base-locked rollout 的参数解析构建器和执行适配器
+- `__init__.py`：供脚本侧导入的公共导出
 
-后续任务专用 runner 只有在对应训练任务的观测、动作、执行器顺序和策略导出都核对清楚之后，才应该继续往这里添加。
+## 当前设计
+
+`base_locked.py` 不会复制完整 rollout 实现，而是导入并转发到已经验证过的基线：
+
+```text
+modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py
+```
+
+这样可以把行为基线保持在一个地方，同时又允许更高层脚本和任务分发器通过包级 API 使用它。
+
+只有在观测定义、动作顺序、资产连接和导出策略都和训练侧核对完成之后，才应在这里增加新的任务 runner。

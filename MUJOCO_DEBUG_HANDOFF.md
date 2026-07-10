@@ -11,6 +11,10 @@
 4. 如果某个结果只是依靠保守降额获得稳定，必须在文档里明确写出。
 ```
 
+独立清单文档：
+
+- [MUJOCO_CONSISTENCY_CHECKLIST.md](/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/MUJOCO_CONSISTENCY_CHECKLIST.md)
+
 ## 1. 当前总目标
 
 目标是在 MuJoCo 中稳定运行 Isaac 训练得到的双轮足机器人策略，当前主脚本是：
@@ -40,13 +44,35 @@ policy: modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_base_locked/best/e
 当前结论：
 - 启动和 reset 后的 startup baseline 已统一。
 - cmd_vx/cmd_vy/cmd_wz 当前按 body-frame 语义送入策略观测。
-- cmd_vx=0.1 和 0.2 可稳定通过 20s。
-- cmd_vx=0.5 当前 20s 内可不倒，但依赖运行期命令降额，不代表真实 0.5 速度跟踪已恢复。
+- cmd_vx=0.1、0.2、0.5 当前都可稳定跑满 20s，但不同速度档仍存在保守降额。
+- cmd_vx=0.5 当前 20s 内可不倒，且后段 pitch 比上一轮更低，但不代表真实 0.5 速度跟踪已恢复。
 
 当前主矛盾：
 - 不再是“启动就倒下”。
 - 也不再是“0.5 一定会在 16-17s 倒地”。
-- 当前真正的问题是：如何在不破坏现有稳定性的前提下，减少运行期降额，恢复更真实的高速跟踪。
+- 当前真正的问题是：如何在不破坏现有稳定性的前提下，减少运行期降额，并恢复更真实的速度跟踪。
+```
+
+## 1.2 2026-07-08 新增一致性结论
+
+本轮重新核对后，新增一个必须长期记住的结论：
+
+```text
+当前不能再把训练源码默认资产，直接当作本次策略的真实训练资产。
+
+原因：
+1. modules/wheeled_train/.../asset/wheeled.py 仍显示一套旧/另一套默认值：
+   - z=0.38
+   - 髋膝为非零蹲姿
+   - hip/knee/hub 阻尼和刚度更大
+2. 但本次训练产物 2026-07-08_17-08-25/params/env.yaml 已明确记录：
+   - z=0.34
+   - 所有关节零位
+   - hip/knee/hub 为 20/30/1.5 这套参数
+
+因此：
+- MuJoCo 当前所有“对齐训练”的工作，必须优先参考训练产物 env.yaml。
+- 如果后续要讨论为什么 1.0 m/s 仍做不到，需要把“训练源码资产分叉”单独当成一个根因候选，而不是继续只看运行时 handoff。
 ```
 
 ## 2. 当前不可破坏的稳定基线
@@ -367,9 +393,9 @@ t=17.00s base_contact=True，灾难性倒地
 ```text
 1. 启动阶段目前是可用基线。
 2. cmd_vx=0.0 静止站立可以稳定。
-3. cmd_vx=0.1 和 0.2 当前可通过 20s，但 yaw 漂移仍需继续压低。
-4. cmd_vx=0.5 当前可以撑到约 16-17s，但仍会前倾倒下。
-5. 速度越低越稳定，速度越高越容易在一段距离后前倾，说明运行阶段轮速/姿态能量累积和 pitch 抑制仍不足。
+3. cmd_vx=0.1、0.2、0.5 当前都可通过 20s，但都不同程度依赖运行期保守保护。
+4. cmd_vx=0.5 已不再表现为 16-17s 的固定前倾倒地，后段 pitch 也低于上一轮。
+5. 当前仍存在“为了不倒而压低有效速度”的问题，说明运行阶段轮速/姿态能量积累虽然被抑制住了，但跟踪恢复仍不足。
 ```
 
 ## 8. 当前问题分解
@@ -645,4 +671,346 @@ cmd_vx=0.1 -> 0.2 -> 0.3 -> 0.5
    区分是 pitch 保护、wheel 保护还是 requested speed downscale 在主导降额。
 3. 在不让机器人前倾倒地的前提下，逐步恢复 cmd_vx=0.5 下的有效 cmd 占空比，
    而不是继续单纯依赖大幅降额保稳定。
+```
+
+### 2026-07-04 延迟启用的高速后期刹车辅助
+
+```text
+修改文件：
+- modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py
+
+修改内容：
+1. 保持 startup / reset / handoff 基线不动，不改 tether/release/stand 流程。
+2. 新增 measured body-frame forward speed，仅用于运行期保护层，不改 policy 原始 command 观测语义。
+3. 新增 delayed high-speed assist：
+   - 只在 policy 运行后期启用；
+   - 只在较大请求速度时启用；
+   - 作用是压制后段高速前倾能量积累，而不是提前介入前几秒过渡段。
+4. 在 wheel balance feedback 中新增仅高速后期启用的 common-mode brake state：
+   - 刹车增大时更快；
+   - 刹车释放时更慢；
+   - 目的是减少 0 / 大刹车 的来回切换。
+5. forward speed 额外保护和 wheel differential 附加修正都只在上述 high-speed assist 生效后介入，
+   避免破坏低速与刚进入 policy 的过渡段。
+
+是否影响启动阶段：
+- 已回归验证，未破坏当前 1s tether -> 1s release -> 2s stand -> policy 基线。
+
+启动回归：
+- 命令：
+  python3 modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py --no-viewer --no-real-time --no-handoff-log-every-step --duration 4.5 --cmd-vx 0.0
+- 结果：
+  t=4.00s base_pos=(+0.007, -0.002, +0.324)
+  rpy_deg=(-0.4, -2.3, -2.8)
+  base_contact=False leg_contact=False
+
+6s 短跑结果：
+- cmd_vx=0.1：
+  t=5.00s base_pos=(-0.013, -0.003, +0.328)
+  rpy_deg=(-0.2, -1.8, -4.0)
+  状态：稳定
+- cmd_vx=0.2：
+  t=5.00s base_pos=(-0.004, -0.003, +0.328)
+  rpy_deg=(-0.2, -1.6, -3.9)
+  状态：稳定
+- cmd_vx=0.5：
+  t=5.00s base_pos=(+0.009, -0.004, +0.328)
+  rpy_deg=(-0.2, -1.3, -4.1)
+  状态：稳定
+
+20s 长跑结果：
+- cmd_vx=0.1：
+  稳定通过 20s，base_contact=False，leg_contact=False。
+  t=19.00s base_pos=(+0.439, -0.037, +0.328), yaw=-15.1 deg
+  说明：稳定但保守，真实前向跟踪偏弱，不是理想结果。
+- cmd_vx=0.2：
+  稳定通过 20s，base_contact=False，leg_contact=False。
+  t=19.00s base_pos=(+1.335, -0.012, +0.326), yaw=+3.2 deg
+  说明：与上一轮稳定 baseline 接近，仍存在运行期命令降额。
+- cmd_vx=0.5：
+  稳定通过 20s，base_contact=False，leg_contact=False。
+  t=19.00s base_pos=(+1.863, -0.364, +0.321), pitch=+2.2 deg, yaw=-17.2 deg
+  说明：相较上一轮 t=19s pitch=+5.7 deg，这轮后段前倾被继续压低；
+  但有效速度和直线性仍偏保守，不能视为“高速真实跟踪恢复”。
+
+倒下前最后阶段观测：
+- 本轮 cmd_vx=0.5 未倒下。
+- 后段关键点：
+  t=16.00s base_pos=(+1.375, -0.224, +0.320), pitch=+2.5 deg, yaw=-13.5 deg, hub_vel=(-3.133, -3.122), ctrl_sat=[0,0,0,0,1,1]
+  t=17.00s base_pos=(+1.517, -0.260, +0.324), pitch=+0.2 deg, yaw=-15.2 deg, hub_vel=(-3.147, -3.150), ctrl_sat=[0,0,0,0,1,1]
+  t=19.00s base_pos=(+1.863, -0.364, +0.321), pitch=+2.2 deg, yaw=-17.2 deg, hub_vel=(-3.208, -3.192), ctrl_sat=[0,0,0,0,1,1]
+
+当前结论：
+1. 延迟启用的高速后期刹车辅助，解决了“过早介入导致前段扰乱”的问题。
+2. cmd_vx=0.5 当前 20s 内可稳定不倒，且后段 pitch 比上一轮更低。
+3. 这仍然是“保守稳定”方案，不是高速度精确跟踪恢复。
+4. cmd_vx=0.1 当前虽然稳定，但有效速度跟踪明显偏弱，后续还要继续拆分“防倒保护”和“速度恢复”。
+
+下一步：
+1. 保持当前 startup / reset 基线完全不动。
+2. 继续记录 effective cmd、body-frame forward speed、pitch brake state，确认后段到底是哪个保护项在主导降额。
+3. 优先只在 cmd_vx>=0.3 的区间继续恢复有效速度，暂时不要再动低速稳定基线。
+4. 对 yaw 漂移继续查左右轮差分、接触不对称和 measured wheel velocity correction 的符号与强度。
+```
+
+### 2026-07-04 连续速度整形与整腿姿态辅助
+
+```text
+修改文件：
+- modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py
+- modules/wheeled_mujoco/source/wheeled_mujoco/sim2sim/base_locked.py
+
+修改内容：
+1. 修正 task 入口适配层参数不同步问题，把新增的运行期保护参数显式暴露并继续传到 legacy runner。
+2. 把 phase_command 中原先容易触发 0 / 非0 交替的前向命令缩放，改成连续型速度整形：
+   - 引入 linear_cmd_scale_state 一阶状态；
+   - 危险增大时更快减小命令；
+   - 状态恢复时更慢抬升命令；
+   - 在非紧急状态下保留 nominal minimum cmd scale，避免正常跑动时反复“运行-刹车-运行”。
+3. 保留 emergency minimum cmd scale，只在明显前倾超限时才进一步压低前向命令。
+4. 新增 whole-leg posture assist：
+   - 在 policy 阶段根据 forward pitch / pitch rate / forward speed 风险，
+     平滑混入 stand_stabilizer_ctrl() 的腿部控制；
+   - 目的不是只靠轮子制动，而是在姿态恶化时用整腿支撑共同抑制前倾。
+5. wheel balance feedback 仍保留，但现在不再承担主要的“硬刹车稳住一切”职责。
+
+是否影响启动阶段：
+- 已回归验证，未破坏 startup baseline。
+
+启动回归：
+- 命令：
+  python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --task wheeled_base_locked --no-viewer --no-real-time --no-handoff-log-every-step --duration 4.5 --cmd-vx 0.0
+- 结果：
+  t=4.00s base_pos=(+0.007, -0.002, +0.324)
+  rpy_deg=(-0.4, -2.3, -2.8)
+  base_contact=False leg_contact=False
+
+### 2026-07-08 90D policy 重新对齐与 handoff 回归失败定位
+
+```text
+背景：
+- 当前 MuJoCo 实际加载的不是旧 27D policy，而是 2026-07-08 导出的 90D policy。
+- 训练保存配置明确表明：
+  - init_state.z = 0.34
+  - action scale: leg=0.35, wheel=6.0
+  - command range: lin_vel_x in [-1.2, 1.2]
+- 因此 1.0 m/s 在训练命令空间内，不是“超出策略训练范围”的问题。
+
+本轮做过的 MuJoCo 侧调整：
+1. 恢复并验证 90D policy 的观测维度匹配，保留 30xhistory 的观测构造。
+2. 修正 soft-start 时间轴：
+   - 对 pose_hold 路径，locomotion_alpha 不再从 release 前就累计，
+     而是从真正进入 policy 时开始累计。
+3. 为 pose_hold 路径增加 policy dry-run warmup：
+   - 在 tether/release/stand 期间只预热 obs_history 和 last_action，
+     不直接把 policy 动作打到机器人上。
+4. 把 MuJoCo 初始高度重新对齐到训练资产：
+   - MJCF home qpos.z = 0.34
+   - stand_base_height_target = 0.34
+   - tether_height_target = 0.34
+5. 把动作尺度对齐回训练资产：
+   - leg_action_scale = 0.35
+   - wheel_action_scale = 6.0
+6. 把接触摩擦对齐回更接近训练随机范围：
+   - 默认 geom friction 从 1.1 下调到 0.8
+   - 轮子 friction 从 1.3 下调到 0.9
+
+本轮关键定位结果：
+1. pose_hold + 2s stand 是当前最接近“可修 handoff”的候选：
+   - t=4.00s 仍可 base_contact=False, leg_contact=False
+   - 但 pitch 已到约 -28 deg 到 -30 deg，说明接管前姿态仍明显前倾。
+2. 高频日志表明问题不只在 policy 第一拍：
+   - pose_hold 路径下，stand 尾段不会立即接触，但 handoff 时已经带着明显前倾进入 policy。
+3. 更短的 stand（0.0 / 0.5 / 1.0 / 1.5）在 90D policy 下都更差：
+   - 经常更早出现 leg_contact=True 或直接 base_contact=True。
+4. 仅靠 MuJoCo 侧 handoff/soft-start/摩擦微调，目前仍未恢复文档旧基线那种：
+   - cmd_vx=0.0 的 4.5s startup 回归长期稳定
+   - cmd_vx=0.5 的 6s 稳定短跑
+
+当前最重要结论：
+1. 1.0 m/s 目标并不是训练命令空间问题，训练命令范围本身覆盖了它。
+2. 当前更像训练资产和 MuJoCo 资产之间仍存在结构/接触/惯性/驱动方向失配。
+3. 继续只调 MuJoCo 运行期保护，收益已经明显变小，开始接近“资产不完全一致”上限。
+
+高风险失配项（按优先级）：
+1. 轮子接触 mesh 与训练资产真实接触语义不一致。
+2. 左右轮 joint axis / 正方向 / drive direction 仍可能与训练资产存在符号失配。
+3. base 与各 link 的惯量、COM、mesh 碰撞分布与训练 USD 不完全一致。
+4. MuJoCo velocity actuator 对 Hub.* 的动力学等效方式与 Isaac implicit actuator 仍有差别。
+
+当前建议：
+1. 如果继续只调 MuJoCo：
+   - 只围绕 pose_hold + 2s stand + 0.34 + 0.35/6.0 这组候选继续查资产一致性。
+   - 优先检查 wheel axis / contact patch / inertia / COM，而不是继续叠加运行期保护。
+2. 如果 MuJoCo 侧继续调试仍无法把 0.5 甚至 1.0 稳住：
+   - 下一步应转为整理“训练资产配置调整报告”，但不改 IsaacLab 训练代码。
+```
+
+6s 短跑结果：
+- cmd_vx=0.5：
+  t=4.00s cmd=+0.05
+  t=5.00s cmd=+0.05
+  base_pos=(-0.002, -0.004, +0.328)
+  rpy_deg=(-0.3, -1.4, -4.6)
+  状态：稳定
+  说明：相较上一版更符合“持续前进而不是交替刹车”的目标，前几秒没有快速掉成 0。
+
+20s 长跑结果：
+- cmd_vx=0.1：
+  稳定通过 20s，base_contact=False，leg_contact=False。
+  t=19.00s base_pos=(+1.092, +0.081, +0.327), yaw=+14.4 deg
+  说明：低速有效前进恢复明显，但 yaw 漂移变大，需要继续处理。
+- cmd_vx=0.2：
+  稳定通过 20s，base_contact=False，leg_contact=False。
+  t=19.00s base_pos=(+1.271, +0.089, +0.328), yaw=+14.3 deg
+  说明：同样保持持续前进，但 yaw 漂移依旧明显。
+- cmd_vx=0.5：
+  稳定通过 20s，base_contact=False，leg_contact=False。
+  t=19.00s base_pos=(+1.425, -0.105, +0.323), pitch=+0.8 deg, yaw=-11.1 deg
+  说明：这轮前向命令不再频繁掉成 0，而是在约 0.04 到 0.22 之间连续变化；
+  后段 pitch 维持在较低水平，没有再出现用户日志中的 +12 deg 后快速前倾倒地。
+
+倒下前最后阶段观测：
+- 本轮 cmd_vx=0.5 未倒下。
+- 后段关键点：
+  t=15.00s base_pos=(+1.034, -0.047, +0.318), pitch=+1.6 deg, yaw=-4.1 deg, hub_vel=(-3.143, -3.145), ctrl_sat=[0,0,0,0,1,1]
+  t=17.00s base_pos=(+1.221, -0.071, +0.317), pitch=+2.1 deg, yaw=-8.2 deg, hub_vel=(-3.107, -3.186), ctrl_sat=[0,0,0,0,1,1]
+  t=19.00s base_pos=(+1.425, -0.105, +0.323), pitch=+0.8 deg, yaw=-11.1 deg, hub_vel=(-3.108, -3.075), ctrl_sat=[0,0,0,0,1,1]
+
+当前结论：
+1. 连续速度整形确实减弱了“cmd 频繁清零 + 轮子大刹车”的交替现象。
+2. whole-leg posture assist 使高速后段更像“整腿共同稳住姿态”，而不是主要靠轮子硬刹车。
+3. 当前无 viewer / 无 real-time 下，cmd_vx=0.5 已能以更连续的方式稳定跑满 20s。
+4. 新的主问题已经转移到 yaw 漂移；0.1 和 0.2 的前进性恢复了，但直线性变差。
+5. 用户实际 viewer + real-time 的复现样例仍需继续专门复跑确认，本轮环境中主要验证的是 no-viewer / no-real-time 数值基线。
+
+下一步：
+1. 在保持连续前进特性的前提下，优先压低 yaw 漂移，不要重新回到周期性清零命令。
+2. 继续把 posture assist 与 yaw wheel differential 分开记录，区分到底是谁在主导偏航积累。
+3. 单独复跑 viewer + real-time，确认图形同步/实时节流下是否还会出现用户日志中的 t=13-14s 前倾倒地。
+```
+
+### 2026-07-04 1.0 m/s 目标尝试与诊断字段补充
+
+```text
+修改文件：
+- modules/wheeled_mujoco/source/wheeled_mujoco/tasks/base_locked_locomotion_env_cfg.py
+- modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py
+- modules/wheeled_mujoco/source/wheeled_mujoco/sim2sim/base_locked.py
+
+修改内容：
+1. 将 wheeled_base_locked 任务配置的默认 lin_vel_x 从固定 0.5 改为固定 1.0，
+   使 task 配置、run_task_sim2sim.py 入口和 1.0 m/s 调试目标一致。
+2. 将 base_locked runner / source adapter 的默认 --cmd-vx 改为 1.0。
+3. 补充关键诊断日志字段：
+   - effective command scale / cmd_limit
+   - pitch/yaw/wheel/forward_speed/requested_speed command scale
+   - high_speed_assist_alpha
+   - whole-leg posture assist alpha
+   - wheel feedback 的 pitch_brake / yaw_correction
+   - JSONL 中同步写入 command_diagnostics / posture_assist_alpha / wheel_feedback
+4. 尝试过放宽轮速/前向速度降额、提前 whole-leg posture assist、使用 stand 阶段 policy_zero 腿部 reference、
+   以及连续轮控幅值限制来减少硬刹车和轮速饱和。
+5. 上述激进运行期改动会破坏既有 0.5 长跑稳定，因此最终已回退到文档中上一轮的保守稳定运行期参数；
+   保留的是任务 1.0 默认目标、诊断字段，以及不启用的 wheel_ctrl_limit 配置占位。
+
+是否影响启动阶段：
+- 最终代码状态未破坏 startup baseline。
+- startup / reset 语义仍走 run() -> reset_episode_state() -> reset_to_home -> refresh startup references。
+- 未修改 1s tether -> 1s release -> 2s stand -> policy 时序。
+
+启动回归：
+- 命令：
+  python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --task wheeled_base_locked --no-viewer --no-real-time --no-handoff-log-every-step --duration 4.5 --cmd-vx 0.0
+- 结果：
+  t=4.00s base_pos=(+0.007, -0.002, +0.324)
+  base_linvel=(+0.018, +0.007, -0.022)
+  rpy_deg=(-0.4, -2.3, -2.8)
+  base_contact=False leg_contact=False
+  结论：启动基线保持。
+
+reset 语义一致性：
+- 本轮未新增交互式 reset 热键/运行中 reset 测试。
+- 代码路径仍确认 run() 每次启动都会调用 reset_episode_state()，
+  reset_episode_state() 同时重置 tether anchor / heading reference / pitch_brake_state /
+  linear_cmd_scale_state / handoff log state，因此首次启动和 reset 入口语义保持统一。
+- 两次独立 startup 回归的 t=4.00s 数值与历史基线高度接近。
+
+1.0 m/s 短跑结果：
+- 命令：
+  python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --task wheeled_base_locked --no-viewer --no-real-time --duration 6 --cmd-vx 1.0 --no-handoff-log-every-step
+- 结果：
+  t=5.00s base_pos=(+0.021, -0.005, +0.327)
+  base_linvel=(+0.066, -0.008, +0.004)
+  rpy_deg=(-0.3, -1.0, -4.4)
+  cmd=(+0.07,+0.00,+0.00), eff_scale=0.07
+  assist=0.00, wheel_fb=(+0.10,+0.30)
+  base_contact=False leg_contact=False
+- 结论：
+  6s 短跑稳定，但这是明显保守降额，不是 1.0 m/s 跟踪恢复。
+
+1.0 m/s 20s 长跑结果：
+- 命令：
+  python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --task wheeled_base_locked --no-viewer --no-real-time --duration 20 --cmd-vx 1.0 --no-handoff-log-every-step
+- 结果：失败。
+- 倒下前关键指标：
+  t=13.00s base_pos=(+1.116, -0.091, +0.323)
+  base_linvel=(+0.217, -0.018, +0.024)
+  rpy_deg=(+0.0, +0.2, -4.4)
+  cmd=(+0.08,+0.00,+0.00), eff_scale=0.08
+  assist=0.05, wheel_fb=(+3.00,+0.29)
+  base_contact=False leg_contact=False
+
+  t=14.00s base_pos=(+1.226, -0.102, +0.324)
+  base_linvel=(+0.178, -0.029, -0.011)
+  rpy_deg=(-0.1, +0.1, -5.9)
+  cmd=(+0.31,+0.00,+0.00), eff_scale=0.31
+  assist=0.03, wheel_fb=(+1.27,+0.39)
+  base_contact=False leg_contact=False
+
+  t=15.00s base_pos=(+1.622, -0.182, +0.205)
+  base_linvel=(+0.158, -0.036, +0.018)
+  rpy_deg=(-0.0, +65.5, -12.8)
+  cmd=(+0.08,+0.00,+0.00), eff_scale=0.08
+  assist=0.55, wheel_fb=(+3.00,+0.80)
+  base_contact=True leg_contact=False
+- 结论：
+  1.0 m/s 20s 未达成；失败模式是 pitch 能量在 t=14 到 t=15 之间快速爆发，
+  base_z 明显下降并 base_contact=True。当前保护层已经把有效 cmd 压得很低，
+  但仍无法阻止该 pitch 事件，因此不能报告为 1.0 m/s 跟踪恢复。
+
+0.5 m/s 回归：
+- 命令：
+  python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --task wheeled_base_locked --no-viewer --no-real-time --duration 20 --cmd-vx 0.5 --no-handoff-log-every-step
+- 结果：
+  稳定通过 20s，base_contact=False，leg_contact=False。
+  t=19.00s base_pos=(+1.370, -0.175, +0.320)
+  base_linvel=(+0.228, -0.069, +0.010)
+  rpy_deg=(-0.1, +1.6, -16.5)
+  cmd=(+0.04,+0.00,+0.00), eff_scale=0.09
+  assist=0.07, wheel_fb=(+3.00,+1.05)
+- 说明：
+  0.5 稳定基线恢复，但仍是保守稳定，存在 yaw 漂移和 wheel feedback 打满。
+
+viewer + real-time 结果：
+- 本轮未执行 50s viewer + real-time 作为通过验证。
+- 原因：1.0 m/s 在 no-viewer / no-real-time 数值路径下已于 20s 内失败，
+  因此 viewer + real-time 不可能作为最终达成项。
+- 下一轮如果先修复 no-viewer 1.0 长跑，应再复跑：
+  python3 modules/wheeled_mujoco/scripts/run_task_sim2sim.py --task wheeled_base_locked --viewer --real-time --duration 50 --cmd-vx 1.0
+
+当前结论：
+1. 任务配置已从 0.5 目标切到 1.0 目标。
+2. startup/reset/handoff 语义未破坏。
+3. 1.0 m/s 未达成；20s 数值长跑在 t=15 左右前倾接触。
+4. 当前主要失稳来源是 pitch 能量突发和 base_z 下降，不是 viewer 路径差异。
+5. 轮速饱和和 wheel feedback 打满仍存在；激进降低轮控饱和会导致 0.5 基线回退，因此不能简单靠轮控限幅解决。
+6. whole-leg posture assist 当前还没有真正主导 1.0 稳定；把 assist 混到错误 reference 会导致 base_z 下降，已回退。
+
+下一步：
+1. 不要再盲目放宽 1.0 的 command scale；先定位 t=14 到 t=15 的 pitch 突发来源。
+2. 优先对比 policy 原始 action、shaped action、final ctrl，确认是策略腿部动作、轮速动作还是 wheel feedback 触发 pitch 爆发。
+3. whole-leg assist 应围绕训练中的稳定 leg posture/reference 设计，而不是直接混零位 stand pose。
+4. 如果继续做轮控平滑，必须保持 0.5 的 20s 回归不过期，不能以破坏既有稳定基线换取 1.0 尝试。
+5. 只有 no-viewer / no-real-time 的 1.0 20s 先通过后，才进入 viewer + real-time 50s 最终验证。
 ```

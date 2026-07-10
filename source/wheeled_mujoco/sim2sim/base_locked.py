@@ -34,12 +34,13 @@ def load_legacy_base_locked_module() -> ModuleType:
 def build_base_locked_parser() -> argparse.ArgumentParser:
     """Build a full CLI parser that preserves the current base-locked defaults."""
     legacy = load_legacy_base_locked_module()
+    legacy_cfg = legacy.Sim2SimConfig()
 
     parser = argparse.ArgumentParser(description="MuJoCo sim2sim for wheeled_base_locked")
     parser.add_argument(
         "--mode",
         choices=["isaac_play", "experimental"],
-        default="isaac_play",
+        default=legacy_cfg.mode,
         help="Run mode. `isaac_play` aligns reset/command semantics with Isaac Play; `experimental` keeps custom tether/release logic.",
     )
     parser.add_argument("--model", type=Path, default=legacy.DEFAULT_MODEL, help="Path to wheeled_leg.xml")
@@ -58,22 +59,22 @@ def build_base_locked_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--duration",
         type=float,
-        default=None,
+        default=legacy_cfg.duration,
         help="Simulation duration in seconds. Default is to run forever until the viewer/script is closed.",
     )
-    parser.add_argument("--cmd-vx", type=float, default=0.5, help="Forward velocity command")
-    parser.add_argument("--cmd-vy", type=float, default=0.0, help="Lateral velocity command")
-    parser.add_argument("--cmd-wz", type=float, default=0.0, help="Yaw rate command")
+    parser.add_argument("--cmd-vx", type=float, default=legacy_cfg.cmd_vx, help="Forward velocity command")
+    parser.add_argument("--cmd-vy", type=float, default=legacy_cfg.cmd_vy, help="Lateral velocity command")
+    parser.add_argument("--cmd-wz", type=float, default=legacy_cfg.cmd_wz, help="Yaw rate command")
     parser.add_argument(
         "--leg-action-scale",
         type=float,
-        default=0.5,
+        default=legacy_cfg.leg_action_scale,
         help="Leg joint position action scale. Isaac training uses 0.5.",
     )
     parser.add_argument(
         "--wheel-action-scale",
         type=float,
-        default=10.0,
+        default=legacy_cfg.wheel_action_scale,
         help="Wheel joint velocity action scale. Isaac base_locked training uses 10.0.",
     )
     parser.add_argument(
@@ -103,49 +104,61 @@ def build_base_locked_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--playback-speed",
         type=float,
-        default=0.5,
+        default=legacy_cfg.playback_speed,
         help="Viewer playback speed multiplier. 0.5 means half-speed visualization without changing sim dt.",
     )
     parser.add_argument(
         "--startup-tether",
         type=float,
-        default=1.0,
+        default=legacy_cfg.startup_tether_s,
         help="Keep the robot stabilized by a virtual safety tether for this many seconds at startup/reset.",
     )
     parser.add_argument(
         "--tether-release",
         type=float,
-        default=1.0,
+        default=legacy_cfg.tether_release_s,
         help="Duration of the smooth tether release phase after startup tethering.",
     )
     parser.add_argument(
         "--startup-stand",
         type=float,
-        default=2.0,
+        default=legacy_cfg.startup_stand_s,
         help="Run a stand phase for this many seconds after tether release and before locomotion commands.",
     )
     parser.add_argument(
         "--stand-strategy",
         choices=["pose_hold", "policy_zero"],
-        default="policy_zero",
+        default=legacy_cfg.stand_strategy,
         help="Stand-phase strategy: hold a fixed pose, or run the policy with zero velocity command.",
+    )
+    parser.add_argument(
+        "--stand-base-height-target",
+        type=float,
+        default=legacy_cfg.stand_base_height_target,
+        help="Base height target used by the MuJoCo stand stabilizer.",
+    )
+    parser.add_argument(
+        "--tether-height-target",
+        type=float,
+        default=legacy_cfg.tether_height_target,
+        help="Base height target used during startup tethering.",
     )
     parser.add_argument(
         "--deterministic-startup-reset",
         action=argparse.BooleanOptionalAction,
-        default=True,
+        default=legacy_cfg.deterministic_startup_reset,
         help="Use a deterministic zero-velocity startup reset instead of Isaac Play random startup pose/velocity.",
     )
     parser.add_argument(
         "--apply-soft-start-in-isaac-play",
         action=argparse.BooleanOptionalAction,
-        default=True,
+        default=legacy_cfg.apply_soft_start_in_isaac_play,
         help="Apply command ramp and action soft-start even in isaac_play mode to improve deployment stability.",
     )
     parser.add_argument(
         "--isaac-play-cmd-limit-early",
         type=float,
-        default=0.10,
+        default=legacy_cfg.isaac_play_cmd_limit_early,
         help="Early command fraction used at the start of isaac_play command ramp.",
     )
     parser.add_argument(
@@ -221,6 +234,18 @@ def build_base_locked_parser() -> argparse.ArgumentParser:
         help="Fully suppress forward command when average wheel speed exceeds this value.",
     )
     parser.add_argument(
+        "--forward-speed-cmd-attenuation-start",
+        type=float,
+        default=0.22,
+        help="Start attenuating forward command when measured body-frame forward speed exceeds this value.",
+    )
+    parser.add_argument(
+        "--forward-speed-cmd-attenuation-full",
+        type=float,
+        default=0.42,
+        help="Fully suppress forward command when measured body-frame forward speed exceeds this value.",
+    )
+    parser.add_argument(
         "--high-speed-cmd-start",
         type=float,
         default=0.10,
@@ -243,6 +268,84 @@ def build_base_locked_parser() -> argparse.ArgumentParser:
         type=float,
         default=3.0,
         help="Additional common-mode wheel braking gain once wheel speed exceeds the soft limit.",
+    )
+    parser.add_argument(
+        "--high-speed-assist-start",
+        type=float,
+        default=0.30,
+        help="Enable the additional high-speed assist only above this requested forward speed.",
+    )
+    parser.add_argument(
+        "--high-speed-assist-delay-s",
+        type=float,
+        default=8.0,
+        help="Delay the additional high-speed assist so it only engages later in the policy-running phase.",
+    )
+    parser.add_argument(
+        "--nominal-cmd-min-scale",
+        type=float,
+        default=0.35,
+        help="Minimum forward-command scale kept during normal running to avoid run/brake toggling.",
+    )
+    parser.add_argument(
+        "--emergency-cmd-min-scale",
+        type=float,
+        default=0.08,
+        help="Lower emergency floor for forward-command scale when severe pitch or speed risk appears.",
+    )
+    parser.add_argument(
+        "--cmd-scale-rise-time",
+        type=float,
+        default=0.45,
+        help="Time constant for restoring forward-command scale.",
+    )
+    parser.add_argument(
+        "--cmd-scale-fall-time",
+        type=float,
+        default=0.12,
+        help="Time constant for reducing forward-command scale under risk.",
+    )
+    parser.add_argument(
+        "--forward-speed-soft-limit",
+        type=float,
+        default=0.18,
+        help="Start applying extra common-mode wheel braking when measured body-frame forward speed exceeds this value.",
+    )
+    parser.add_argument(
+        "--forward-speed-brake-gain",
+        type=float,
+        default=3.5,
+        help="Additional common-mode wheel braking gain once measured body-frame forward speed exceeds the soft limit.",
+    )
+    parser.add_argument(
+        "--brake-rise-time",
+        type=float,
+        default=0.08,
+        help="Rise time constant for the common-mode wheel brake state.",
+    )
+    parser.add_argument(
+        "--brake-fall-time",
+        type=float,
+        default=0.35,
+        help="Release time constant for the common-mode wheel brake state.",
+    )
+    parser.add_argument(
+        "--posture-assist-start-deg",
+        type=float,
+        default=2.0,
+        help="Start blending in whole-leg posture stabilization when forward pitch exceeds this value.",
+    )
+    parser.add_argument(
+        "--posture-assist-full-deg",
+        type=float,
+        default=7.0,
+        help="Reach full whole-leg posture stabilization blend by this forward pitch.",
+    )
+    parser.add_argument(
+        "--posture-assist-gain",
+        type=float,
+        default=0.55,
+        help="Maximum blend weight for the whole-leg posture stabilization assist.",
     )
     parser.add_argument(
         "--yaw-feedback-gain-scale",
@@ -288,6 +391,8 @@ def create_base_locked_config(args: Namespace):
         tether_release_s=args.tether_release,
         startup_stand_s=args.startup_stand,
         stand_strategy=args.stand_strategy,
+        stand_base_height_target=args.stand_base_height_target,
+        tether_height_target=args.tether_height_target,
         deterministic_startup_reset=args.deterministic_startup_reset,
         log_path=args.log_path,
         apply_soft_start_in_isaac_play=args.apply_soft_start_in_isaac_play,
@@ -309,10 +414,25 @@ def create_base_locked_config(args: Namespace):
         heading_hold_wz_limit=args.heading_hold_wz_limit,
         wheel_cmd_attenuation_start=args.wheel_cmd_attenuation_start,
         wheel_cmd_attenuation_full=args.wheel_cmd_attenuation_full,
+        forward_speed_cmd_attenuation_start=args.forward_speed_cmd_attenuation_start,
+        forward_speed_cmd_attenuation_full=args.forward_speed_cmd_attenuation_full,
         high_speed_cmd_start=args.high_speed_cmd_start,
         high_speed_cmd_gain=args.high_speed_cmd_gain,
         wheel_speed_soft_limit=args.wheel_speed_soft_limit,
         wheel_speed_brake_gain=args.wheel_speed_brake_gain,
+        forward_speed_soft_limit=args.forward_speed_soft_limit,
+        forward_speed_brake_gain=args.forward_speed_brake_gain,
+        brake_rise_time=args.brake_rise_time,
+        brake_fall_time=args.brake_fall_time,
+        high_speed_assist_start=args.high_speed_assist_start,
+        high_speed_assist_delay_s=args.high_speed_assist_delay_s,
+        nominal_cmd_min_scale=args.nominal_cmd_min_scale,
+        emergency_cmd_min_scale=args.emergency_cmd_min_scale,
+        cmd_scale_rise_time=args.cmd_scale_rise_time,
+        cmd_scale_fall_time=args.cmd_scale_fall_time,
+        posture_assist_start_deg=args.posture_assist_start_deg,
+        posture_assist_full_deg=args.posture_assist_full_deg,
+        posture_assist_gain=args.posture_assist_gain,
         yaw_feedback_gain_scale=args.yaw_feedback_gain_scale,
         pitch_feedback_gain_scale=args.pitch_feedback_gain_scale,
         verbose_obs=args.verbose_obs,
