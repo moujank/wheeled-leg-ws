@@ -77,7 +77,10 @@ import os
 import torch
 from datetime import datetime
 
+from rsl_rl.algorithms.ppo import PPO
+from rsl_rl.modules.actor_critic import ActorCritic
 from rsl_rl.runners import OnPolicyRunner
+from rsl_rl.storage import RolloutStorage
 
 from isaaclab.envs import (
     DirectMARLEnv,
@@ -101,6 +104,114 @@ torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 torch.backends.cudnn.deterministic = False
 torch.backends.cudnn.benchmark = False
+
+
+def _install_rsl_rl_numerics_guard() -> None:
+    """Patch RSL-RL runtime to avoid PPO corruption from non-finite rollout samples."""
+
+    if getattr(_install_rsl_rl_numerics_guard, "_installed", False):
+        return
+
+    _install_rsl_rl_numerics_guard._installed = True
+    warn_counts: dict[str, int] = {}
+
+    def warn_once(key: str, message: str, limit: int = 5) -> None:
+        count = warn_counts.get(key, 0)
+        if count < limit:
+            print(message)
+        warn_counts[key] = count + 1
+
+    def sanitize_tensor(
+        name: str,
+        tensor: torch.Tensor | None,
+        *,
+        clip_value: float | None = None,
+        fill_value: float = 0.0,
+    ) -> torch.Tensor | None:
+        if tensor is None:
+            return None
+        if not torch.isfinite(tensor).all():
+            bad = int((~torch.isfinite(tensor)).sum().item())
+            warn_once(name, f"[WARN][numerics] Sanitizing {bad}/{tensor.numel()} non-finite entries in {name}.")
+            tensor = torch.nan_to_num(tensor, nan=fill_value, posinf=fill_value, neginf=fill_value)
+        if clip_value is not None:
+            if torch.any(torch.abs(tensor) > clip_value):
+                warn_once(
+                    f"{name}_clip",
+                    f"[WARN][numerics] Clipping {name} to +/-{clip_value:.1e} to bound PPO updates.",
+                )
+            tensor = torch.clamp(tensor, min=-clip_value, max=clip_value)
+        return tensor
+
+    original_update_distribution = ActorCritic.update_distribution
+
+    def safe_update_distribution(self: ActorCritic, observations):
+        observations = sanitize_tensor("policy_observations", observations, clip_value=1.0e6)
+        mean = sanitize_tensor("policy_mean", self.actor(observations), clip_value=1.0e3)
+        if self.noise_std_type == "scalar":
+            safe_std = sanitize_tensor("policy_std", self.std, clip_value=1.0e2, fill_value=1.0)
+            std = torch.clamp(safe_std, min=1.0e-6).expand_as(mean)
+        elif self.noise_std_type == "log":
+            safe_log_std = sanitize_tensor("policy_log_std", self.log_std, clip_value=20.0)
+            safe_log_std = torch.clamp(safe_log_std, min=-20.0, max=2.0)
+            std = torch.exp(safe_log_std).expand_as(mean)
+        else:
+            return original_update_distribution(self, observations)
+        std = sanitize_tensor("policy_distribution_std", std, clip_value=1.0e2, fill_value=1.0)
+        std = torch.clamp(std, min=1.0e-6)
+        self.distribution = torch.distributions.Normal(mean, std)
+
+    ActorCritic.update_distribution = safe_update_distribution
+
+    original_add_transitions = RolloutStorage.add_transitions
+
+    def safe_add_transitions(self: RolloutStorage, transition: RolloutStorage.Transition):
+        transition.observations = sanitize_tensor("rollout_observations", transition.observations, clip_value=1.0e6)
+        transition.privileged_observations = sanitize_tensor(
+            "rollout_privileged_observations", transition.privileged_observations, clip_value=1.0e6
+        )
+        transition.actions = sanitize_tensor("rollout_actions", transition.actions, clip_value=1.0e3)
+        transition.rewards = sanitize_tensor("rollout_rewards", transition.rewards, clip_value=1.0e4)
+        transition.values = sanitize_tensor("rollout_values", transition.values, clip_value=1.0e6)
+        transition.actions_log_prob = sanitize_tensor(
+            "rollout_actions_log_prob", transition.actions_log_prob, clip_value=1.0e3
+        )
+        transition.action_mean = sanitize_tensor("rollout_action_mean", transition.action_mean, clip_value=1.0e3)
+        transition.action_sigma = sanitize_tensor(
+            "rollout_action_sigma", transition.action_sigma, clip_value=1.0e2, fill_value=1.0
+        )
+        transition.rnd_state = sanitize_tensor("rollout_rnd_state", transition.rnd_state, clip_value=1.0e6)
+        return original_add_transitions(self, transition)
+
+    RolloutStorage.add_transitions = safe_add_transitions
+
+    original_compute_returns = RolloutStorage.compute_returns
+
+    def safe_compute_returns(self: RolloutStorage, last_values, gamma, lam, normalize_advantage: bool = True):
+        self.rewards = sanitize_tensor("storage_rewards", self.rewards, clip_value=1.0e4)
+        self.values = sanitize_tensor("storage_values", self.values, clip_value=1.0e6)
+        last_values = sanitize_tensor("storage_last_values", last_values, clip_value=1.0e6)
+        original_compute_returns(self, last_values, gamma, lam, normalize_advantage=normalize_advantage)
+        self.returns = sanitize_tensor("storage_returns", self.returns, clip_value=1.0e6)
+        self.advantages = sanitize_tensor("storage_advantages", self.advantages, clip_value=1.0e4)
+
+    RolloutStorage.compute_returns = safe_compute_returns
+
+    original_ppo_update = PPO.update
+
+    def safe_ppo_update(self: PPO):
+        loss_dict = original_ppo_update(self)
+        for name, param in self.policy.named_parameters():
+            if not torch.isfinite(param).all():
+                warn_once(
+                    f"param_{name}",
+                    f"[WARN][numerics] Non-finite policy parameter detected after PPO update: {name}. Resetting bad entries.",
+                )
+                with torch.no_grad():
+                    param.copy_(torch.nan_to_num(param, nan=0.0, posinf=0.0, neginf=0.0))
+        return loss_dict
+
+    PPO.update = safe_ppo_update
 
 
 @hydra_task_config(args_cli.task, args_cli.agent)
@@ -165,6 +276,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # wrap around environment for rsl-rl
     env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
+
+    _install_rsl_rl_numerics_guard()
 
     # create runner from rsl-rl
     runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)

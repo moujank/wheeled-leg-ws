@@ -10,6 +10,7 @@ from . import arm_free_locomotion_env_cfg
 from . import arm_free_obstacle_env_cfg
 from . import arm_free_recovery_env_cfg
 from . import base_locked_locomotion_env_cfg
+from . import base_locked_locomotion_hard_env_cfg
 from . import cartesian_grasp_env_cfg
 from . import grasp_pose_locomotion_env_cfg
 from . import loaded_grasp_obstacle_env_cfg
@@ -42,23 +43,23 @@ def _register_rsl_rl_task(task_id: str, env_cfg_entry_point, rsl_rl_cfg_entry_po
 
 
 _register_rsl_rl_task(
-    "Wheeled-Base-Locked-v0",
+    "Wheeled-Base-Locked-simple",
     f"{__name__}.base_locked_locomotion_env_cfg:BaseLockedLocomotionEnvCfg",
     _RSL_RL_BASE_LOCKED_CFG_ENTRY_POINT,
 )
 _register_rsl_rl_task(
-    "Wheeled-Base-Locked-Play-v0",
+    "Wheeled-Base-Locked-simple-Play",
     base_locked_locomotion_env_cfg.BaseLockedLocomotionEnvCfg_PLAY,
     _RSL_RL_BASE_LOCKED_CFG_ENTRY_POINT,
 )
 _register_rsl_rl_task(
-    "Wheeled-Base-Locked-Hard-v0",
-    f"{__name__}.base_locked_locomotion_env_cfg:BaseLockedLocomotionHardEnvCfg",
+    "Wheeled-Base-Locked-Curriculum",
+    f"{__name__}.base_locked_locomotion_hard_env_cfg:BaseLockedLocomotionHardEnvCfg",
     _RSL_RL_BASE_LOCKED_HARD_CFG_ENTRY_POINT,
 )
 _register_rsl_rl_task(
-    "Wheeled-Base-Locked-Hard-Play-v0",
-    base_locked_locomotion_env_cfg.BaseLockedLocomotionHardEnvCfg_PLAY,
+    "Wheeled-Base-Locked-Curriculum-Play",
+    base_locked_locomotion_hard_env_cfg.BaseLockedLocomotionHardEnvCfg_PLAY,
     _RSL_RL_BASE_LOCKED_HARD_CFG_ENTRY_POINT,
 )
 _register_rsl_rl_task(
