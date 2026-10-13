@@ -1,5 +1,7 @@
 # wheeled_firmware
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory is reserved for embedded firmware related to the wheeled-leg platform. It currently contains documentation only.
 
 ## Intended scope

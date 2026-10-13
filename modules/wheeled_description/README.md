@@ -1,5 +1,7 @@
 # wheeled_description
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory is reserved for robot description source-of-truth data. It currently contains no implementation files beyond documentation.
 
 ## Intended scope

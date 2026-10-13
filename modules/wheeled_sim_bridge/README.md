@@ -1,5 +1,7 @@
 # wheeled_sim_bridge
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory is reserved for system integration and simulator bridging work. It currently contains documentation only.
 
 ## Intended scope

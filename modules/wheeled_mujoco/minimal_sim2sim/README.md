@@ -1,5 +1,7 @@
 # minimal_sim2sim
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory contains the validated low-risk MuJoCo rollout for the base-locked wheeled-leg policy.
 
 ## Purpose
@@ -27,7 +29,7 @@ It is not the final deployment stack and it is not a general task framework.
 
 ## Current assumptions
 
-- observation dimension: `27`
+- observation dimension: inferred from the exported policy; supports legacy `27D` and `30 × history` with body-frame linear velocity (`90D` uses 3 frames)
 - action dimension: `6`
 - action order: `HipL HipR KneeL KneeR HubL HubR`
 - command observation: `[cmd_vx, cmd_vy, cmd_wz]`
@@ -71,3 +73,5 @@ python3 modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py --help
 ```
 
 Keep this baseline stable. New experiments should usually be layered above it rather than replacing it in place.
+
+Confirm runtime parameters against the selected training run's `params/env.yaml`. See the [debug handoff](../docs/MUJOCO_DEBUG_HANDOFF.md) for historical evidence. Run these commands from the workspace root.

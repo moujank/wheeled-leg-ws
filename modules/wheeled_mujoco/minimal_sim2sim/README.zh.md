@@ -1,5 +1,7 @@
 # minimal_sim2sim
 
+[English](README.md) · [上级目录](../README.zh.md)
+
 该目录包含已经验证过的、低风险的 base-locked 轮腿策略 MuJoCo rollout 基线。
 
 ## 目标
@@ -27,7 +29,7 @@
 
 ## 当前假设
 
-- 观测维度：`27`
+- 观测维度：由导出策略推断；支持旧 `27D` 及 `30 × history`（含机体系线速度，`90D` 为 3 帧）
 - 动作维度：`6`
 - 动作顺序：`HipL HipR KneeL KneeR HubL HubR`
 - 命令观测：`[cmd_vx, cmd_vy, cmd_wz]`
@@ -71,3 +73,5 @@ python3 modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py --help
 ```
 
 这条基线应尽量保持稳定。新的实验通常应在它之上分层，而不是直接在原地替换。
+
+参数与训练 run 的 `params/env.yaml` 应逐项确认。历史记录见 [调试交接](../docs/MUJOCO_DEBUG_HANDOFF.md)。以上命令从工作区根目录执行。

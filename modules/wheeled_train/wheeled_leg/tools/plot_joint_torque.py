@@ -1,19 +1,34 @@
 #!/usr/bin/env python3
-"""绘制 play 过程中的关节力矩-时间折线图。
+"""绘制 play 过程中的关节力矩-时间折线图，并估算等效额定扭矩。
 
 默认输入文件格式为:
 logs/rsl_rl/<experiment>/<run>/play_joint_torque/<timestamp>/joint_torque.csv
 
 输出图片默认写回同目录:
 joint_torque_timeseries.png
+
+默认使用整段数据的 RMS（均方根）作为每个关节的等效连续额定扭矩，并在原始
+力矩曲线上绘制 ``+/- RMS`` 参考线。也可以改用绝对力矩百分位常值、滚动 RMS
+曲线，或者通过 ``--rated-method=none`` 恢复为仅绘制原始曲线。
+
+注意：这里计算的是基于仿真载荷数据的“等效额定扭矩需求”，用于策略和执行器
+选型分析；它不是电机制造商给出的额定扭矩，也没有包含安全系数、减速器效率和
+热模型等工程裕量。
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import math
+import os
 from pathlib import Path
 
+os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
+
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
@@ -42,10 +57,56 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Ignore samples after this step.",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--rated-method",
+        choices=("rms", "percentile", "rolling-rms", "none"),
+        default="rms",
+        help=(
+            "Rated-torque estimate drawn over the raw signal: whole-series RMS (default), "
+            "absolute-torque percentile, rolling RMS curve, or none."
+        ),
+    )
+    parser.add_argument(
+        "--rated-percentile",
+        type=float,
+        default=95.0,
+        help="Absolute-torque percentile used by --rated-method=percentile. Default: 95.",
+    )
+    parser.add_argument(
+        "--rolling-window-seconds",
+        type=float,
+        default=1.0,
+        help="Window duration used by --rated-method=rolling-rms. Default: 1.0 second.",
+    )
+    parser.add_argument(
+        "--summary-output",
+        type=Path,
+        default=None,
+        help=(
+            "Optional rated-torque summary CSV path. "
+            "Default: <csv_dir>/joint_torque_rated_summary.csv."
+        ),
+    )
+    parser.add_argument("--joints", nargs="+", help="Only plot the named joint columns.")
+    parser.add_argument("--env-index", type=int, help="Only read samples from this environment.")
+    args = parser.parse_args()
+    if args.start_step < 0 or (args.end_step is not None and args.end_step < args.start_step):
+        parser.error("Step range must satisfy 0 <= start-step <= end-step.")
+    if not 0 <= args.rated_percentile <= 100:
+        parser.error("rated-percentile must be between 0 and 100.")
+    if not math.isfinite(args.rolling_window_seconds) or args.rolling_window_seconds <= 0:
+        parser.error("rolling-window-seconds must be finite and greater than zero.")
+    return args
 
 
-def load_torque_csv(csv_path: Path, start_step: int, end_step: int | None) -> tuple[list[float], dict[str, list[float]]]:
+def load_torque_csv(
+    csv_path: Path,
+    start_step: int,
+    end_step: int | None,
+    *,
+    joints: list[str] | None = None,
+    env_index: int | None = None,
+) -> tuple[list[float], dict[str, list[float]]]:
     if not csv_path.exists():
         raise FileNotFoundError(f"Torque csv file not found: {csv_path}")
 
@@ -54,30 +115,217 @@ def load_torque_csv(csv_path: Path, start_step: int, end_step: int | None) -> tu
         fieldnames = reader.fieldnames
         if fieldnames is None:
             raise ValueError(f"CSV has no header: {csv_path}")
-        if len(fieldnames) < 4:
-            raise ValueError(f"Unexpected torque CSV format: {csv_path}")
-
-        joint_names = fieldnames[3:]
+        required = {"step", "sim_time_s", "env_index"}
+        if not required.issubset(fieldnames) or len(set(fieldnames)) != len(fieldnames):
+            raise ValueError(f"CSV requires unique columns including {sorted(required)}: {csv_path}")
+        available_joints = [name for name in fieldnames if name not in required]
+        joint_names = list(dict.fromkeys(joints)) if joints else available_joints
+        unknown = set(joint_names) - set(available_joints)
+        if not joint_names or unknown:
+            raise ValueError(f"Invalid joint selection: {sorted(unknown)}; available: {available_joints}")
         time_axis: list[float] = []
         torque_series = {joint_name: [] for joint_name in joint_names}
 
-        for row in reader:
-            step = int(row["step"])
+        selected_env = env_index
+        for line_number, row in enumerate(reader, start=2):
+            try:
+                step = int(row["step"])
+                row_env = int(row["env_index"])
+            except (ValueError, TypeError) as exc:
+                raise ValueError(f"Invalid step/env_index at {csv_path}:{line_number}") from exc
             if step < start_step:
                 continue
             if end_step is not None and step > end_step:
                 continue
 
-            time_axis.append(float(row["sim_time_s"]))
-            for joint_name in joint_names:
-                torque_series[joint_name].append(float(row[joint_name]))
+            if selected_env is None:
+                selected_env = row_env
+            if row_env != selected_env:
+                if env_index is None:
+                    raise ValueError("CSV contains multiple environments; select one with --env-index.")
+                continue
+            try:
+                sim_time = float(row["sim_time_s"])
+                values = [float(row[name]) for name in joint_names]
+            except (ValueError, TypeError) as exc:
+                raise ValueError(f"Invalid numeric sample at {csv_path}:{line_number}") from exc
+            if not all(math.isfinite(value) for value in [sim_time, *values]):
+                raise ValueError(f"Non-finite sample at {csv_path}:{line_number}")
+            if time_axis and sim_time <= time_axis[-1]:
+                raise ValueError(f"Time must increase strictly at {csv_path}:{line_number}")
+            time_axis.append(sim_time)
+            for joint_name, value in zip(joint_names, values, strict=True):
+                torque_series[joint_name].append(value)
 
     return time_axis, torque_series
 
 
-def plot_torque(time_axis: list[float], torque_series: dict[str, list[float]], output_path: Path) -> None:
+def root_mean_square(values: list[float]) -> float:
+    """Return the RMS magnitude of a non-empty torque series."""
+
+    if not values:
+        raise ValueError("Cannot calculate RMS from an empty torque series.")
+    return math.sqrt(math.fsum(value * value for value in values) / len(values))
+
+
+def percentile(values: list[float], percentage: float) -> float:
+    """Return a linearly interpolated percentile without requiring NumPy."""
+
+    if not values:
+        raise ValueError("Cannot calculate a percentile from an empty torque series.")
+    if not 0.0 <= percentage <= 100.0:
+        raise ValueError("rated percentile must be between 0 and 100.")
+
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return ordered[0]
+
+    position = (len(ordered) - 1) * percentage / 100.0
+    lower_index = math.floor(position)
+    upper_index = math.ceil(position)
+    if lower_index == upper_index:
+        return ordered[lower_index]
+
+    fraction = position - lower_index
+    return ordered[lower_index] * (1.0 - fraction) + ordered[upper_index] * fraction
+
+
+def infer_sample_period(time_axis: list[float]) -> float:
+    """Infer a robust sample period from the time axis."""
+
+    positive_deltas = [
+        current - previous
+        for previous, current in zip(time_axis, time_axis[1:])
+        if current - previous > 0.0
+    ]
+    if not positive_deltas:
+        raise ValueError("At least two increasing time samples are required for rolling RMS.")
+    return percentile(positive_deltas, 50.0)
+
+
+def rolling_root_mean_square(values: list[float], window_samples: int) -> list[float]:
+    """Return a trailing rolling-RMS curve using an efficient running sum."""
+
+    if not values:
+        raise ValueError("Cannot calculate rolling RMS from an empty torque series.")
+    if window_samples < 1:
+        raise ValueError("rolling RMS window must contain at least one sample.")
+
+    result: list[float] = []
+    squared_window: list[float] = []
+    squared_sum = 0.0
+
+    for value in values:
+        squared_value = value * value
+        squared_window.append(squared_value)
+        squared_sum += squared_value
+
+        if len(squared_window) > window_samples:
+            squared_sum -= squared_window[-window_samples - 1]
+
+        active_count = min(len(squared_window), window_samples)
+        result.append(math.sqrt(max(squared_sum, 0.0) / active_count))
+
+    return result
+
+
+def calculate_torque_statistics(torque_series: dict[str, list[float]]) -> dict[str, dict[str, float]]:
+    """Calculate engineering statistics used by the plot and summary CSV."""
+
+    statistics: dict[str, dict[str, float]] = {}
+    for joint_name, values in torque_series.items():
+        if not values:
+            raise ValueError(f"Torque series is empty for joint: {joint_name}")
+        absolute_values = [abs(value) for value in values]
+        statistics[joint_name] = {
+            "rms_nm": root_mean_square(values),
+            "mean_abs_nm": math.fsum(absolute_values) / len(absolute_values),
+            "peak_abs_nm": max(absolute_values),
+            "p95_abs_nm": percentile(absolute_values, 95.0),
+        }
+    return statistics
+
+
+def write_rating_summary(
+    summary_path: Path,
+    torque_series: dict[str, list[float]],
+    statistics: dict[str, dict[str, float]],
+    rated_method: str,
+    rated_percentile: float,
+    rolling_window_seconds: float,
+) -> None:
+    """Write the fitted rated-torque values and supporting statistics to CSV."""
+
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    with summary_path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(
+            [
+                "joint_name",
+                "sample_count",
+                "display_method",
+                "display_parameter",
+                "display_scalar_estimate_nm",
+                "equivalent_rated_torque_rms_nm",
+                "mean_absolute_torque_nm",
+                "p95_absolute_torque_nm",
+                "peak_absolute_torque_nm",
+            ]
+        )
+
+        if rated_method == "percentile":
+            display_parameter = f"percentile={rated_percentile:g}"
+        elif rated_method == "rolling-rms":
+            display_parameter = f"window_seconds={rolling_window_seconds:g}"
+        else:
+            display_parameter = ""
+
+        for joint_name, values in torque_series.items():
+            joint_statistics = statistics[joint_name]
+            if rated_method == "rms":
+                display_scalar_estimate: float | str = joint_statistics["rms_nm"]
+            elif rated_method == "percentile":
+                display_scalar_estimate = percentile([abs(value) for value in values], rated_percentile)
+            else:
+                display_scalar_estimate = ""
+            writer.writerow(
+                [
+                    joint_name,
+                    len(values),
+                    rated_method,
+                    display_parameter,
+                    display_scalar_estimate,
+                    joint_statistics["rms_nm"],
+                    joint_statistics["mean_abs_nm"],
+                    joint_statistics["p95_abs_nm"],
+                    joint_statistics["peak_abs_nm"],
+                ]
+            )
+
+
+def plot_torque(
+    time_axis: list[float],
+    torque_series: dict[str, list[float]],
+    output_path: Path,
+    *,
+    rated_method: str = "rms",
+    rated_percentile: float = 95.0,
+    rolling_window_seconds: float = 1.0,
+) -> dict[str, dict[str, float]]:
     if not time_axis:
         raise ValueError("No torque samples matched the requested step range.")
+    if rated_method not in {"rms", "percentile", "rolling-rms", "none"}:
+        raise ValueError(f"Unsupported rated torque method: {rated_method}")
+    if not 0.0 <= rated_percentile <= 100.0:
+        raise ValueError("rated percentile must be between 0 and 100.")
+    if rolling_window_seconds <= 0.0:
+        raise ValueError("rolling RMS window duration must be greater than zero.")
+
+    statistics = calculate_torque_statistics(torque_series)
+    rolling_window_samples = None
+    if rated_method == "rolling-rms":
+        sample_period = infer_sample_period(time_axis)
+        rolling_window_samples = max(1, round(rolling_window_seconds / sample_period))
 
     num_joints = len(torque_series)
     fig_height = max(6, 1.8 * num_joints)
@@ -87,26 +335,89 @@ def plot_torque(time_axis: list[float], torque_series: dict[str, list[float]], o
         axes = [axes]
 
     for ax, (joint_name, values) in zip(axes, torque_series.items(), strict=True):
-        ax.plot(time_axis, values, linewidth=1.2)
-        ax.set_ylabel("Torque")
+        raw_label = "Applied torque" if rated_method != "none" else None
+        raw_line_width = 1.0 if rated_method != "none" else 1.2
+        ax.plot(time_axis, values, linewidth=raw_line_width, color="tab:blue", label=raw_label)
+
+        if rated_method == "rms":
+            rated_value = statistics[joint_name]["rms_nm"]
+            ax.axhspan(-rated_value, rated_value, color="tab:orange", alpha=0.08)
+            ax.axhline(rated_value, color="tab:orange", linestyle="--", linewidth=1.4,
+                       label=f"Equivalent rated torque (RMS): {rated_value:.3f} N·m")
+            ax.axhline(-rated_value, color="tab:orange", linestyle="--", linewidth=1.0)
+        elif rated_method == "percentile":
+            rated_value = percentile([abs(value) for value in values], rated_percentile)
+            ax.axhspan(-rated_value, rated_value, color="tab:orange", alpha=0.08)
+            ax.axhline(rated_value, color="tab:orange", linestyle="--", linewidth=1.4,
+                       label=f"|Torque| P{rated_percentile:g}: {rated_value:.3f} N·m")
+            ax.axhline(-rated_value, color="tab:orange", linestyle="--", linewidth=1.0)
+        elif rated_method == "rolling-rms":
+            assert rolling_window_samples is not None
+            rolling_rms = rolling_root_mean_square(values, rolling_window_samples)
+            ax.plot(time_axis, rolling_rms, color="tab:orange", linewidth=1.6,
+                    label=f"Rolling RMS ({rolling_window_seconds:g} s)")
+            ax.plot(time_axis, [-value for value in rolling_rms], color="tab:orange", linewidth=1.0,
+                    linestyle="--", alpha=0.75)
+
+        ax.set_ylabel("Torque [N·m]" if rated_method != "none" else "Torque")
         ax.set_title(joint_name)
         ax.grid(True, alpha=0.3)
+        if rated_method != "none":
+            ax.legend(loc="upper right", fontsize=8)
 
     axes[-1].set_xlabel("Time [s]")
-    fig.suptitle("Joint Torque Time Series", fontsize=14)
+    figure_title = (
+        "Joint Torque Time Series"
+        if rated_method == "none"
+        else "Joint Torque Time Series and Equivalent Rated Torque"
+    )
+    fig.suptitle(figure_title, fontsize=14)
     fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
+    return statistics
 
 
 def main() -> None:
     args = parse_args()
     csv_path = args.csv_path.resolve()
     output_path = args.output.resolve() if args.output is not None else csv_path.parent / "joint_torque_timeseries.png"
+    summary_path = (
+        args.summary_output.resolve()
+        if args.summary_output is not None
+        else csv_path.parent / "joint_torque_rated_summary.csv"
+    )
 
-    time_axis, torque_series = load_torque_csv(csv_path, start_step=args.start_step, end_step=args.end_step)
-    plot_torque(time_axis, torque_series, output_path)
+    time_axis, torque_series = load_torque_csv(
+        csv_path, start_step=args.start_step, end_step=args.end_step,
+        joints=args.joints, env_index=args.env_index,
+    )
+    statistics = plot_torque(
+        time_axis,
+        torque_series,
+        output_path,
+        rated_method=args.rated_method,
+        rated_percentile=args.rated_percentile,
+        rolling_window_seconds=args.rolling_window_seconds,
+    )
+    write_rating_summary(
+        summary_path,
+        torque_series,
+        statistics,
+        rated_method=args.rated_method,
+        rated_percentile=args.rated_percentile,
+        rolling_window_seconds=args.rolling_window_seconds,
+    )
     print(f"Saved plot to: {output_path}")
+    print(f"Saved rated-torque summary to: {summary_path}")
+    print("Equivalent continuous rated torque estimates (RMS):")
+    for joint_name, joint_statistics in statistics.items():
+        print(
+            f"  {joint_name}: {joint_statistics['rms_nm']:.6g} N·m "
+            f"(P95 |torque|={joint_statistics['p95_abs_nm']:.6g} N·m, "
+            f"peak |torque|={joint_statistics['peak_abs_nm']:.6g} N·m)"
+        )
 
 
 if __name__ == "__main__":

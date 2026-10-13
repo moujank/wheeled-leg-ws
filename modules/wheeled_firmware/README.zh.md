@@ -1,5 +1,7 @@
 # wheeled_firmware
 
+[English](README.md) · [上级目录](../README.md)
+
 该目录预留给轮腿平台相关的嵌入式固件使用，目前只有文档。
 
 ## 预期职责

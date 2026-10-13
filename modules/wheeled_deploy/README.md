@@ -1,5 +1,7 @@
 # wheeled_deploy
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory is reserved for on-robot deployment code. It does not yet contain runtime implementation files.
 
 ## Intended scope

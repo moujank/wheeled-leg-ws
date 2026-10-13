@@ -5,7 +5,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$repo_root"
 
-output_file="GIT_HISTORY.md"
+output_file="docs/GIT_HISTORY.md"
 generated_at="$(date '+%Y-%m-%d %H:%M:%S %z')"
 
 {

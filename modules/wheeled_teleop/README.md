@@ -1,5 +1,7 @@
 # wheeled_teleop
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory is reserved for teleoperation and operator-facing tooling. It currently contains documentation only.
 
 ## Intended scope

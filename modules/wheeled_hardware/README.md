@@ -1,5 +1,7 @@
 # wheeled_hardware
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory is reserved for hardware-facing project data. It currently contains documentation only.
 
 ## Intended scope

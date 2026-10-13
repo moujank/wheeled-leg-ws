@@ -1,0 +1,15 @@
+train:
+python scripts/rsl_rl/train.py --task Wheeled-Base-Locked-Curriculum --max_iterations 8000 --num_envs 4096 
+
+plot-reward
+python tools/plot_mean_reward.py --task wheeled_base_locked_hard
+
+update
+python scripts/rsl_rl/update_best_policy.py   --experiment=wheeled_base_locked_hard   --run=2026-08-07_21-37-26   --checkpoint=model_6900.pt   --task=Wheeled-Base-Locked-Curriculum   --play-task=Wheeled-Base-Locked-Curriculum-Play   --comment="Short reason for selecting this checkpoint."
+
+play
+python scripts/rsl_rl/play.py   --task=Wheeled-Base-Locked-Curriculum-Play   --experiment_name=wheeled_base_locked_hard  --load_run=best   --checkpoint=model.pt
+
+torque:
+python modules/wheeled_train/wheeled_leg/tools/plot_joint_torque.py /home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_base_locked_hard/2026-07-10_11-10-58/play_joint_torque/2026-07-10_13-58-14/joint_torque.csv 
+

@@ -1,5 +1,7 @@
 # wheeled-leg-ws
 
+[中文](README.zh.md) · [Documentation index](docs/README.md) · [Modules](modules/README.md) · [TODO](docs/TODO.md)
+
 This repository is the main workspace for a wheeled-leg robot stack. It currently contains two active implementation tracks:
 
 - `modules/wheeled_train/wheeled_leg`: Isaac Lab training tasks, scripts, and experiment outputs.
@@ -12,6 +14,7 @@ The remaining `modules/wheeled_*` directories are present as reserved module bou
 ```text
 wheeled-leg-ws/
 ├── assets/                         # USD/URDF exports and raw robot assets used outside MuJoCo
+├── docs/                           # Workspace docs, migration workflow, TODO, history
 ├── modules/
 │   ├── wheeled_train/             # Isaac Lab training workspace
 │   ├── wheeled_mujoco/            # MuJoCo sim2sim workspace
@@ -22,11 +25,9 @@ wheeled-leg-ws/
 │   ├── wheeled_teleop/            # Reserved teleoperation and UI module
 │   ├── wheeled_hardware/          # Reserved hardware data module
 │   └── wheeled_firmware/          # Reserved firmware module
-├── tools/                         # Small standalone analysis utilities
 ├── sync_to_github.sh              # Push main + subtree split branches
-├── update_git_history.sh          # Regenerate GIT_HISTORY.md from git log
-├── GIT_HISTORY.md                 # Generated commit history snapshot
-└── SIM2SIM_DYNAMIC_FLOW.md        # Project notes for sim2sim work
+├── update_git_history.sh          # Regenerate docs/GIT_HISTORY.md from git log
+└── README.md / README.zh.md        # Workspace entry points
 ```
 
 ## Active code areas
@@ -54,8 +55,8 @@ At the moment, `wheeled_base_locked` is the only fully runnable MuJoCo path. Oth
 ## Top-level assets and tools
 
 - `assets/`: exported USD, URDF, mesh, and package-style robot assets used by the Isaac-side workflow.
-- `tools/plot_joint_torque.py`: plotting utility for joint torque traces.
-- `tools/plot_mean_reward.py`: plotting utility for reward curves or aggregate reward logs.
+- `modules/wheeled_train/wheeled_leg/tools/plot_joint_torque.py`: plotting utility for joint torque traces.
+- `modules/wheeled_train/wheeled_leg/tools/plot_mean_reward.py`: plotting utility for reward curves or aggregate reward logs.
 - `MUJOCO_LOG.TXT` and `thinking.txt`: working notes captured in the repository root.
 
 ## Common workflows
@@ -66,7 +67,7 @@ At the moment, `wheeled_base_locked` is the only fully runnable MuJoCo path. Oth
 ./update_git_history.sh
 ```
 
-This rewrites `GIT_HISTORY.md` from the current local git history.
+This rewrites [docs/GIT_HISTORY.md](docs/GIT_HISTORY.md) from the current local git history.
 
 ### Sync the workspace to GitHub
 
@@ -91,4 +92,6 @@ Provide a custom message when needed:
 ## Notes
 
 - This worktree is actively used for experimentation. Generated logs, checkpoints, exported policies, and local notes may coexist with source changes.
-- The repository already contains non-README technical notes such as `SIM2SIM_DYNAMIC_FLOW.md`, `modules/wheeled_mujoco/SIM2SIM_ARCHITECTURE.md`, and `modules/wheeled_mujoco/MUJOCO_DEBUG_HANDOFF.md`. Those files carry workflow state and should be read together with the module READMEs when working on sim2sim.
+- The repository already contains non-README technical notes such as [migration workflow](docs/SIM2SIM_DYNAMIC_FLOW.md), [MuJoCo architecture](modules/wheeled_mujoco/docs/SIM2SIM_ARCHITECTURE.md), and [debug handoff](modules/wheeled_mujoco/docs/MUJOCO_DEBUG_HANDOFF.md). Those files carry workflow state and should be read together with the module READMEs when working on sim2sim.
+
+Training and playback analysis tools are maintained in [the training tools directory](modules/wheeled_train/wheeled_leg/tools/README.md), including torque statistics and TensorBoard scalar analysis.

@@ -1,5 +1,7 @@
 # wheeled_sim_bridge
 
+[English](README.md) · [上级目录](../README.md)
+
 该目录预留给系统集成与仿真桥接工作，目前只有文档。
 
 ## 预期职责

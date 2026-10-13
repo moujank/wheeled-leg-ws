@@ -1,5 +1,7 @@
 # wheeled_deploy
 
+[English](README.md) · [上级目录](../README.md)
+
 该目录预留给真机部署代码使用，目前还没有实际运行实现文件。
 
 ## 预期职责

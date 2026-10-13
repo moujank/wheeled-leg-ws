@@ -1,5 +1,7 @@
 # wheeled-leg-ws
 
+[English](README.md) · [文档索引](docs/README.md) · [模块导航](modules/README.md) · [待办](docs/TODO.md)
+
 这个仓库是轮腿机器人项目的主工作区。目前有两条真正落地的实现主线：
 
 - `modules/wheeled_train/wheeled_leg`：Isaac Lab 训练任务、脚本与实验输出。
@@ -12,6 +14,7 @@
 ```text
 wheeled-leg-ws/
 ├── assets/                         # MuJoCo 之外使用的 USD / URDF 原始资产
+├── docs/                           # 工作区文档索引、迁移流程、待办、历史
 ├── modules/
 │   ├── wheeled_train/             # Isaac Lab 训练工作区
 │   ├── wheeled_mujoco/            # MuJoCo sim2sim 工作区
@@ -22,11 +25,9 @@ wheeled-leg-ws/
 │   ├── wheeled_teleop/            # 预留遥操作与界面模块
 │   ├── wheeled_hardware/          # 预留硬件资料模块
 │   └── wheeled_firmware/          # 预留固件模块
-├── tools/                         # 独立分析小工具
 ├── sync_to_github.sh              # 推送 main 和 subtree 拆分分支
-├── update_git_history.sh          # 基于 git log 重新生成 GIT_HISTORY.md
-├── GIT_HISTORY.md                 # 自动生成的提交历史快照
-└── SIM2SIM_DYNAMIC_FLOW.md        # sim2sim 工作记录
+├── update_git_history.sh          # 基于 git log 重新生成 docs/GIT_HISTORY.md
+└── README.md / README.zh.md        # 工作区入口
 ```
 
 ## 当前有效代码区
@@ -54,8 +55,8 @@ wheeled-leg-ws/
 ## 顶层资产与工具
 
 - `assets/`：供 Isaac 侧使用的 USD、URDF、mesh 以及 package 风格机器人资产。
-- `tools/plot_joint_torque.py`：关节力矩曲线绘图工具。
-- `tools/plot_mean_reward.py`：奖励曲线或平均奖励日志绘图工具。
+- `modules/wheeled_train/wheeled_leg/tools/plot_joint_torque.py`：关节力矩曲线绘图工具。
+- `modules/wheeled_train/wheeled_leg/tools/plot_mean_reward.py`：奖励曲线或平均奖励日志绘图工具。
 - `MUJOCO_LOG.TXT` 与 `thinking.txt`：保存在仓库根目录的工作记录。
 
 ## 常用工作流
@@ -66,7 +67,7 @@ wheeled-leg-ws/
 ./update_git_history.sh
 ```
 
-该脚本会根据当前本地 git 历史重写 `GIT_HISTORY.md`。
+该脚本会根据当前本地 git 历史重写 [docs/GIT_HISTORY.md](docs/GIT_HISTORY.md)。
 
 ### 同步工作区到 GitHub
 
@@ -91,4 +92,6 @@ wheeled-leg-ws/
 ## 说明
 
 - 这个工作区处于持续实验状态。源码改动、生成日志、checkpoint、导出策略和临时记录会同时存在。
-- 仓库中已经包含若干非 README 技术说明文件，例如 `SIM2SIM_DYNAMIC_FLOW.md`、`modules/wheeled_mujoco/SIM2SIM_ARCHITECTURE.md` 和 `modules/wheeled_mujoco/MUJOCO_DEBUG_HANDOFF.md`。做 sim2sim 相关工作时，应该与模块 README 一起阅读。
+- 仓库中已经包含若干非 README 技术说明文件，例如 [迁移流程](docs/SIM2SIM_DYNAMIC_FLOW.md)、[MuJoCo 架构](modules/wheeled_mujoco/docs/SIM2SIM_ARCHITECTURE.md) 和 [调试交接](modules/wheeled_mujoco/docs/MUJOCO_DEBUG_HANDOFF.md)。做 sim2sim 相关工作时，应该与模块 README 一起阅读。
+
+训练与回放分析工具统一位于 [训练工程 tools](modules/wheeled_train/wheeled_leg/tools/README.md)，使用说明包含力矩统计和 TensorBoard 标量分析。
