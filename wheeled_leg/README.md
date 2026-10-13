@@ -1,5 +1,7 @@
 # wheeled_leg Isaac Lab project
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This directory is the active Isaac Lab extension project for the wheeled-leg robot. It is no longer a generic template in practice, even though some package metadata still comes from the upstream Isaac Lab extension template.
 
 ## Structure
@@ -137,3 +139,11 @@ python scripts/random_agent.py --task=Wheeled-Base-Locked-simple
 - run-time outputs from Hydra or Isaac Lab live under `outputs/<date>/<time>/`
 
 If a training run still writes to an unexpected default directory, check the current working directory first. `scripts/rsl_rl/train.py` writes logs relative to the directory where the script is launched.
+
+## Documentation navigation
+
+[Training module](../README.md) · [Policy index](logs/rsl_rl/POLICY_INDEX.md) · [Workspace docs](../../../docs/README.md)
+
+Each experiment's `best/notes.md` records its own checkpoint source and selection rationale. These records are managed by the policy helper and indexed in `POLICY_INDEX.md`.
+
+[Analysis tools](tools/README.md): joint torque plots, equivalent torque statistics, and TensorBoard reward/scalar analysis are maintained in `tools/`.

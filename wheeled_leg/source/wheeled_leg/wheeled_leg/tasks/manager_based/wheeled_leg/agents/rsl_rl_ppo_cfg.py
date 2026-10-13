@@ -40,6 +40,13 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
 
 
 @configclass
+class WheeledLegPPORunnerCfg(PPORunnerCfg):
+    """双轮足任务沿用基础 PPO 参数，并使用独立实验目录。"""
+
+    experiment_name = "wheeled_leg_v0"
+
+
+@configclass
 class BaseLockedPPORunnerCfg(PPORunnerCfg):
     experiment_name = "wheeled_base_locked_simple"
     empirical_normalization = True

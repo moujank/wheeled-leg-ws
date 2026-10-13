@@ -1,5 +1,7 @@
 # wheeled_train
 
+[English](README.md) · [上级目录](../README.md)
+
 该目录承载轮腿项目的训练侧工作区。当前真实可用的 Isaac Lab 工程位于 `wheeled_leg/`。
 
 ## 目录结构
@@ -23,35 +25,6 @@ modules/wheeled_train/
 - 多个任务的实验产物已直接提交在仓库中
 - 用于维护最优策略索引的 `scripts/rsl_rl/update_best_policy.py`
 
-## 当前任务族
+## 工程文档
 
-当前任务包实际注册了：
-
-- `Wheeled-Base-Locked-simple`
-- `Wheeled-Base-Locked-simple-Play`
-- `Wheeled-Base-Locked-Curriculum`
-- `Wheeled-Base-Locked-Curriculum-Play`
-- `Wheeled-Arm-Free-Locomotion-v0`
-- `Wheeled-Arm-Free-Locomotion-Play-v0`
-- `Wheeled-Arm-Free-Recovery-v0`
-- `Wheeled-Arm-Free-Recovery-Play-v0`
-- `Wheeled-Arm-Free-Obstacle-v0`
-- `Wheeled-Arm-Free-Obstacle-Play-v0`
-- `Wheeled-Grasp-Pose-Locomotion-v0`
-- `Wheeled-Grasp-Pose-Locomotion-Play-v0`
-- `Wheeled-Cartesian-Grasp-v0`
-- `Wheeled-Cartesian-Grasp-Play-v0`
-- `Wheeled-Loaded-Grasp-Obstacle-v0`
-- `Wheeled-Loaded-Grasp-Obstacle-Play-v0`
-
-## 常见工作流
-
-```bash
-cd modules/wheeled_train/wheeled_leg
-python -m pip install -e source/wheeled_leg
-python scripts/list_envs.py
-python scripts/rsl_rl/train.py --task=Wheeled-Base-Locked-simple
-python scripts/rsl_rl/play.py --task=Wheeled-Base-Locked-simple-Play --load_run=best --checkpoint=model.pt
-```
-
-具体工程结构、安装说明和任务 / run 约定见 `wheeled_leg/` 目录下的 README。
+安装、任务清单、训练/回放命令及日志约定统一维护在 [工程 README](wheeled_leg/README.zh.md)。策略选择说明见 [POLICY_INDEX.md](wheeled_leg/logs/rsl_rl/POLICY_INDEX.md)。

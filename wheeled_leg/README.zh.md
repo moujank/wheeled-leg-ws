@@ -1,5 +1,7 @@
 # wheeled_leg Isaac Lab 工程
 
+[English](README.md) · [上级目录](../README.zh.md)
+
 该目录是轮腿机器人的 Isaac Lab 主工程。虽然部分包元数据仍沿用了上游 Isaac Lab 模板，但从实际内容看，它已经不是通用模板仓库，而是当前项目的真实训练工程。
 
 ## 目录结构
@@ -125,6 +127,8 @@ python scripts/rsl_rl/play.py \
 
 ### 快速环境冒烟测试
 
+`Wheeled-Leg-v0` 的最小 PPO 训练已完成一次，配置、产物和暂缓问题见 [运行验证记录](docs/WHEELED_LEG_V0_RUN_STATUS.md)。
+
 ```bash
 python scripts/zero_agent.py --task=Wheeled-Base-Locked-simple
 python scripts/random_agent.py --task=Wheeled-Base-Locked-simple
@@ -137,3 +141,11 @@ python scripts/random_agent.py --task=Wheeled-Base-Locked-simple
 - Hydra / Isaac Lab 运行输出位于 `outputs/<date>/<time>/`
 
 如果训练仍然写入了意料之外的默认目录，先检查当前工作目录。`scripts/rsl_rl/train.py` 会相对于脚本启动目录写日志。
+
+## 文档导航
+
+[训练模块入口](../README.zh.md) · [策略索引](logs/rsl_rl/POLICY_INDEX.md) · [工作区文档](../../../docs/README.md)
+
+各实验的 `best/notes.md` 保存独立的 checkpoint 来源和选择理由，由策略维护脚本管理，索引汇总于 `POLICY_INDEX.md`。
+
+[分析工具说明](tools/README.md)：关节力矩绘图、等效扭矩统计与 TensorBoard 奖励/标量分析统一位于 `tools/`。

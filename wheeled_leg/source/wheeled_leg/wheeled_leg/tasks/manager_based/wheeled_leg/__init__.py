@@ -29,6 +29,17 @@ _RSL_RL_GRASP_POSE_LOCOMOTION_CFG_ENTRY_POINT = f"{agents.__name__}.rsl_rl_ppo_c
 _RSL_RL_CARTESIAN_GRASP_CFG_ENTRY_POINT = f"{agents.__name__}.rsl_rl_ppo_cfg:CartesianGraspPPORunnerCfg"
 _RSL_RL_LOADED_GRASP_OBSTACLE_CFG_ENTRY_POINT = f"{agents.__name__}.rsl_rl_ppo_cfg:LoadedGraspObstaclePPORunnerCfg"
 
+gym.register(
+    id="Wheeled-Leg-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.v2_wheeled_leg_v0:WheeledLegEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:WheeledLegPPORunnerCfg",
+    },
+)
+
+
 
 def _register_rsl_rl_task(task_id: str, env_cfg_entry_point, rsl_rl_cfg_entry_point: str = _RSL_RL_CFG_ENTRY_POINT) -> None:
     gym.register(
@@ -41,6 +52,11 @@ def _register_rsl_rl_task(task_id: str, env_cfg_entry_point, rsl_rl_cfg_entry_po
         },
     )
 
+_register_rsl_rl_task(
+    "Wheeled-Leg-Play-v0",
+    f"{__name__}.v2_wheeled_leg_v0:WheeledLegEnvCfg_PLAY",
+    f"{agents.__name__}.rsl_rl_ppo_cfg:WheeledLegPPORunnerCfg",
+)
 
 _register_rsl_rl_task(
     "Wheeled-Base-Locked-simple",
