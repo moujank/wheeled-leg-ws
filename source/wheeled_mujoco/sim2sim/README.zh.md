@@ -1,5 +1,7 @@
 # wheeled_mujoco.sim2sim
 
+[English](README.md) · [上级目录](../README.zh.md)
+
 该目录包含 MuJoCo sim-to-sim 执行的 runner 适配层。
 
 ## 当前文件

@@ -1,5 +1,7 @@
 # wheeled_mujoco source package
 
+[English](README.md) · [上级目录](../README.zh.md)
+
 `wheeled_mujoco` 是当前工作区中 MuJoCo 侧代码的 Python 包边界。
 
 ## 职责
@@ -23,3 +25,9 @@ scripts/*.py
   -> wheeled_mujoco.tasks
   -> wheeled_mujoco.paths
 ```
+
+## 子包导航
+
+[任务配置](tasks/README.zh.md) · [运行时适配](sim2sim/README.zh.md) · [ROS 接口](ros/README.zh.md) · [编排](orchestration/README.zh.md)
+
+共享路径工具位于 `paths.py`；一次性执行入口位于模块 `scripts/`。

@@ -1,5 +1,7 @@
 # wheeled_mujoco source package
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 `wheeled_mujoco` is the Python package boundary for MuJoCo-side code in this workspace.
 
 ## Responsibilities
@@ -23,3 +25,9 @@ scripts/*.py
   -> wheeled_mujoco.tasks
   -> wheeled_mujoco.paths
 ```
+
+## Subpackages
+
+[Tasks](tasks/README.md) · [Runner adapters](sim2sim/README.md) · [ROS interfaces](ros/README.md) · [Orchestration](orchestration/README.md)
+
+Shared repository-relative paths are defined in `paths.py`; execution entry points belong in the module `scripts/` directory.

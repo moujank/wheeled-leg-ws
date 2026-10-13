@@ -1,5 +1,7 @@
 # wheeled_mujoco.tasks
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This folder stores MuJoCo task metadata that mirrors the training-side task families.
 
 ## What these files contain

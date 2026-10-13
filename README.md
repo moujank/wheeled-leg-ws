@@ -1,5 +1,7 @@
 # wheeled_mujoco
 
+[中文](README.zh.md) · [Module documentation](docs/README.md)
+
 This module contains the MuJoCo-side workspace for the wheeled-leg project.
 
 ## Structure
@@ -10,9 +12,7 @@ modules/wheeled_mujoco/
 ├── minimal_sim2sim/       # Validated minimal base-locked MuJoCo rollout
 ├── scripts/               # Command-line entry points
 ├── source/                # Importable Python package
-├── MUJOCO_DEBUG_HANDOFF.md
-├── MUJOCO_CONSISTENCY_CHECKLIST.md
-└── SIM2SIM_ARCHITECTURE.md
+└── docs/                  # Architecture, consistency, handoff, asset index, history
 ```
 
 ## Current scope
@@ -63,3 +63,9 @@ python3 modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py --duration 5
 ```
 
 Use the more specific README files in `minimal_sim2sim/`, `scripts/`, and `source/` for details.
+
+## Documentation navigation
+
+[Minimal rollout](minimal_sim2sim/README.md) · [CLI entry points](scripts/README.md) · [Source package](source/wheeled_mujoco/README.md) · [Technical notes](docs/README.md)
+
+Historical validation results apply to their recorded policies and parameters. Consult the [debug handoff](docs/MUJOCO_DEBUG_HANDOFF.md) and selected checkpoint for policy status. Run the commands above from the workspace root.

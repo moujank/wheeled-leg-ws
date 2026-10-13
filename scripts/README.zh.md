@@ -1,5 +1,7 @@
 # wheeled_mujoco/scripts
 
+[English](README.md) · [上级目录](../README.zh.md)
+
 该目录存放 MuJoCo 侧工作流的命令行入口。
 
 ## 当前脚本

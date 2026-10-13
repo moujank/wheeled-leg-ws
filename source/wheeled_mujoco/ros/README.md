@@ -1,5 +1,7 @@
 # wheeled_mujoco.ros
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This folder reserves ROS-facing interfaces for future MuJoCo integration.
 
 ## Current files

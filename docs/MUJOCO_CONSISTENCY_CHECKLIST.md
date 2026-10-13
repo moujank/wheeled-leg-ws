@@ -1,5 +1,9 @@
 # MuJoCo Consistency Checklist
 
+[文档索引](README.md) · [调试交接](MUJOCO_DEBUG_HANDOFF.md) · [资产查询](ASSET_INDEX.md)
+
+范围：2026-07-08 训练 run 的一致性排查记录。以下“当前”对应该次记录，其他 checkpoint 应重新核对其 `params/env.yaml`。
+
 本文档只记录 MuJoCo 侧的一致性排查清单、当前结论和后续优先级，不包含 IsaacLab 训练代码修改建议。目标是先判断 `1.0 m/s` 失败究竟是 MuJoCo 接入问题，还是训练资产本身与 MuJoCo 部署资产已经发生结构性分叉。
 
 ## 1. 当前目标
@@ -24,7 +28,7 @@
 
 本次训练保存下来的参数来自：
 
-- [env.yaml](/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_base_locked/2026-07-08_17-08-25/params/env.yaml)
+- [env.yaml](../../wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_base_locked/2026-07-08_17-08-25/params/env.yaml)
 
 已确认的关键项：
 
@@ -48,7 +52,7 @@
 
 文件：
 
-- [wheeled.py](/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/asset/wheeled.py)
+- [wheeled.py](../../wheeled_train/wheeled_leg/source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/asset/wheeled.py)
 
 当前源码里仍能看到另一套默认值：
 
@@ -69,9 +73,9 @@
 
 文件：
 
-- 活动 MJCF: [wheeled_leg.xml](/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/mjcf/wheeled_leg.xml)
-- 原始导出: [meshes/wheeled_leg.xml](/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_leg/meshes/wheeled_leg.xml)
-- 原始 URDF: [wheeled_leg.urdf](/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/asset/wheeled_leg/urdf/wheeled_leg.urdf)
+- 活动 MJCF: [wheeled_leg.xml](../asset/mjcf/wheeled_leg.xml)
+- 原始导出: [meshes/wheeled_leg.xml](../asset/wheeled_leg/meshes/wheeled_leg.xml)
+- 原始 URDF: [wheeled_leg.urdf](../asset/wheeled_leg/urdf/wheeled_leg.urdf)
 
 当前活动 MJCF 相比导出模型，已经有人为改动：
 

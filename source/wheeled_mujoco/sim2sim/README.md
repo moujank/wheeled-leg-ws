@@ -1,5 +1,7 @@
 # wheeled_mujoco.sim2sim
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This folder contains the runner adapter layer for MuJoCo sim-to-sim execution.
 
 ## Current files

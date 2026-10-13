@@ -1,5 +1,7 @@
 # wheeled_mujoco/scripts
 
+[中文](README.zh.md) · [Parent directory](../README.md)
+
 This folder contains command-line entry points for MuJoCo-side workflows.
 
 ## Scripts

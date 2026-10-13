@@ -1,5 +1,7 @@
 # wheeled_mujoco
 
+[English](README.md) · [模块文档索引](docs/README.md)
+
 该模块是轮腿项目的 MuJoCo 侧工作区。
 
 ## 目录结构
@@ -10,9 +12,7 @@ modules/wheeled_mujoco/
 ├── minimal_sim2sim/       # 已验证的 base-locked 最小 MuJoCo 闭环
 ├── scripts/               # 命令行入口
 ├── source/                # 可导入 Python 包
-├── MUJOCO_DEBUG_HANDOFF.md
-├── MUJOCO_CONSISTENCY_CHECKLIST.md
-└── SIM2SIM_ARCHITECTURE.md
+└── docs/                  # 架构、一致性、交接、资产索引与历史记录
 ```
 
 ## 当前职责
@@ -63,3 +63,9 @@ python3 modules/wheeled_mujoco/minimal_sim2sim/run_base_locked.py --duration 5
 ```
 
 更详细的说明请继续查看 `minimal_sim2sim/`、`scripts/` 和 `source/` 下的 README。
+
+## 文档导航
+
+[最小闭环](minimal_sim2sim/README.zh.md) · [命令行入口](scripts/README.zh.md) · [源码包](source/wheeled_mujoco/README.zh.md) · [专题说明](docs/README.md)
+
+历史验证结果对应当时的策略及参数；现有策略的状态应结合 [调试交接](docs/MUJOCO_DEBUG_HANDOFF.md) 与所选 checkpoint 确认。上述命令从工作区根目录执行。

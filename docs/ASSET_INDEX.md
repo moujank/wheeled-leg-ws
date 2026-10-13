@@ -1,4 +1,10 @@
-    ---step1: isaac 配置---
+# MuJoCo 资产与索引查询记录
+
+[模块文档](README.md) · [一致性清单](MUJOCO_CONSISTENCY_CHECKLIST.md)
+
+本文保存原 `asset/mjcf/index_list.md` 的查询步骤与历史输出。下列数值是当时记录，实际索引和参数应以选定 MJCF、训练 run 的 `params/env.yaml` 和查询脚本输出为准。所有命令从工作区根目录执行。
+
+## Step 1：Isaac 配置
 
 先查 Isaac 训练配置里的动作定义：
 
@@ -85,7 +91,7 @@ claw :
     velocity_limit:
     effort_limit:
 
-    ---step2: mujoco xml配置---
+## Step 2：mujoco xml配置
 先直接从 XML 里把关键结构扫出来：
 rg -n '<joint|<actuator|<position|<velocity|axis=|<body|<site|<sensor|<key'  modules/wheeled_mujoco/asset/mjcf/wheeled_leg.xml
 
@@ -112,7 +118,7 @@ rg -n '<joint|<actuator|<position|<velocity|axis=|<body|<site|<sensor|<key'  mod
 
 
 
-    ---step3: 查询 MuJoCo 中 joint 的 qpos/qvel 索引---
+## Step 3：查询 MuJoCo 中 joint 的 qpos/qvel 索引
 
   这个信息单看 XML 不够，最稳的是直接用 MuJoCo Python API 读模型。
   执行：idx_qpos_qvel.py
@@ -136,7 +142,7 @@ HubL: id=3, type=HINGE, qpos_adr=9, qvel_adr=8, axis=[ 0.  0. -1.]
 HubR: id=6, type=HINGE, qpos_adr=12, qvel_adr=11, axis=[0. 0. 1.]
 
 
-    ---step4: 查询 actuator 的 ctrl 索引和 joint 绑定关系---
+## Step 4：查询 actuator 的 ctrl 索引和 joint 绑定关系
 
   MuJoCo 里 policy 最终写的是 data.ctrl[...]，所以你必须知道 actuator 索引。
   执行：idx_actuator.py
@@ -152,7 +158,7 @@ KneeR_pos: actuator_id=3, ctrl_index=3, joint=KneeR, ctrlrange=[-3.14  3.14], fo
 HubL_vel: actuator_id=4, ctrl_index=4, joint=HubL, ctrlrange=[-6.28319  6.28319], forcerange=[-150.  150.]
 HubR_vel: actuator_id=5, ctrl_index=5, joint=HubR, ctrlrange=[-6.28319  6.28319], forcerange=[-150.  150.]
 
-    ---step5: 查询 base body、imu site、sensor 的 id---
+## Step 5：查询 base body、imu site、sensor 的 id
 
   后面你做 observation builder 一定会用到 body/site/sensor 索引。
   执行：idx_body_site_sensor.py
@@ -198,7 +204,7 @@ right_wheel_site: id=3
   如果你后面打算直接用 XML 里已经定义好的 imu_gyro、imu_orientation、jointpos、
   jointvel，这一步非常关键。
 
-    ---step6： 查询 home pose 和 freejoint 相关的 qpos 布局---
+## Step 6：查询 home pose 和 freejoint 相关的 qpos 布局
 
   你必须知道 qpos 前 7 维是 freejoint，后面才是各个 hinge joint。
   执行：
@@ -227,7 +233,7 @@ nu = 6
 130:    <key name="home" qpos="0 0 0.34 1 0 0 0 0 0 0 0 0"/>
 
 
-    ---step7：查询 joint 正负方向前，先确认 base 朝前轴---
+## Step 7：查询 joint 正负方向前，先确认 base 朝前轴
 
   这个索引不一定要靠 API，看 body 姿态和实际试验更可靠。先从 XML 看 base_link 和 IMU：
   sed -n '35,90p' modules/wheeled_mujoco/asset/mjcf/wheeled_leg.xml
@@ -371,7 +377,7 @@ nu = 6
 base_link body id = 1
 
 
-    ---step8：做“最小正负号实验”前需要的索引查询---
+## Step 8：做“最小正负号实验”前需要的索引查询
 
   后面你不加载 policy，直接手工写 ctrl 做测试时，最常用的查询命令是这两个。
 

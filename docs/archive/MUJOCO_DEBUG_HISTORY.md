@@ -1,4 +1,8 @@
-# MuJoCo Wheeled-Leg Sim2Sim Debug State
+# MuJoCo Wheeled-Leg Sim2Sim 调试历史
+
+[交接入口](../MUJOCO_DEBUG_HANDOFF.md) · [文档索引](../README.md)
+
+本文归档原交接说明及 2026-07-03 至 2026-07-08 调试流水。下文的“当前”“最近”“用户要求”均属于原记录的历史上下文，各次试验使用的策略与参数可能不同；不得据此认定现有策略已通过验证。
 
 本文档是 `wheeled_mujoco` 这部分工作的状态文件，同时承担交接文档作用。后续每进一步调试一次，都需要同步更新本文档中的“当前阶段状态”“最近验证结果”“失败样例”“下一步动作”，避免重新打开 Codex、切换模型或跨轮调试后丢失上下文。
 
@@ -13,7 +17,7 @@
 
 独立清单文档：
 
-- [MUJOCO_CONSISTENCY_CHECKLIST.md](/home/moujank/project/wheeled-leg-ws/modules/wheeled_mujoco/MUJOCO_CONSISTENCY_CHECKLIST.md)
+- [MUJOCO_CONSISTENCY_CHECKLIST.md](../MUJOCO_CONSISTENCY_CHECKLIST.md)
 
 ## 1. 当前总目标
 
@@ -785,66 +789,6 @@ cmd_vx=0.1 -> 0.2 -> 0.3 -> 0.5
   rpy_deg=(-0.4, -2.3, -2.8)
   base_contact=False leg_contact=False
 
-### 2026-07-08 90D policy 重新对齐与 handoff 回归失败定位
-
-```text
-背景：
-- 当前 MuJoCo 实际加载的不是旧 27D policy，而是 2026-07-08 导出的 90D policy。
-- 训练保存配置明确表明：
-  - init_state.z = 0.34
-  - action scale: leg=0.35, wheel=6.0
-  - command range: lin_vel_x in [-1.2, 1.2]
-- 因此 1.0 m/s 在训练命令空间内，不是“超出策略训练范围”的问题。
-
-本轮做过的 MuJoCo 侧调整：
-1. 恢复并验证 90D policy 的观测维度匹配，保留 30xhistory 的观测构造。
-2. 修正 soft-start 时间轴：
-   - 对 pose_hold 路径，locomotion_alpha 不再从 release 前就累计，
-     而是从真正进入 policy 时开始累计。
-3. 为 pose_hold 路径增加 policy dry-run warmup：
-   - 在 tether/release/stand 期间只预热 obs_history 和 last_action，
-     不直接把 policy 动作打到机器人上。
-4. 把 MuJoCo 初始高度重新对齐到训练资产：
-   - MJCF home qpos.z = 0.34
-   - stand_base_height_target = 0.34
-   - tether_height_target = 0.34
-5. 把动作尺度对齐回训练资产：
-   - leg_action_scale = 0.35
-   - wheel_action_scale = 6.0
-6. 把接触摩擦对齐回更接近训练随机范围：
-   - 默认 geom friction 从 1.1 下调到 0.8
-   - 轮子 friction 从 1.3 下调到 0.9
-
-本轮关键定位结果：
-1. pose_hold + 2s stand 是当前最接近“可修 handoff”的候选：
-   - t=4.00s 仍可 base_contact=False, leg_contact=False
-   - 但 pitch 已到约 -28 deg 到 -30 deg，说明接管前姿态仍明显前倾。
-2. 高频日志表明问题不只在 policy 第一拍：
-   - pose_hold 路径下，stand 尾段不会立即接触，但 handoff 时已经带着明显前倾进入 policy。
-3. 更短的 stand（0.0 / 0.5 / 1.0 / 1.5）在 90D policy 下都更差：
-   - 经常更早出现 leg_contact=True 或直接 base_contact=True。
-4. 仅靠 MuJoCo 侧 handoff/soft-start/摩擦微调，目前仍未恢复文档旧基线那种：
-   - cmd_vx=0.0 的 4.5s startup 回归长期稳定
-   - cmd_vx=0.5 的 6s 稳定短跑
-
-当前最重要结论：
-1. 1.0 m/s 目标并不是训练命令空间问题，训练命令范围本身覆盖了它。
-2. 当前更像训练资产和 MuJoCo 资产之间仍存在结构/接触/惯性/驱动方向失配。
-3. 继续只调 MuJoCo 运行期保护，收益已经明显变小，开始接近“资产不完全一致”上限。
-
-高风险失配项（按优先级）：
-1. 轮子接触 mesh 与训练资产真实接触语义不一致。
-2. 左右轮 joint axis / 正方向 / drive direction 仍可能与训练资产存在符号失配。
-3. base 与各 link 的惯量、COM、mesh 碰撞分布与训练 USD 不完全一致。
-4. MuJoCo velocity actuator 对 Hub.* 的动力学等效方式与 Isaac implicit actuator 仍有差别。
-
-当前建议：
-1. 如果继续只调 MuJoCo：
-   - 只围绕 pose_hold + 2s stand + 0.34 + 0.35/6.0 这组候选继续查资产一致性。
-   - 优先检查 wheel axis / contact patch / inertia / COM，而不是继续叠加运行期保护。
-2. 如果 MuJoCo 侧继续调试仍无法把 0.5 甚至 1.0 稳住：
-   - 下一步应转为整理“训练资产配置调整报告”，但不改 IsaacLab 训练代码。
-```
 
 6s 短跑结果：
 - cmd_vx=0.5：
@@ -1013,4 +957,65 @@ viewer + real-time 结果：
 3. whole-leg assist 应围绕训练中的稳定 leg posture/reference 设计，而不是直接混零位 stand pose。
 4. 如果继续做轮控平滑，必须保持 0.5 的 20s 回归不过期，不能以破坏既有稳定基线换取 1.0 尝试。
 5. 只有 no-viewer / no-real-time 的 1.0 20s 先通过后，才进入 viewer + real-time 50s 最终验证。
+```
+
+### 2026-07-08 90D policy 重新对齐与 handoff 回归失败定位
+
+```text
+背景：
+- 当前 MuJoCo 实际加载的不是旧 27D policy，而是 2026-07-08 导出的 90D policy。
+- 训练保存配置明确表明：
+  - init_state.z = 0.34
+  - action scale: leg=0.35, wheel=6.0
+  - command range: lin_vel_x in [-1.2, 1.2]
+- 因此 1.0 m/s 在训练命令空间内，不是“超出策略训练范围”的问题。
+
+本轮做过的 MuJoCo 侧调整：
+1. 恢复并验证 90D policy 的观测维度匹配，保留 30xhistory 的观测构造。
+2. 修正 soft-start 时间轴：
+   - 对 pose_hold 路径，locomotion_alpha 不再从 release 前就累计，
+     而是从真正进入 policy 时开始累计。
+3. 为 pose_hold 路径增加 policy dry-run warmup：
+   - 在 tether/release/stand 期间只预热 obs_history 和 last_action，
+     不直接把 policy 动作打到机器人上。
+4. 把 MuJoCo 初始高度重新对齐到训练资产：
+   - MJCF home qpos.z = 0.34
+   - stand_base_height_target = 0.34
+   - tether_height_target = 0.34
+5. 把动作尺度对齐回训练资产：
+   - leg_action_scale = 0.35
+   - wheel_action_scale = 6.0
+6. 把接触摩擦对齐回更接近训练随机范围：
+   - 默认 geom friction 从 1.1 下调到 0.8
+   - 轮子 friction 从 1.3 下调到 0.9
+
+本轮关键定位结果：
+1. pose_hold + 2s stand 是当前最接近“可修 handoff”的候选：
+   - t=4.00s 仍可 base_contact=False, leg_contact=False
+   - 但 pitch 已到约 -28 deg 到 -30 deg，说明接管前姿态仍明显前倾。
+2. 高频日志表明问题不只在 policy 第一拍：
+   - pose_hold 路径下，stand 尾段不会立即接触，但 handoff 时已经带着明显前倾进入 policy。
+3. 更短的 stand（0.0 / 0.5 / 1.0 / 1.5）在 90D policy 下都更差：
+   - 经常更早出现 leg_contact=True 或直接 base_contact=True。
+4. 仅靠 MuJoCo 侧 handoff/soft-start/摩擦微调，目前仍未恢复文档旧基线那种：
+   - cmd_vx=0.0 的 4.5s startup 回归长期稳定
+   - cmd_vx=0.5 的 6s 稳定短跑
+
+当前最重要结论：
+1. 1.0 m/s 目标并不是训练命令空间问题，训练命令范围本身覆盖了它。
+2. 当前更像训练资产和 MuJoCo 资产之间仍存在结构/接触/惯性/驱动方向失配。
+3. 继续只调 MuJoCo 运行期保护，收益已经明显变小，开始接近“资产不完全一致”上限。
+
+高风险失配项（按优先级）：
+1. 轮子接触 mesh 与训练资产真实接触语义不一致。
+2. 左右轮 joint axis / 正方向 / drive direction 仍可能与训练资产存在符号失配。
+3. base 与各 link 的惯量、COM、mesh 碰撞分布与训练 USD 不完全一致。
+4. MuJoCo velocity actuator 对 Hub.* 的动力学等效方式与 Isaac implicit actuator 仍有差别。
+
+当前建议：
+1. 如果继续只调 MuJoCo：
+   - 只围绕 pose_hold + 2s stand + 0.34 + 0.35/6.0 这组候选继续查资产一致性。
+   - 优先检查 wheel axis / contact patch / inertia / COM，而不是继续叠加运行期保护。
+2. 如果 MuJoCo 侧继续调试仍无法把 0.5 甚至 1.0 稳住：
+   - 下一步应转为整理“训练资产配置调整报告”，但不改 IsaacLab 训练代码。
 ```
