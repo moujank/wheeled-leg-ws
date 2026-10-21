@@ -1,0 +1,250 @@
+[
+  {
+    "task": "wheeled_leg_v1",
+    "run": "2026-10-13_12-40-38",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 439.1056883239746,
+    "Train/mean_episode_length_last200": 1839.60080078125,
+    "peak_reward_ma100": 715.1964709472657,
+    "peak_reward_ma100_end_step": 4981
+  },
+  {
+    "task": "wheeled_leg_v1",
+    "run": "2026-10-13_15-19-25",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 89.52832733154297,
+    "Train/mean_episode_length_last200": 2424.661756591797,
+    "peak_reward_ma100": 91.72308540344238,
+    "peak_reward_ma100_end_step": 6543
+  },
+  {
+    "task": "wheeled_leg_v1",
+    "run": "2026-10-17_10-52-09_v1_stable_baseline",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 87.62260486602783,
+    "Train/mean_episode_length_last200": 2434.505750732422,
+    "peak_reward_ma100": 88.97426277160645,
+    "peak_reward_ma100_end_step": 7161
+  },
+  {
+    "task": "wheeled_leg_v1",
+    "run": "2026-10-19_15-21-35_v1_stable_baseline",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 85.95568244934083,
+    "Train/mean_episode_length_last200": 2433.546057739258,
+    "peak_reward_ma100": 87.70579353332519,
+    "peak_reward_ma100_end_step": 5540
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_10-25-46_wheeled_leg_v1",
+    "checkpoints": 2,
+    "first": "model_0.pt",
+    "last": "model_50.pt",
+    "Train/mean_reward_last200": 0.9527810311775251,
+    "Train/mean_episode_length_last200": 160.25059965432408,
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_10-28-15_wheeled_leg_v1",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Train/mean_reward_last200": -3.7838677725730796,
+    "Train/mean_episode_length_last200": 113.35733005328056,
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_10-35-35",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Train/mean_reward_last200": -3.1869765044677827,
+    "Train/mean_episode_length_last200": 103.30980107897804,
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_13-35-58_terrain_transfer_smoke",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_13-58-07_terrain_best_transfer_fix",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_13-58-44_terrain_best_transfer_fix",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-01-16",
+    "checkpoints": 2,
+    "first": "model_0.pt",
+    "last": "model_50.pt",
+    "Train/mean_reward_last200": -0.4946204543645893,
+    "Train/mean_episode_length_last200": 88.56219456877027,
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-10-14_warmstart_alignment_verify",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-13-13_warmstart_named_terms_final",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-17-47",
+    "checkpoints": 10,
+    "first": "model_0.pt",
+    "last": "model_450.pt",
+    "Train/mean_reward_last200": 1.1083914199471474,
+    "Train/mean_episode_length_last200": 112.44729995727539,
+    "Curriculum/terrain_levels_last200": 0.0,
+    "peak_reward_ma100": 1.4766395753622055,
+    "peak_reward_ma100_end_step": 468
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-27-36",
+    "checkpoints": 2,
+    "first": "model_0.pt",
+    "last": "model_50.pt",
+    "Train/mean_reward_last200": -0.32102578532868536,
+    "Train/mean_episode_length_last200": 88.7797519987908,
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-29-52",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Train/mean_reward_last200": 0.1320744187667452,
+    "Train/mean_episode_length_last200": 97.02389319189663,
+    "Curriculum/terrain_levels_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-31-23",
+    "checkpoints": 3,
+    "first": "model_0.pt",
+    "last": "model_100.pt",
+    "Train/mean_reward_last200": 1.177679945594342,
+    "Train/mean_episode_length_last200": 130.81153559684753,
+    "Curriculum/terrain_levels_last200": 0.0,
+    "peak_reward_ma100": 1.34701834872365,
+    "peak_reward_ma100_end_step": 115
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_14-34-14",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 49.60675731658935,
+    "Train/mean_episode_length_last200": 2356.3369079589843,
+    "Curriculum/terrain_levels_last200": 0.38179710388183596,
+    "peak_reward_ma100": 71.47627403259277,
+    "peak_reward_ma100_end_step": 1049
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-17_17-43-03",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 92.0237423324585,
+    "Train/mean_episode_length_last200": 2455.130994873047,
+    "Curriculum/terrain_levels_last200": 4.3835609436035154,
+    "peak_reward_ma100": 93.52653404235839,
+    "peak_reward_ma100_end_step": 7683
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-18_14-31-43",
+    "checkpoints": 1,
+    "first": "model_0.pt",
+    "last": "model_0.pt",
+    "Curriculum/terrain_levels/mean_level_last200": 0.0
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-18_14-57-09",
+    "checkpoints": 35,
+    "first": "model_0.pt",
+    "last": "model_1700.pt",
+    "Train/mean_reward_last200": 8.15450609922409,
+    "Train/mean_episode_length_last200": 332.0362505340576,
+    "Curriculum/terrain_levels/mean_level_last200": 0.0,
+    "peak_reward_ma100": 10.67668170452118,
+    "peak_reward_ma100_end_step": 1713
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-18_15-40-17",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 78.04778263092041,
+    "Train/mean_episode_length_last200": 1823.3230029296874,
+    "Curriculum/terrain_levels/mean_level_last200": 6.9854338836669925,
+    "peak_reward_ma100": 91.64556884765625,
+    "peak_reward_ma100_end_step": 5137
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-19_19-59-28",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 79.71331958770752,
+    "Train/mean_episode_length_last200": 2023.5567468261718,
+    "Curriculum/terrain_levels/mean_level_last200": 6.652730102539063,
+    "peak_reward_ma100": 84.0638591003418,
+    "peak_reward_ma100_end_step": 7086
+  },
+  {
+    "task": "wheeled_leg_terrains",
+    "run": "2026-10-20_09-29-55",
+    "checkpoints": 161,
+    "first": "model_0.pt",
+    "last": "model_7999.pt",
+    "Train/mean_reward_last200": 64.84365697860717,
+    "Train/mean_episode_length_last200": 1646.3535522460938,
+    "Curriculum/terrain_levels/mean_level_last200": 6.741809539794922,
+    "peak_reward_ma100": 87.12367889404297,
+    "peak_reward_ma100_end_step": 2067
+  }
+]

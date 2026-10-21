@@ -28,6 +28,9 @@ parser.add_argument(
     "--agent", type=str, default="rsl_rl_cfg_entry_point", help="Name of the RL agent configuration entry point."
 )
 parser.add_argument("--seed", type=int, default=None, help="Seed used for the environment")
+parser.add_argument("--terrain_level", type=int, default=None, help="Fix the Terrains task to one terrain row (0-9).")
+parser.add_argument("--terrain_speed", type=float, default=None, help="Fix the forward target after ramp-up (.20 < m/s <= .40).")
+parser.add_argument("--max_steps", type=int, default=None, help="Stop evaluation after this many control steps.")
 parser.add_argument(
     "--use_pretrained_checkpoint",
     action="store_true",
@@ -40,6 +43,8 @@ cli_args.add_rsl_rl_args(parser)
 AppLauncher.add_app_launcher_args(parser)
 # parse the arguments
 args_cli, hydra_args = parser.parse_known_args()
+if args_cli.max_steps is not None and args_cli.max_steps <= 0:
+    parser.error("--max_steps must be positive")
 # always enable cameras to record video
 if args_cli.video:
     args_cli.enable_cameras = True
@@ -81,6 +86,7 @@ from isaaclab_tasks.utils import get_checkpoint_path
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import wheeled_leg.tasks  # noqa: F401
+from terrain_evaluation import configure_terrain_evaluation, set_fixed_terrain_level
 
 
 def _resolve_artifact_log_dir(resume_path: str, experiment_log_root: str) -> str:
@@ -133,9 +139,18 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # note: certain randomizations occur in the environment initialization so we set the seed here
     env_cfg.seed = agent_cfg.seed
     env_cfg.sim.device = args_cli.device if args_cli.device is not None else env_cfg.sim.device
+    configure_terrain_evaluation(env_cfg, args_cli.terrain_level, args_cli.terrain_speed)
+    if args_cli.terrain_level is not None or args_cli.terrain_speed is not None:
+        from isaaclab.managers import CurriculumTermCfg
+        from wheeled_leg.tasks.manager_based.wheeled_leg.mdp.curriculums import terrain_levels_forward_traversal
+
+        # Record terminal states before automatic reset, without changing rows.
+        env_cfg.curriculum.terrain_levels = CurriculumTermCfg(
+            func=terrain_levels_forward_traversal, params={"update_levels": False}
+        )
 
     # specify directory for logging experiments
-    log_root_path = os.path.join("logs", "rsl_rl", agent_cfg.experiment_name)
+    log_root_path = os.path.join(Path(__file__).resolve().parents[2], "logs", "rsl_rl", agent_cfg.experiment_name)
     log_root_path = os.path.abspath(log_root_path)
     print(f"[INFO] Loading experiment from directory: {log_root_path}")
     if args_cli.use_pretrained_checkpoint:
@@ -172,6 +187,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # create isaac environment
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
     base_env = env.unwrapped
+    set_fixed_terrain_level(base_env, args_cli.terrain_level)
 
     # convert to single-agent instance if required by the RL algorithm
     if isinstance(env.unwrapped, DirectMARLEnv):
@@ -236,7 +252,10 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     print(f"[INFO]: Loading model checkpoint from: {resume_path}")
     # load previously trained model
-    ppo_runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=None, device=agent_cfg.device)
+    from distillation_runner import DistillationRunner
+
+    runner_class = DistillationRunner if agent_cfg.algorithm.class_name == "Distillation" else OnPolicyRunner
+    ppo_runner = runner_class(env, agent_cfg.to_dict(), log_dir=None, device=agent_cfg.device)
     ppo_runner.load(resume_path)
 
     # obtain the trained policy for inference
@@ -272,7 +291,9 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
                 # agent stepping
                 actions = policy(obs)
                 # env stepping
-                obs, _, _, _ = env.step(actions)
+                obs, _, dones, _ = env.step(actions)
+                if policy_nn.is_recurrent:
+                    policy_nn.reset(dones)
 
             if torque_log_writer is not None:
                 robot = base_env.scene["robot"]
@@ -283,6 +304,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
                     torque_log_file.flush()
 
             timestep += 1
+            if args_cli.max_steps is not None and timestep >= args_cli.max_steps:
+                break
             if args_cli.video:
                 # Exit the play loop after recording one video
                 if timestep == args_cli.video_length:
@@ -293,6 +316,13 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
             if args_cli.real_time and sleep_time > 0:
                 time.sleep(sleep_time)
     finally:
+        if hasattr(base_env, "_forward_terrain_counts"):
+            print("[INFO] Fixed-terrain traversal outcomes (completed attempts only):")
+            names = base_env.scene.terrain.cfg.terrain_generator.sub_terrains
+            for name, counts in zip(names, base_env._forward_terrain_counts.detach().cpu().tolist()):
+                attempts, successes = (int(value) for value in counts[:2])
+                rate = f"{successes / attempts:.1%}" if attempts else "N/A"
+                print(f"  {name}: {successes}/{attempts}, success_rate={rate}")
         if torque_log_file is not None:
             torque_log_file.flush()
             torque_log_file.close()

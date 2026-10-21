@@ -28,6 +28,22 @@ modules/wheeled_train/wheeled_leg/
 
 ## 当前已实现内容
 
+多地形稳定运动基础任务为 `Wheeled-Leg-Terrain-Balance` 和 `Wheeled-Leg-Terrain-Balance-Play`，
+使用 `wheeled_leg_v2` 资产，实验目录为 `logs/rsl_rl/wheeled_leg_terrain_balance/`。
+地形课程、控制方案和训练命令见 [多地形稳定运动说明](TERRAIN_BALANCE.zh.md)。
+左右协调奖励、镜像增强和 checkpoint 迁移说明见 [非 v0 左右协调训练](SYMMETRY.zh.md)。
+
+`wheeled_leg_v2` 的独立训练与 play 任务为 `Wheeled-Leg-v1` 和 `Wheeled-Leg-Play-v1`，
+实验目录为 `logs/rsl_rl/wheeled_leg_v1/`。训练、绘图和最佳策略管理命令见
+[双轮足 v1 使用说明](WHEELED_LEG_V1.zh.md)。
+
+越障与严格跳跃任务使用独立的 `asset/wheeled_leg_v2_agile.py` 资产类，直接定义各自的场景和 MDP，不继承 terrain-balance：
+
+- `Wheeled-Leg-Obstacle-Jump` / `Wheeled-Leg-Obstacle-Jump-Play`：倒金字塔台阶与随机高度方格，任意方式越过 20 cm 障碍，实验目录 `logs/rsl_rl/wheeled_leg_obstacle_jump/`。
+- `Wheeled-Leg-Jump` / `Wheeled-Leg-Jump-Play`：成功率课程：原地跳跃 → 移动跳跃 → 跳过长方体障碍并到达目标，实验目录 `logs/rsl_rl/wheeled_leg_jump/`。
+
+两项任务均支持从现有 v1 / terrain-balance 策略通过 `--init_checkpoint` 初始化新实验，支持奖励绘图、回放力矩记录和最佳策略管理。配置、迁移训练、回放与分析命令见 [越障与跳跃说明](OBSTACLE_JUMP.zh.md)。
+
 ### 任务包
 
 主任务包位于：
@@ -78,6 +94,12 @@ python -m pip install -e source/wheeled_leg
 
 当前 `source/wheeled_leg/wheeled_leg/tasks/manager_based/wheeled_leg/__init__.py` 中实际注册了：
 
+- `Wheeled-Leg-Terrain-Balance`
+- `Wheeled-Leg-Terrain-Balance-Play`
+- `Wheeled-Leg-Obstacle-Jump`
+- `Wheeled-Leg-Obstacle-Jump-Play`
+- `Wheeled-Leg-Jump`
+- `Wheeled-Leg-Jump-Play`
 - `Wheeled-Base-Locked-simple`
 - `Wheeled-Base-Locked-simple-Play`
 - `Wheeled-Base-Locked-Curriculum`

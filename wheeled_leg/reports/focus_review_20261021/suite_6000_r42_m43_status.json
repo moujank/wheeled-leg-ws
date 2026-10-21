@@ -1,0 +1,83 @@
+[
+  {
+    "name": "focus6000_row4_reset42_map43",
+    "returncode": 0,
+    "valid": true,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-21_11-14-05_low_speed_focus/model_6000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/focus_review_20261021/focus6000_row4_reset42_map43.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "4",
+      "--speed",
+      ".25",
+      "--num_envs",
+      "192",
+      "--seed",
+      "42",
+      "--terrain-seed",
+      "43",
+      "--preserve-count"
+    ]
+  },
+  {
+    "name": "focus6000_row7_reset42_map43",
+    "returncode": 0,
+    "valid": true,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-21_11-14-05_low_speed_focus/model_6000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/focus_review_20261021/focus6000_row7_reset42_map43.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "7",
+      "--speed",
+      ".25",
+      "--num_envs",
+      "192",
+      "--seed",
+      "42",
+      "--terrain-seed",
+      "43",
+      "--preserve-count"
+    ]
+  },
+  {
+    "name": "focus6000_row9_reset42_map43",
+    "returncode": 0,
+    "valid": true,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-21_11-14-05_low_speed_focus/model_6000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/focus_review_20261021/focus6000_row9_reset42_map43.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "9",
+      "--speed",
+      ".25",
+      "--num_envs",
+      "192",
+      "--seed",
+      "42",
+      "--terrain-seed",
+      "43",
+      "--preserve-count"
+    ]
+  }
+]

@@ -34,7 +34,9 @@
 
     --tag
         要读取并绘图的 TensorBoard 标量标签。
-        默认是 Train/mean_reward。
+        默认优先读取 Train/mean_reward。新版 RSL-RL 通常只记录
+        Episode_Reward/*，此时脚本会自动把所有 Episode_Reward 项按训练
+        step 相加，生成等价的 Episode_Reward/total 曲线。
         如果你想画别的指标，可以先用 --list-tags 查看可选标签。
 
     --smoothing
@@ -73,6 +75,7 @@ from tensorboard.backend.event_processing import event_accumulator
 TRAIN_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_LOG_ROOT = TRAIN_ROOT / "logs" / "rsl_rl"
 DEFAULT_TAG = "Train/mean_reward"
+DERIVED_TOTAL_TAG = "Episode_Reward/total"
 
 
 @dataclass(frozen=True)
@@ -90,7 +93,7 @@ def parse_args() -> argparse.Namespace:
             "By default, the script finds the latest run under the given task."
         )
     )
-    parser.add_argument("--task", type=str, help="Task / experiment directory name under logs/rsl_rl.")
+    parser.add_argument("--task", type=str, help="Experiment directory name, or a supported wheeled-leg/arm Gym ID.")
     parser.add_argument("--run-dir", type=Path, help="Explicit run directory containing TensorBoard event files.")
     parser.add_argument(
         "--log-root",
@@ -140,6 +143,15 @@ def resolve_run_dir(log_root: Path, task: str | None, run_dir: Path | None) -> P
     if not task:
         raise ValueError("Either --task or --run-dir must be provided.")
 
+    # Train and PLAY IDs share an experiment; custom experiment names still work.
+    task = {
+        "Wheeled-Arm-v1": "wheeled_arm_v1",
+        "Wheeled-Arm-Play-v1": "wheeled_arm_v1",
+        "Wheeled-Leg-Obstacle-Jump": "wheeled_leg_obstacle_jump",
+        "Wheeled-Leg-Obstacle-Jump-Play": "wheeled_leg_obstacle_jump",
+        "Wheeled-Leg-Jump": "wheeled_leg_jump",
+        "Wheeled-Leg-Jump-Play": "wheeled_leg_jump",
+    }.get(task, task)
     task_dir = (log_root / task).resolve()
     if not task_dir.is_dir():
         raise FileNotFoundError(f"Task log directory does not exist: {task_dir}")
@@ -201,6 +213,51 @@ def load_scalar_series(accumulator: event_accumulator.EventAccumulator, tag: str
         values=[float(event.value) for event in events],
         wall_times=[float(event.wall_time) for event in events],
     )
+
+
+def aggregate_episode_rewards(accumulator: event_accumulator.EventAccumulator) -> ScalarSeries:
+    """Build a total episode reward from RSL-RL's per-term scalar tags.
+
+    Current RSL-RL writes ``Episode_Reward/<term>`` values instead of the old
+    ``Train/mean_reward`` scalar.  All terms are emitted at the same training
+    iterations, but using the intersection of steps also makes resumed runs
+    safe when one term starts a little later than the others.
+    """
+    reward_tags = sorted(tag for tag in available_scalar_tags(accumulator) if tag.startswith("Episode_Reward/"))
+    if not reward_tags:
+        raise KeyError(
+            f"Scalar tag '{DEFAULT_TAG}' not found and no Episode_Reward/* tags are available. "
+            f"Available scalar tags: {', '.join(available_scalar_tags(accumulator)) or '(none)'}"
+        )
+
+    series = [load_scalar_series(accumulator, tag) for tag in reward_tags]
+    by_step = [{step: value for step, value in zip(item.steps, item.values, strict=True)} for item in series]
+    common_steps = set(by_step[0])
+    for values in by_step[1:]:
+        common_steps.intersection_update(values)
+    steps = sorted(common_steps)
+    if not steps:
+        raise ValueError("Episode_Reward/* tags do not contain a common training step.")
+    return ScalarSeries(
+        tag=DERIVED_TOTAL_TAG,
+        steps=steps,
+        values=[sum(values[step] for values in by_step) for step in steps],
+        wall_times=[max(item.wall_times[item.steps.index(step)] for item in series) for step in steps],
+    )
+
+
+def load_requested_series(accumulator: event_accumulator.EventAccumulator, tag: str) -> ScalarSeries:
+    """Load an explicit tag, or transparently derive total reward for old defaults."""
+    try:
+        return load_scalar_series(accumulator, tag)
+    except KeyError:
+        if tag not in (DEFAULT_TAG, DERIVED_TOTAL_TAG):
+            raise
+        print(
+            f"[INFO] Scalar tag '{tag}' is absent; summing Episode_Reward/* into "
+            f"'{DERIVED_TOTAL_TAG}'."
+        )
+        return aggregate_episode_rewards(accumulator)
 
 
 def moving_average(values: list[float], window: int) -> list[float]:
@@ -300,10 +357,12 @@ def main() -> int:
     if args.list_tags:
         for tag in available_scalar_tags(accumulator):
             print(tag)
+        if any(tag.startswith("Episode_Reward/") for tag in available_scalar_tags(accumulator)):
+            print(DERIVED_TOTAL_TAG + " (derived from Episode_Reward/*)")
         return 0
 
     try:
-        series = load_scalar_series(accumulator, args.tag)
+        series = load_requested_series(accumulator, args.tag)
         selected = [
             index for index, step in enumerate(series.steps)
             if step >= args.start_step and (args.end_step is None or step <= args.end_step)

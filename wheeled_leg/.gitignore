@@ -66,6 +66,10 @@ datasets
 
 # Tests
 tests/
+!tests/
+tests/*
+!tests/test_obstacle_jump.py
+!tests/test_wheeled_arm_v1.py
 
 # Docker history
 .isaac-lab-docker-history

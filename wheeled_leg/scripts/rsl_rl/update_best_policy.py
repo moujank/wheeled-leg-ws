@@ -16,6 +16,12 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+TASK_DEFAULTS = {
+    "wheeled_arm_v1": ("Wheeled-Arm-v1", "Wheeled-Arm-Play-v1"),
+    "wheeled_leg_obstacle_jump": ("Wheeled-Leg-Obstacle-Jump", "Wheeled-Leg-Obstacle-Jump-Play"),
+    "wheeled_leg_jump": ("Wheeled-Leg-Jump", "Wheeled-Leg-Jump-Play"),
+}
+
 
 def _relative_symlink_target(source: Path, link_path: Path) -> str:
     return os.path.relpath(source.resolve(), start=link_path.parent.resolve())
@@ -94,10 +100,13 @@ def main() -> None:
     parser.add_argument("--comment", default=None, help="Short reason for selecting this checkpoint.")
     parser.add_argument(
         "--logs-root",
-        default="logs/rsl_rl",
-        help="RSL-RL logs root relative to the current project directory.",
+        default=str(Path(__file__).resolve().parents[2] / "logs" / "rsl_rl"),
+        help="RSL-RL logs root (defaults to the training project, independent of the working directory).",
     )
     args = parser.parse_args()
+    default_task, default_play_task = TASK_DEFAULTS.get(args.experiment, (None, None))
+    args.task = args.task or default_task
+    args.play_task = args.play_task or default_play_task
 
     logs_root = Path(args.logs_root)
     experiment_dir = logs_root / args.experiment

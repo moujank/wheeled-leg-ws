@@ -50,8 +50,24 @@ python3 tools/plot_mean_reward.py --run-dir /path/to/run \
   --output /path/to/reward.png --csv-output /path/to/reward.csv
 ```
 
+当前 RSL-RL 日志一般没有 `Train/mean_reward`，而是分别记录
+`Episode_Reward/<term>`。因此不指定 `--tag` 时，工具会自动把所有
+`Episode_Reward/*` 在相同训练 step 上相加，并绘制派生的
+`Episode_Reward/total`；仍可用 `--tag Episode_Reward/mirrored_legs` 绘制单项奖励。
+
 `--task` 使用实验目录名，自动按目录名选择最新且含 TensorBoard 事件文件的 run，跳过 `best/` 和非事件目录。`--run-dir` 可精确选择某次训练，并优先于 `--task`。
 
 工具加载所选目录的全部事件文件，沿用 TensorBoard 的恢复训练清理规则；剩余重复 step 保留 wall time 最新的记录，并按 step 排序。支持任意 scalar tag、标签列表、迭代闭区间筛选、因果滑动平均和图上 Top-5 峰值标注。CSV 导出筛选后的 step、wall time、tag、原始值和平滑值。
 
 默认图像写入 `<run>/plots/mean_reward.png`，可用 `--output-name` 改文件名，或用 `--output` 指定完整路径。平滑在所选区间内计算。完整参数见两个工具的 `--help`。
+
+20 cm 越障与严格跳跃分别使用 `logs/rsl_rl/wheeled_leg_obstacle_jump/` 和 `logs/rsl_rl/wheeled_leg_jump/`。奖励工具的 `--task` 支持实验目录名，也支持这两个任务的训练/PLAY Gym ID；训练与回放的 `--task` 填 Gym 注册名称。完整命令见 [越障与跳跃说明](../OBSTACLE_JUMP.zh.md)：
+
+```bash
+python3 tools/plot_mean_reward.py --task wheeled_leg_obstacle_jump --smoothing 20
+python3 tools/plot_mean_reward.py --task wheeled_leg_jump --smoothing 20
+python3 tools/plot_joint_torque.py \
+  "logs/rsl_rl/wheeled_leg_obstacle_jump/<run>/play_joint_torque/<timestamp>/joint_torque.csv"
+```
+
+严格跳跃可单独分析 `Episode_Reward/jump_flight`、`Episode_Reward/jump_landing` 和 `Episode_Reward/goal_success`。课程和实际成功统计通过 `--list-tags` 查询，再传入 `--tag` 绘图。`update_best_policy.py` 对这两个默认实验名自动填入训练/PLAY ID；完整命令见 [越障与跳跃说明](../OBSTACLE_JUMP.zh.md)。

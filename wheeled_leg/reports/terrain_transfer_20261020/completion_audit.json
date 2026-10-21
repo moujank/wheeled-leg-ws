@@ -1,0 +1,15 @@
+{
+  "previous_goal_turn_classification": "progress",
+  "requirements": {
+    "short_transfer_capability_experiments": "7 actual simulator probes, completed first episodes and load action equivalence verified",
+    "configuration_comparison": "REPORT.zh.md and historical_environment_diff.json; actor/critic dimensions, action clips, commands, normalization and actuator boundary documented",
+    "do_not_edit_v1": "no v1 writes in this work; external modification separately documented, current SHA256 unchanged from recorded value",
+    "simplify_terrain_to_low_speed_traversal": "current terrain config exact .25m/s, .20m/s2, speed curriculum disabled, full terrain promotion; smoke runtime config verified",
+    "training_flow": "TERRAINS_TRAINING.zh.md with focus/retention, initialization command, fixed evaluations and deployment requirements",
+    "historical_checkpoint_detail": "24 experiments, 1512 existing files; inventory validated against all per-run counts; historical_checkpoints.zh.md adds readable index",
+    "selected_checkpoint_executable": "12 fixed-row probes and 2 PPO updates; source SHA256, finite updated network and preserved normalization independently rechecked"
+  },
+  "all_requirements_verified": true,
+  "full_training_required_by_objective": false,
+  "full_training_completed": false
+}

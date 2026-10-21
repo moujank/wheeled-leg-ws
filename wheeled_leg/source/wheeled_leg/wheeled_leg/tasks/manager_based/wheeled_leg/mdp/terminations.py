@@ -29,3 +29,16 @@ if TYPE_CHECKING:
 # - recovery timeout after fallen initialization
 # - obstacle traversal failure
 
+
+def terrain_patch_boundary(
+    env: ManagerBasedRLEnv,
+    margin: float = 0.25,
+    asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+) -> torch.Tensor:
+    """Truncate before entering a neighboring patch with a different terrain or level."""
+    asset = env.scene[asset_cfg.name]
+    patch_size = env.scene.terrain.cfg.terrain_generator.size
+    half_size = torch.tensor(patch_size, device=env.device) * 0.5 - margin
+    offset = asset.data.root_pos_w[:, :2] - env.scene.env_origins[:, :2]
+    return torch.any(torch.abs(offset) > half_size, dim=1)
+
