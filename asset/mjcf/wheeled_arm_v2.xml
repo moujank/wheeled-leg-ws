@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<mujoco model="wheeled_arm_v2">
+  <!-- Nominal v2_wheeled_arm_v1 PLAY asset: WHEELED_ARM_CFG + ActionsCfg.
+       Training mass/material/reset randomization is not baked into this model.
+       Original STL collision meshes are retained; robot self-collisions are disabled.
+       USD mass/COM/inertia and rest frames were checked; see the two inertia
+       exceptions on Arm_Y3 and Arm_P2 below. -->
+  <compiler angle="radian" meshdir="../wheeled_arm_v2/meshes" autolimits="true" eulerseq="xyz"/>
+  <option timestep="0.002" iterations="50" solver="PGS" gravity="0 0 -9.81" integrator="implicitfast">
+    <flag frictionloss="enable"/>
+  </option>
+  <visual>
+    <quality shadowsize="4096"/>
+    <map znear="0.05"/>
+  </visual>
+  <default>
+    <!-- USD joint armature/friction are zero. Drive damping belongs in the
+         actuator so the complete PD torque is saturated and reported by actuatorfrc. -->
+    <joint damping="0" frictionloss="0" armature="0"/>
+    <!-- Visual meshes override collision filtering. Robot collision meshes use
+         contype=2/conaffinity=1; the ground uses the inverse pair. -->
+    <!-- Nominal PLAY scene friction is 1.0. No additional rolling/torsional friction.
+         solref is a MuJoCo approximation, not an equivalent PhysX setting;
+         0.004 s is the refsafe minimum at dt=0.002. -->
+    <geom condim="3" contype="2" conaffinity="1" solref="0.004 2" friction="1 0 0"/>
+    <equality solref="0.004 2"/>
+    <general ctrllimited="true" forcelimited="true" gear="1"/>
+  </default>
+  <statistic meansize="0.164352" extent="1.1084" center="0 0 0"/>
+  <asset>
+    <mesh name="base_link" file="base_link.STL"/>
+    <mesh name="HipL" file="HipL.STL"/>
+    <mesh name="KneeL" file="KneeL.STL"/>
+    <mesh name="HubL" file="HubL.STL"/>
+    <mesh name="HipR" file="HipR.STL"/>
+    <mesh name="KneeR" file="KneeR.STL"/>
+    <mesh name="HubR" file="HubR.STL"/>
+    <mesh name="Arm_R" file="Arm_R.STL"/>
+    <mesh name="Arm_Y1" file="Arm_Y1.STL"/>
+    <mesh name="Arm_Y2" file="Arm_Y2.STL"/>
+    <mesh name="Arm_P1" file="Arm_P1.STL"/>
+    <mesh name="Arm_Y3" file="Arm_Y3.STL"/>
+    <mesh name="Arm_P2" file="Arm_P2.STL"/>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <texture name="texplane2" type="2d" builtin="checker" rgb1="1 0.3137 0.1843" rgb2="0.0 0.30196 0.38039" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <material name="matplane" reflectance="0." texture="texplane" texrepeat="1 1" texuniform="true"/>
+    <material name="matplane2" reflectance="0.1" texture="texplane2" texrepeat="1 1" texuniform="true"/>
+    <material name="obstacle" rgba="0.9 0.6 0.2 1"/>
+    <material name="visualgeom" rgba="0.5 0.9 0.2 1"/>
+    <material name="visualgeom2" rgba="0.5 0.9 0.2 1"/>
+  </asset>
+  <worldbody>
+    <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
+    <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+    <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="3" contype="1" conaffinity="2"/>
+    <body name="base_link" pos="0 0 0.58">
+      <inertial pos="-0.015398 0.0002546 0.065682" mass="6.382" fullinertia="0.562 0.583 0.134 0.019 0.12 -0.071"/>
+      <freejoint name="floating_base_joint"/>
+      <site name="imu" pos="0 0 0" size="0.01"/>
+      <site name="base_com" pos="-0.015398 0.0002546 0.065682" size="0.008"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="base_link"/>
+      <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="base_link"/>
+      <body name="HipL" pos="-0.000233493 0.110014 -0.0172088" quat="0.5 0.5 0.5 -0.5">
+        <inertial pos="0.094322 0 -0.015998" quat="0.855249 0.489805 -0.144393 0.0882685" mass="3.721" diaginertia="0.287509 0.266497 0.0269935"/>
+        <joint name="HipL" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-120 120"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HipL"/>
+        <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HipL"/>
+        <body name="KneeL" pos="0.282 0 -0.0467" quat="0 1 0 0">
+          <inertial pos="0.10421 0 0.0277" quat="0.437135 0.306137 -0.558816 0.634758" mass="0.7847" diaginertia="0.175291 0.174605 0.00110417"/>
+          <joint name="KneeL" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-120 120"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="KneeL"/>
+          <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="KneeL"/>
+          <body name="HubL" pos="0.269979 0 0.052" quat="0 -1 0 0">
+            <inertial pos="1.3804e-05 -1.5091e-06 -0.02755" quat="0.51264 0.441377 -0.522725 0.518792" mass="1.1563" diaginertia="0.442815 0.440648 0.00253725"/>
+            <joint name="HubL" pos="0 0 0" axis="0 0 -1" actuatorfrcrange="-17 17"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HubL"/>
+            <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HubL"/>
+          </body>
+        </body>
+      </body>
+      <body name="HipR" pos="-0.00023349 -0.10999 -0.017209" quat="0.499998 -0.5 0.5 0.500002">
+        <inertial pos="0.094322 0 -0.015998" quat="0.971555 0.229058 -0.0574499 0.0176716" mass="3.721" diaginertia="0.838537 0.783402 0.0610613"/>
+        <joint name="HipR" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-120 120"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HipR"/>
+        <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HipR"/>
+        <body name="KneeR" pos="0.282 0 -0.0467" quat="0 1 0 0">
+          <inertial pos="0.10421 0 0.0277" quat="0.92326 0.382427 -0.0338154 -0.0140068" mass="0.7847" diaginertia="0.334763 0.331 0.00523653"/>
+          <joint name="KneeR" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-120 120"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="KneeR"/>
+          <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="KneeR"/>
+          <body name="HubR" pos="0.269979 0 0.052" quat="0 -1 0 0">
+            <inertial pos="1.3804e-05 -1.5094e-06 -0.02755" quat="0.580785 0.246191 -0.345827 0.694609" mass="1.1563" diaginertia="0.744011 0.742574 0.00341512"/>
+            <joint name="HubR" pos="0 0 0" axis="0 0 -1" actuatorfrcrange="-17 17"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HubR"/>
+            <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HubR"/>
+          </body>
+        </body>
+      </body>
+      <body name="Arm_R" pos="-0.012349 1.4546e-05 0.25079">
+        <inertial pos="-0.015398 0.0002546 0.065682" quat="0.846688 -0.129372 -0.0695501 0.511415" mass="0.49" diaginertia="0.594211 0.593132 0.0916573"/>
+        <joint name="Arm_R" pos="0 0 0" axis="0 0 1" range="-3.14 3.14" actuatorfrcrange="-27 27"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="Arm_R"/>
+        <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Arm_R"/>
+        <body name="Arm_Y1" pos="0.0071154 0.0327497 0.037" quat="0.5 -0.5 -0.5 -0.5">
+          <inertial pos="0.19076 -0.011655 -0.032116" quat="0.481321 0.873939 0.00631014 0.0672382" mass="0.958" diaginertia="0.260976 0.26019 0.000834009"/>
+          <joint name="Arm_Y1" pos="0 0 0" axis="0 0 1" range="-1.57 1.57" actuatorfrcrange="-27 27"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="Arm_Y1"/>
+          <geom type="mesh" rgba="1 1 1 1" mesh="Arm_Y1"/>
+          <body name="Arm_Y2" pos="0.28503 0 0" quat="0.707107 0 0 0.707107">
+            <inertial pos="0.16155 -0.021893 -0.032752" quat="0.362942 0.451819 -0.717979 0.385537" mass="0.738" diaginertia="0.289825 0.289605 0.000569847"/>
+            <joint name="Arm_Y2" pos="0 0 0" axis="0 0 1" range="-1.57 1.57" actuatorfrcrange="-27 27"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="Arm_Y2"/>
+            <geom type="mesh" rgba="1 1 1 1" mesh="Arm_Y2"/>
+            <body name="Arm_P1" pos="0.214752 -0.021984 -0.03275" quat="0.5 -0.5 0.5 -0.5">
+              <inertial pos="0.00016825 -0.0028362 0.031075" quat="0.535891 0.813035 -0.224879 -0.0349878" mass="0.632" diaginertia="0.263355 0.262957 0.000687454"/>
+              <joint name="Arm_P1" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57" actuatorfrcrange="-27 27"/>
+              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="Arm_P1"/>
+              <geom type="mesh" rgba="1 1 1 1" mesh="Arm_P1"/>
+              <body name="Arm_Y3" pos="0 0.0225 0.036" quat="0.5 -0.5 -0.5 -0.5">
+                <!-- Training USD has a negative principal inertia (-0.0002319846).
+                     Retain the existing physical repair: I_MJCF = I_USD + 0.002*Identity
+                     (kg*m^2, within export rounding). Exact inertia alignment requires
+                     correcting the training asset and checking PhysX runtime inertia. -->
+                <inertial pos="0.057026 1.4351e-05 -0.020402" quat="0.538527 0.735051 -0.409955 0.0403199" mass="0.637" diaginertia="0.287075 0.286157 0.00176802"/>
+                <joint name="Arm_Y3" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57" actuatorfrcrange="-27 27"/>
+                <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="Arm_Y3"/>
+                <geom type="mesh" rgba="1 1 1 1" mesh="Arm_Y3"/>
+                <body name="Arm_P2" pos="0.091 0 -0.0239165" quat="0.5 0.5 0.5 0.5">
+                  <!-- Training USD has a negative principal inertia (-0.0001007608).
+                       Retain the existing repair: I_MJCF = I_USD + 0.001*Identity (kg*m^2). -->
+                  <inertial pos="-8.6993e-05 -0.00012256 0.051431" quat="0.509059 0.823675 -0.131346 -0.212523" mass="0.5" diaginertia="0.249101 0.249 0.000899234"/>
+                  <joint name="Arm_P2" pos="0 0 0" axis="0 0 -1" range="-1.57 1.57" actuatorfrcrange="-27 27"/>
+                  <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="1 1 1 1" mesh="Arm_P2"/>
+                  <geom type="mesh" rgba="1 1 1 1" mesh="Arm_P2"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <!-- Control order: HipL, HipR, KneeL, KneeR, HubL, HubR,
+       Arm_R, Arm_Y1, Arm_Y2, Arm_P1, Arm_Y3, Arm_P2.
+       These are final physical targets, NOT raw policy actions:
+       legs: q_default + 0.25*action; wheels: 4*action; arm: q_folded + 0.15*action;
+       then clip to the ctrlrange below. Hold targets for 4 physics steps (0.008 s).
+       PhysX actual velocity limits (legs/wheels: 2*pi, arm: 2 rad/s) have no
+       equivalent MJCF joint-speed constraint; ctrlrange is NOT a speed limit
+       for position actuators. soft_joint_pos_limit_factor=0.9 is a reward
+       threshold, not a reduction of the physical joint ranges.
+       PGS iterations and solref do not map directly to PhysX solver settings. -->
+  <actuator>
+    <position name="HipL_pos" joint="HipL" kp="20" kv="1.5" ctrlrange="0.3 1.0" forcerange="-120 120"/>
+    <position name="HipR_pos" joint="HipR" kp="20" kv="1.5" ctrlrange="-1.0 -0.3" forcerange="-120 120"/>
+    <position name="KneeL_pos" joint="KneeL" kp="30" kv="1.5" ctrlrange="0.9 1.7" forcerange="-120 120"/>
+    <position name="KneeR_pos" joint="KneeR" kp="30" kv="1.5" ctrlrange="-1.7 -0.9" forcerange="-120 120"/>
+    <velocity name="HubL_vel" joint="HubL" kv="1.5" ctrlrange="-6 6" forcerange="-17 17"/>
+    <velocity name="HubR_vel" joint="HubR" kv="1.5" ctrlrange="-6 6" forcerange="-17 17"/>
+    <position name="Arm_R_pos" joint="Arm_R" kp="40" kv="6" ctrlrange="-2.8 2.8" forcerange="-27 27"/>
+    <position name="Arm_Y1_pos" joint="Arm_Y1" kp="40" kv="6" ctrlrange="-1.4 1.4" forcerange="-27 27"/>
+    <position name="Arm_Y2_pos" joint="Arm_Y2" kp="40" kv="6" ctrlrange="-1.4 1.4" forcerange="-27 27"/>
+    <position name="Arm_P1_pos" joint="Arm_P1" kp="40" kv="6" ctrlrange="-1.4 1.4" forcerange="-27 27"/>
+    <position name="Arm_Y3_pos" joint="Arm_Y3" kp="40" kv="6" ctrlrange="-1.4 1.4" forcerange="-27 27"/>
+    <position name="Arm_P2_pos" joint="Arm_P2" kp="40" kv="6" ctrlrange="-1.4 1.4" forcerange="-27 27"/>
+  </actuator>
+  <!-- Keep the reference leg sensor order; append arm position, velocity and actuator torque sensors. -->
+  <sensor>
+    <gyro name="imu_gyro" site="imu"/>
+    <velocimeter name="imu_linear_velocity" site="imu"/>
+    <accelerometer name="imu_linear_acceleration" site="imu"/>
+    <framequat name="imu_orientation" objtype="site" objname="imu"/>
+    <framepos name="imu_position" objtype="site" objname="imu"/>
+    <framezaxis name="imu_upvector" objtype="site" objname="imu"/>
+    <framelinvel name="imu_global_linvel" objtype="site" objname="imu"/>
+    <frameangvel name="imu_global_angvel" objtype="site" objname="imu"/>
+    <jointpos name="HipL_pos" joint="HipL"/>
+    <jointvel name="HipL_vel" joint="HipL"/>
+    <jointpos name="HipR_pos" joint="HipR"/>
+    <jointvel name="HipR_vel" joint="HipR"/>
+    <jointpos name="KneeL_pos" joint="KneeL"/>
+    <jointvel name="KneeL_vel" joint="KneeL"/>
+    <jointpos name="KneeR_pos" joint="KneeR"/>
+    <jointvel name="KneeR_vel" joint="KneeR"/>
+    <jointpos name="HubL_pos" joint="HubL"/>
+    <jointvel name="HubL_vel" joint="HubL"/>
+    <jointpos name="HubR_pos" joint="HubR"/>
+    <jointvel name="HubR_vel" joint="HubR"/>
+    <actuatorfrc name="HipL_torque" actuator="HipL_pos"/>
+    <actuatorfrc name="HipR_torque" actuator="HipR_pos"/>
+    <actuatorfrc name="KneeL_torque" actuator="KneeL_pos"/>
+    <actuatorfrc name="KneeR_torque" actuator="KneeR_pos"/>
+    <actuatorfrc name="HubL_torque" actuator="HubL_vel"/>
+    <actuatorfrc name="HubR_torque" actuator="HubR_vel"/>
+    <jointpos name="Arm_R_pos" joint="Arm_R"/>
+    <jointvel name="Arm_R_vel" joint="Arm_R"/>
+    <jointpos name="Arm_Y1_pos" joint="Arm_Y1"/>
+    <jointvel name="Arm_Y1_vel" joint="Arm_Y1"/>
+    <jointpos name="Arm_Y2_pos" joint="Arm_Y2"/>
+    <jointvel name="Arm_Y2_vel" joint="Arm_Y2"/>
+    <jointpos name="Arm_P1_pos" joint="Arm_P1"/>
+    <jointvel name="Arm_P1_vel" joint="Arm_P1"/>
+    <jointpos name="Arm_Y3_pos" joint="Arm_Y3"/>
+    <jointvel name="Arm_Y3_vel" joint="Arm_Y3"/>
+    <jointpos name="Arm_P2_pos" joint="Arm_P2"/>
+    <jointvel name="Arm_P2_vel" joint="Arm_P2"/>
+    <actuatorfrc name="Arm_R_torque" actuator="Arm_R_pos"/>
+    <actuatorfrc name="Arm_Y1_torque" actuator="Arm_Y1_pos"/>
+    <actuatorfrc name="Arm_Y2_torque" actuator="Arm_Y2_pos"/>
+    <actuatorfrc name="Arm_P1_torque" actuator="Arm_P1_pos"/>
+    <actuatorfrc name="Arm_Y3_torque" actuator="Arm_Y3_pos"/>
+    <actuatorfrc name="Arm_P2_torque" actuator="Arm_P2_pos"/>
+    <!-- Isaac base_lin_vel uses base-link COM velocity in the base frame. -->
+    <velocimeter name="base_com_linvel" site="base_com"/>
+  </sensor>
+  <keyframe>
+    <!-- Explicitly reset to home before stepping. qpos follows the body tree;
+         ctrl follows actuator order. Zero raw actions hold the folded reference. -->
+    <key name="home" qpos="0 0 0.58 1 0 0 0 0.65 1.3 0 -0.65 -1.3 0 0 -0.65 1.2 0 0 0"
+         ctrl="0.65 -0.65 1.3 -1.3 0 0 0 -0.65 1.2 0 0 0"/>
+  </keyframe>
+</mujoco>

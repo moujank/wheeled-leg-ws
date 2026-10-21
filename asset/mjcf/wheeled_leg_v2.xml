@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<mujoco model="wheeled_leg_v2">
+  <!-- Nominal v2_wheeled_leg_v1 PLAY model: WHEELED_CFG + task overrides.
+       Mass/COM/inertia and joint frames checked against the training USD.
+       Training startup mass/material randomization is not baked into this asset. -->
+  <compiler angle="radian" meshdir="../wheeled_leg_v2/meshes" autolimits="true" eulerseq="xyz"/>
+  <option timestep="0.002" iterations="50" solver="PGS" gravity="0 0 -9.81" integrator="implicitfast">
+    <flag frictionloss="enable"/>
+  </option>
+  <visual>
+    <quality shadowsize="4096"/>
+    <map znear="0.05"/>
+  </visual>
+  <default>
+    <!-- USD armature and joint friction are zero. Drive damping belongs in the
+         actuators so it is included in both torque saturation and actuatorfrc. -->
+    <joint damping="0" frictionloss="0" armature="0"/>
+    <!-- Visual meshes override collision filtering. Robot collision meshes use
+         contype=2/conaffinity=1; the ground uses the inverse pair. -->
+    <!-- Nominal PLAY uses the scene material: static/dynamic friction 1.0.
+         MuJoCo uses one sliding coefficient; no added torsional/rolling friction.
+         solref is a MuJoCo contact approximation, not a PhysX parameter conversion.
+         0.004 s explicitly matches the previous refsafe minimum at dt=0.002. -->
+    <geom condim="3" contype="2" conaffinity="1" solref="0.004 2" friction="1 0 0"/>
+    <equality solref="0.004 2"/>
+    <general ctrllimited="true" forcelimited="true" gear="1"/>
+  </default>
+  <statistic meansize="0.164352" extent="1.1084" center="0 0 0"/>
+  <asset>
+    <mesh name="base_link" file="base_link.STL"/>
+    <mesh name="HipL" file="HipL.STL"/>
+    <mesh name="KneeL" file="KneeL.STL"/>
+    <mesh name="HubL" file="HubL.STL"/>
+    <mesh name="HipR" file="HipR.STL"/>
+    <mesh name="KneeR" file="KneeR.STL"/>
+    <mesh name="HubR" file="HubR.STL"/>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 0.15 0.2" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <texture name="texplane2" type="2d" builtin="checker" rgb1="1 0.3137 0.1843" rgb2="0.0 0.30196 0.38039" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <material name="matplane" reflectance="0." texture="texplane" texrepeat="1 1" texuniform="true"/>
+    <material name="matplane2" reflectance="0.1" texture="texplane2" texrepeat="1 1" texuniform="true"/>
+    <material name="obstacle" rgba="0.9 0.6 0.2 1"/>
+    <material name="visualgeom" rgba="0.5 0.9 0.2 1"/>
+    <material name="visualgeom2" rgba="0.5 0.9 0.2 1"/>
+  </asset>
+  <worldbody>
+    <light directional="true" diffuse=".4 .4 .4" specular="0.1 0.1 0.1" pos="0 0 5.0" dir="0 0 -1" castshadow="false"/>
+    <light directional="true" diffuse=".6 .6 .6" specular="0.2 0.2 0.2" pos="0 0 4" dir="0 0 -1"/>
+    <geom name="ground" type="plane" size="0 0 1" pos="0.001 0 0" quat="1 0 0 0" material="matplane" condim="3" contype="1" conaffinity="2"/>
+    <body name="base_link" pos="0 0 0.58">
+      <inertial pos="-0.015398 0.0002546 0.065682" mass="10.337" fullinertia="1.259 1.478 0.26 0 -0.368 -0.002"/>
+      <freejoint name="floating_base_joint"/>
+      <site name="imu" pos="0 0 0" size="0.01"/>
+      <site name="base_com" pos="-0.015398 0.0002546 0.065682" size="0.008"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="base_link"/>
+      <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="base_link"/>
+      <body name="HipL" pos="-0.00023349 0.11001 -0.017209" quat="0.499998 0.5 0.5 -0.500002">
+        <inertial pos="0.094322 0 -0.015998" quat="0.855249 0.489805 -0.144393 0.0882685" mass="3.721" diaginertia="0.287509 0.266497 0.0269935"/>
+        <joint name="HipL" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-150 150"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HipL"/>
+        <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HipL"/>
+        <body name="KneeL" pos="0.282 0 -0.0467" quat="-3.67321e-06 1 0 0">
+          <inertial pos="0.10421 0 0.0277" quat="0.437135 0.306137 -0.558816 0.634758" mass="0.7847" diaginertia="0.175291 0.174605 0.00110417"/>
+          <joint name="KneeL" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-150 150"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="KneeL"/>
+          <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="KneeL"/>
+          <body name="HubL" pos="0.26998 0 0.052" quat="-3.67321e-06 -1 0 0">
+            <inertial pos="1.3804e-05 -1.5091e-06 -0.02755" quat="0.51264 0.441377 -0.522725 0.518792" mass="1.1563" diaginertia="0.442815 0.440648 0.00253725"/>
+            <joint name="HubL" pos="0 0 0" axis="0 0 -1" actuatorfrcrange="-150 150"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HubL"/>
+            <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HubL"/>
+          </body>
+        </body>
+      </body>
+      <body name="HipR" pos="-0.00023349 -0.10999 -0.017209" quat="0.499998 -0.5 0.5 0.500002">
+        <inertial pos="0.094322 0 -0.015998" quat="0.971555 0.229058 -0.0574499 0.0176716" mass="3.721" diaginertia="0.838537 0.783402 0.0610613"/>
+        <joint name="HipR" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-150 150"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HipR"/>
+        <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HipR"/>
+        <body name="KneeR" pos="0.282 0 -0.0467" quat="-3.67321e-06 1 0 0">
+          <inertial pos="0.10421 0 0.0277" quat="0.92326 0.382427 -0.0338154 -0.0140068" mass="0.7847" diaginertia="0.334763 0.331 0.00523653"/>
+          <joint name="KneeR" pos="0 0 0" axis="0 0 -1" range="-3.14 3.14" actuatorfrcrange="-150 150"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="KneeR"/>
+          <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="KneeR"/>
+          <body name="HubR" pos="0.269979 0 0.052" quat="0 -1 0 0">
+            <inertial pos="1.3804e-05 -1.5094e-06 -0.02755" quat="0.580785 0.246191 -0.345827 0.694609" mass="1.1563" diaginertia="0.744011 0.742574 0.00341512"/>
+            <joint name="HubR" pos="0 0 0" axis="0 0 -1" actuatorfrcrange="-150 150"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.75294 0.75294 0.75294 1" mesh="HubR"/>
+            <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="HubR"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <!-- Policy/control order: HipL, HipR, KneeL, KneeR, HubL, HubR. -->
+  <!-- Targets follow ActionsCfg AFTER action scaling/default offsets/clipping.
+       Runner: q_target = q_default + 0.25 * action; wheel_target = 4 * action.
+       Run the policy every 4 physics steps (0.008 s), holding targets between updates.
+       PhysX velocity_limit_sim=2*pi is an actual joint-speed limit, not ctrlrange;
+       MJCF has no equivalent joint-speed constraint. soft_joint_pos_limit_factor=0.9
+       is a training reward threshold; the physical joint ranges remain +/-3.14. -->
+  <actuator>
+    <position name="HipL_pos" joint="HipL" kp="20" ctrlrange="0.3 1.0" forcerange="-150 150" kv="1.5"/>
+    <position name="HipR_pos" joint="HipR" kp="20" ctrlrange="-1.0 -0.3" forcerange="-150 150" kv="1.5"/>
+    <position name="KneeL_pos" joint="KneeL" kp="30" ctrlrange="0.9 1.7" forcerange="-150 150" kv="1.5"/>
+    <position name="KneeR_pos" joint="KneeR" kp="30" ctrlrange="-1.7 -0.9" forcerange="-150 150" kv="1.5"/>
+    <velocity name="HubL_vel" joint="HubL" kv="1.5" ctrlrange="-6 6" forcerange="-150 150"/>
+    <velocity name="HubR_vel" joint="HubR" kv="1.5" ctrlrange="-6 6" forcerange="-150 150"/>
+  </actuator>
+  <!-- Sensor names and types match the wheeled_leg sim2sim model. -->
+  <sensor>
+    <gyro name="imu_gyro" site="imu"/>
+    <velocimeter name="imu_linear_velocity" site="imu"/>
+    <accelerometer name="imu_linear_acceleration" site="imu"/>
+    <framequat name="imu_orientation" objtype="site" objname="imu"/>
+    <framepos name="imu_position" objtype="site" objname="imu"/>
+    <framezaxis name="imu_upvector" objtype="site" objname="imu"/>
+    <framelinvel name="imu_global_linvel" objtype="site" objname="imu"/>
+    <frameangvel name="imu_global_angvel" objtype="site" objname="imu"/>
+    <jointpos name="HipL_pos" joint="HipL"/>
+    <jointvel name="HipL_vel" joint="HipL"/>
+    <jointpos name="HipR_pos" joint="HipR"/>
+    <jointvel name="HipR_vel" joint="HipR"/>
+    <jointpos name="KneeL_pos" joint="KneeL"/>
+    <jointvel name="KneeL_vel" joint="KneeL"/>
+    <jointpos name="KneeR_pos" joint="KneeR"/>
+    <jointvel name="KneeR_vel" joint="KneeR"/>
+    <jointpos name="HubL_pos" joint="HubL"/>
+    <jointvel name="HubL_vel" joint="HubL"/>
+    <jointpos name="HubR_pos" joint="HubR"/>
+    <jointvel name="HubR_vel" joint="HubR"/>
+    <actuatorfrc name="HipL_torque" actuator="HipL_pos"/>
+    <actuatorfrc name="HipR_torque" actuator="HipR_pos"/>
+    <actuatorfrc name="KneeL_torque" actuator="KneeL_pos"/>
+    <actuatorfrc name="KneeR_torque" actuator="KneeR_pos"/>
+    <actuatorfrc name="HubL_torque" actuator="HubL_vel"/>
+    <actuatorfrc name="HubR_torque" actuator="HubR_vel"/>
+    <!-- Isaac Lab base_lin_vel is the base-link COM velocity in the base frame.
+         Keep the IMU sensors at their physical location; use this sensor for policy input. -->
+    <velocimeter name="base_com_linvel" site="base_com"/>
+  </sensor>
+  <keyframe>
+    <!-- Explicitly reset to home before rollout; loading an XML does not select a keyframe. -->
+    <key name="home" qpos="0 0 0.58 1 0 0 0 0.65 1.3 0 -0.65 -1.3 0" ctrl="0.65 -0.65 1.3 -1.3 0 0"/>
+  </keyframe>
+</mujoco>
