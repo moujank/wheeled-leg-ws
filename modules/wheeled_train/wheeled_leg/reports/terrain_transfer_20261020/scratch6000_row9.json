@@ -1,0 +1,123 @@
+{
+  "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+  "scene": "terrain",
+  "leg_clips": "terrain",
+  "seed": 42,
+  "level": 9,
+  "speed": 0.25,
+  "normalizer_updates": false,
+  "num_envs": 192,
+  "preserve_count": false,
+  "completed": 192,
+  "failure_fraction": 0.515625,
+  "mean_first_episode_s": 11.75825,
+  "tracking_error_mps": 0.08069454878568649,
+  "zero_update_action_max_error": 0.0,
+  "termination_counts": {
+    "time_out": 10,
+    "base_contact": 99,
+    "terrain_boundary": 83,
+    "excessive_tilt": 0
+  },
+  "normalizer_count": 10000.0,
+  "first_episode_by_type": {
+    "flat": {
+      "episodes": 16,
+      "completed": 16,
+      "successes": 16,
+      "falls": 0
+    },
+    "slope": {
+      "episodes": 8,
+      "completed": 8,
+      "successes": 8,
+      "falls": 0
+    },
+    "slope_inverted": {
+      "episodes": 8,
+      "completed": 8,
+      "successes": 8,
+      "falls": 0
+    },
+    "pyramid_stairs": {
+      "episodes": 24,
+      "completed": 24,
+      "successes": 24,
+      "falls": 0
+    },
+    "pyramid_stairs_inverted": {
+      "episodes": 40,
+      "completed": 40,
+      "successes": 10,
+      "falls": 29
+    },
+    "rough": {
+      "episodes": 48,
+      "completed": 48,
+      "successes": 0,
+      "falls": 44
+    },
+    "wave": {
+      "episodes": 8,
+      "completed": 8,
+      "successes": 8,
+      "falls": 0
+    },
+    "discrete_obstacles": {
+      "episodes": 40,
+      "completed": 40,
+      "successes": 9,
+      "falls": 26
+    }
+  },
+  "traversal_counts_all_completed": {
+    "flat": [
+      16.0,
+      16.0,
+      16.0,
+      16.0
+    ],
+    "slope": [
+      8.0,
+      8.0,
+      8.0,
+      8.0
+    ],
+    "slope_inverted": [
+      8.0,
+      8.0,
+      8.0,
+      8.0
+    ],
+    "pyramid_stairs": [
+      24.0,
+      24.0,
+      24.0,
+      24.0
+    ],
+    "pyramid_stairs_inverted": [
+      62.0,
+      10.0,
+      62.0,
+      10.0
+    ],
+    "rough": [
+      195.0,
+      0.0,
+      195.0,
+      0.0
+    ],
+    "wave": [
+      8.0,
+      8.0,
+      8.0,
+      8.0
+    ],
+    "discrete_obstacles": [
+      60.0,
+      9.0,
+      60.0,
+      9.0
+    ]
+  }
+}

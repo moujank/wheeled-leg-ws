@@ -1,0 +1,758 @@
+{
+  "run": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-21_11-14-05_low_speed_focus",
+  "windows": [
+    {
+      "start": 0,
+      "end_exclusive": 200,
+      "reward": 70.40881605923175,
+      "duration_s": 14.304610575675964,
+      "terrain_row": 0.30613189697265625,
+      "tracking_error_mps": 0.040689229760318996,
+      "stall_fraction": 9.919186813931447e-05,
+      "noise_std": 0.08252808663994074,
+      "value_loss": 0.02086757667842903,
+      "surrogate_loss": 0.15657597068697215,
+      "symmetry_loss": 0.055672440249472856,
+      "terminations": {
+        "time_out": 0.2747058868408203,
+        "base_contact": 0.0,
+        "terrain_boundary": 0.5355193328857422,
+        "excessive_tilt": 0.0003823089599609375
+      },
+      "by_type": {
+        "flat": {
+          "mean_row": 0.3106743434863165,
+          "attempts": 427.96875,
+          "successes": 427.96875,
+          "success_rate": 1.0,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "slope": {
+          "mean_row": 0.29874818231910466,
+          "attempts": 205.75,
+          "successes": 205.75,
+          "success_rate": 1.0,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "slope_inverted": {
+          "mean_row": 0.30448346155229955,
+          "attempts": 209.53125,
+          "successes": 209.53125,
+          "success_rate": 1.0,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "pyramid_stairs": {
+          "mean_row": 0.306661376953125,
+          "attempts": 631.0625,
+          "successes": 628.0625,
+          "success_rate": 0.9952461127067446,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "pyramid_stairs_inverted": {
+          "mean_row": 0.2996904134177021,
+          "attempts": 1062.34375,
+          "successes": 1061.34375,
+          "success_rate": 0.9990586851007501,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "rough": {
+          "mean_row": 0.31324249267578125,
+          "attempts": 1241.28125,
+          "successes": 1234.28125,
+          "success_rate": 0.994360665642859,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "wave": {
+          "mean_row": 0.30253676999127493,
+          "attempts": 210.90625,
+          "successes": 209.90625,
+          "success_rate": 0.995258556823233,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "discrete_obstacles": {
+          "mean_row": 0.30443772204685954,
+          "attempts": 1059.75,
+          "successes": 1057.75,
+          "success_rate": 0.9981127624439726,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        }
+      },
+      "reward_components": {
+        "track_lin_vel_xy_exp": 2.0625180803798138,
+        "track_ang_vel_z_exp": 0.6741921288752928,
+        "alive": 0.721777671915479,
+        "forward_progress": 0.42471717989446917,
+        "supported_ascent": 0.00029861710757813855,
+        "commanded_stall": -0.00341354802973342,
+        "lateral_deviation": -0.004156015694263147,
+        "termination_penalty": -1.7187501216540114e-05,
+        "lin_vel_z_l2": -4.486815737209327e-05,
+        "ang_vel_xy_l2": -0.0011668350022193863,
+        "energy": -0.0008625671961635816,
+        "dof_acc_l2": -0.0004958768532742397,
+        "action_rate_l2": -0.003095516243192833,
+        "flat_orientation_l2": -0.02062893446590486,
+        "undesired_contacts": 0.0,
+        "dof_pos_limits": 0.0,
+        "joint_deviation_legs": -0.2632383599126479,
+        "leg_joint_vel": -0.005604957967880182,
+        "leg_joint_acc_l2": -0.0019682288038893603,
+        "mirrored_legs": -0.008872957400670884,
+        "mirrored_leg_velocity": -0.0011989848279336,
+        "mirrored_leg_action": -0.01346591669935151,
+        "mirrored_leg_action_rate": -0.0016809359606668294,
+        "straight_wheel_balance": -0.0003587246315419179,
+        "wheel_slip": -5.337146428310291e-06,
+        "single_side_support": -0.001462143969686167,
+        "straight_yaw_drift": -0.0012040374594903369
+      },
+      "physical_failure_log_fraction": 0.0003823089599609375,
+      "return_per_s_proxy": 4.922106455589728
+    },
+    {
+      "start": 800,
+      "end_exclusive": 1000,
+      "reward": 66.70403129577636,
+      "duration_s": 13.633409213867187,
+      "terrain_row": 5.176156234741211,
+      "tracking_error_mps": 0.05624565815553069,
+      "stall_fraction": 0.010087786568747106,
+      "noise_std": 0.08167197775095701,
+      "value_loss": 0.021724153796676547,
+      "surrogate_loss": 0.09720416210591792,
+      "symmetry_loss": 0.06312128720805049,
+      "terminations": {
+        "time_out": 0.009131927490234375,
+        "base_contact": 0.07245147705078125,
+        "terrain_boundary": 0.8175424194335937,
+        "excessive_tilt": 0.10087417602539063
+      },
+      "by_type": {
+        "flat": {
+          "mean_row": 6.986258256435394,
+          "attempts": 630.375,
+          "successes": 630.375,
+          "success_rate": 1.0,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "slope": {
+          "mean_row": 6.839433078765869,
+          "attempts": 311.9375,
+          "successes": 311.9375,
+          "success_rate": 1.0,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "slope_inverted": {
+          "mean_row": 7.136720690727234,
+          "attempts": 325.46875,
+          "successes": 325.46875,
+          "success_rate": 1.0,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "pyramid_stairs": {
+          "mean_row": 6.74883544921875,
+          "attempts": 919.78125,
+          "successes": 919.78125,
+          "success_rate": 1.0,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "pyramid_stairs_inverted": {
+          "mean_row": 6.30551566362381,
+          "attempts": 1792.9375,
+          "successes": 1145.3125,
+          "success_rate": 0.638791090040785,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "rough": {
+          "mean_row": 3.5868234252929687,
+          "attempts": 2027.75,
+          "successes": 1308.9375,
+          "success_rate": 0.6455122672913327,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "wave": {
+          "mean_row": 5.996860413551331,
+          "attempts": 318.90625,
+          "successes": 270.96875,
+          "success_rate": 0.8496815286624204,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "discrete_obstacles": {
+          "mean_row": 3.391928230524063,
+          "attempts": 1700.90625,
+          "successes": 1159.78125,
+          "success_rate": 0.6818607727498208,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        }
+      },
+      "reward_components": {
+        "track_lin_vel_xy_exp": 1.9212304186820983,
+        "track_ang_vel_z_exp": 0.6481526425480842,
+        "alive": 0.681492685675621,
+        "forward_progress": 0.42858338117599487,
+        "supported_ascent": 0.005473097499343566,
+        "commanded_stall": -0.005295685746968957,
+        "lateral_deviation": -0.0015828853280982003,
+        "termination_penalty": -0.004183727943818667,
+        "lin_vel_z_l2": -0.0004871928923694213,
+        "ang_vel_xy_l2": -0.0013545392027299386,
+        "energy": -0.0011612074729055167,
+        "dof_acc_l2": -0.0006758619901665952,
+        "action_rate_l2": -0.0025644240842666475,
+        "flat_orientation_l2": -0.007224041118752212,
+        "undesired_contacts": -2.6887799306223316e-05,
+        "dof_pos_limits": 0.0,
+        "joint_deviation_legs": -0.22137619495391847,
+        "leg_joint_vel": -0.003014486814499833,
+        "leg_joint_acc_l2": -0.0026843058411031963,
+        "mirrored_legs": -0.04185870470944792,
+        "mirrored_leg_velocity": -0.002029930664575659,
+        "mirrored_leg_action": -0.04964823769405484,
+        "mirrored_leg_action_rate": -0.0012287478559301235,
+        "straight_wheel_balance": -0.0009816175495507196,
+        "wheel_slip": -4.7696213750896274e-05,
+        "single_side_support": -0.001825999348075129,
+        "straight_yaw_drift": -0.0007214566058246418
+      },
+      "physical_failure_log_fraction": 0.17332565307617187,
+      "return_per_s_proxy": 4.892689000189955
+    },
+    {
+      "start": 1800,
+      "end_exclusive": 2000,
+      "reward": 70.58804269790649,
+      "duration_s": 15.398828823242187,
+      "terrain_row": 6.239331283569336,
+      "tracking_error_mps": 0.0675110750645399,
+      "stall_fraction": 0.06236730458214879,
+      "noise_std": 0.08316897355020046,
+      "value_loss": 0.016754125100560485,
+      "surrogate_loss": 0.11260665267705917,
+      "symmetry_loss": 0.0639771095663309,
+      "terminations": {
+        "time_out": 0.09005683898925781,
+        "base_contact": 0.14628326416015625,
+        "terrain_boundary": 0.7334471893310547,
+        "excessive_tilt": 0.03021270751953125
+      },
+      "by_type": {
+        "flat": {
+          "mean_row": 9.0,
+          "attempts": 635.21875,
+          "successes": 635.21875,
+          "success_rate": 1.0,
+          "top_attempts": 635.21875,
+          "top_successes": 635.21875,
+          "top_success_rate": 1.0
+        },
+        "slope": {
+          "mean_row": 9.0,
+          "attempts": 290.625,
+          "successes": 290.625,
+          "success_rate": 1.0,
+          "top_attempts": 290.625,
+          "top_successes": 290.625,
+          "top_success_rate": 1.0
+        },
+        "slope_inverted": {
+          "mean_row": 9.0,
+          "attempts": 299.0,
+          "successes": 299.0,
+          "success_rate": 1.0,
+          "top_attempts": 299.0,
+          "top_successes": 299.0,
+          "top_success_rate": 1.0
+        },
+        "pyramid_stairs": {
+          "mean_row": 9.0,
+          "attempts": 791.53125,
+          "successes": 791.53125,
+          "success_rate": 1.0,
+          "top_attempts": 791.53125,
+          "top_successes": 791.53125,
+          "top_success_rate": 1.0
+        },
+        "pyramid_stairs_inverted": {
+          "mean_row": 5.928260133266449,
+          "attempts": 1337.25,
+          "successes": 867.15625,
+          "success_rate": 0.6484623294073658,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "rough": {
+          "mean_row": 4.293561401367188,
+          "attempts": 1578.03125,
+          "successes": 998.75,
+          "success_rate": 0.6329088856763768,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "wave": {
+          "mean_row": 7.519189443588257,
+          "attempts": 262.0625,
+          "successes": 100.0625,
+          "success_rate": 0.3818268542809444,
+          "top_attempts": 55.15625,
+          "top_successes": 7.15625,
+          "top_success_rate": 0.12974504249291785
+        },
+        "discrete_obstacles": {
+          "mean_row": 4.759034688472748,
+          "attempts": 1538.6875,
+          "successes": 1147.625,
+          "success_rate": 0.7458467037653844,
+          "top_attempts": 127.5,
+          "top_successes": 110.5,
+          "top_success_rate": 0.8666666666666667
+        }
+      },
+      "reward_components": {
+        "track_lin_vel_xy_exp": 2.069856132864952,
+        "track_ang_vel_z_exp": 0.7220787653326988,
+        "alive": 0.7680529603362083,
+        "forward_progress": 0.43453717648983003,
+        "supported_ascent": 0.004987352431053296,
+        "commanded_stall": -0.02933638294111006,
+        "lateral_deviation": -0.0033668850699905307,
+        "termination_penalty": -0.003137291884777369,
+        "lin_vel_z_l2": -0.0002117722660932486,
+        "ang_vel_xy_l2": -0.0012341920143808238,
+        "energy": -0.0013136214937549085,
+        "dof_acc_l2": -0.0006739748788822908,
+        "action_rate_l2": -0.002669929282274097,
+        "flat_orientation_l2": -0.005422584966290742,
+        "undesired_contacts": -5.071041975156731e-05,
+        "dof_pos_limits": 0.0,
+        "joint_deviation_legs": -0.24335079438984394,
+        "leg_joint_vel": -0.003491662973538041,
+        "leg_joint_acc_l2": -0.00265998161630705,
+        "mirrored_legs": -0.05823114968836308,
+        "mirrored_leg_velocity": -0.0019667328277137132,
+        "mirrored_leg_action": -0.11683699002489448,
+        "mirrored_leg_action_rate": -0.0011498765487340278,
+        "straight_wheel_balance": -0.001185831039911136,
+        "wheel_slip": -5.5716976412441e-05,
+        "single_side_support": -0.0013747235166374594,
+        "straight_yaw_drift": -0.0005705112071882468
+      },
+      "physical_failure_log_fraction": 0.1764959716796875,
+      "return_per_s_proxy": 4.583987750507661
+    },
+    {
+      "start": 3800,
+      "end_exclusive": 4000,
+      "reward": 73.85766784667969,
+      "duration_s": 18.4356628125,
+      "terrain_row": 5.526793823242188,
+      "tracking_error_mps": 0.09850869882851838,
+      "stall_fraction": 0.1749621526757255,
+      "noise_std": 0.085119535215199,
+      "value_loss": 0.014972674623131753,
+      "surrogate_loss": 0.1354146945849061,
+      "symmetry_loss": 0.07675604078918695,
+      "terminations": {
+        "time_out": 0.39438499450683595,
+        "base_contact": 0.018895950317382813,
+        "terrain_boundary": 0.5585138702392578,
+        "excessive_tilt": 0.028205184936523436
+      },
+      "by_type": {
+        "flat": {
+          "mean_row": 8.999760599136353,
+          "attempts": 509.25,
+          "successes": 504.6875,
+          "success_rate": 0.9910407461953854,
+          "top_attempts": 509.25,
+          "top_successes": 504.6875,
+          "top_success_rate": 0.9910407461953854
+        },
+        "slope": {
+          "mean_row": 8.999238739013672,
+          "attempts": 248.90625,
+          "successes": 245.90625,
+          "success_rate": 0.9879472693032015,
+          "top_attempts": 248.90625,
+          "top_successes": 245.90625,
+          "top_success_rate": 0.9879472693032015
+        },
+        "slope_inverted": {
+          "mean_row": 8.938722648620605,
+          "attempts": 202.53125,
+          "successes": 186.53125,
+          "success_rate": 0.9209998457028237,
+          "top_attempts": 194.53125,
+          "top_successes": 179.53125,
+          "top_success_rate": 0.9228915662650602
+        },
+        "pyramid_stairs": {
+          "mean_row": 8.984359130859374,
+          "attempts": 682.28125,
+          "successes": 596.90625,
+          "success_rate": 0.874868318600284,
+          "top_attempts": 682.28125,
+          "top_successes": 596.90625,
+          "top_success_rate": 0.874868318600284
+        },
+        "pyramid_stairs_inverted": {
+          "mean_row": 4.9022128820419315,
+          "attempts": 1045.0625,
+          "successes": 293.5625,
+          "success_rate": 0.28090425213803,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "rough": {
+          "mean_row": 2.298072509765625,
+          "attempts": 1321.8125,
+          "successes": 483.375,
+          "success_rate": 0.3656910492221854,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "wave": {
+          "mean_row": 6.525296120643616,
+          "attempts": 237.125,
+          "successes": 76.28125,
+          "success_rate": 0.3216921454928835,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "discrete_obstacles": {
+          "mean_row": 4.980480229854583,
+          "attempts": 1239.5,
+          "successes": 897.84375,
+          "success_rate": 0.7243596208148447,
+          "top_attempts": 236.0,
+          "top_successes": 206.0,
+          "top_success_rate": 0.8728813559322034
+        }
+      },
+      "reward_components": {
+        "track_lin_vel_xy_exp": 2.242840722799301,
+        "track_ang_vel_z_exp": 0.8840473762154579,
+        "alive": 0.9216144719719886,
+        "forward_progress": 0.41159125193953516,
+        "supported_ascent": 0.0029404056238126943,
+        "commanded_stall": -0.09257249919697642,
+        "lateral_deviation": -0.002381829624355305,
+        "termination_penalty": -0.0007384375458786963,
+        "lin_vel_z_l2": -0.00012404190452798504,
+        "ang_vel_xy_l2": -0.0012244934256887064,
+        "energy": -0.0013568436668720096,
+        "dof_acc_l2": -0.0005689380438707304,
+        "action_rate_l2": -0.003422972426051274,
+        "flat_orientation_l2": -0.002644212948507629,
+        "undesired_contacts": -5.11666691636492e-06,
+        "dof_pos_limits": 0.0,
+        "joint_deviation_legs": -0.3350248157978058,
+        "leg_joint_vel": -0.004449815965490416,
+        "leg_joint_acc_l2": -0.0022207367658847945,
+        "mirrored_legs": -0.07723375301808119,
+        "mirrored_leg_velocity": -0.002118521790835075,
+        "mirrored_leg_action": -0.24155597060918807,
+        "mirrored_leg_action_rate": -0.001305685676052235,
+        "straight_wheel_balance": -0.0017860460310475902,
+        "wheel_slip": -2.3707354928319545e-05,
+        "single_side_support": -0.0011439451912883668,
+        "straight_yaw_drift": -0.0006405890099995304
+      },
+      "physical_failure_log_fraction": 0.047101135253906246,
+      "return_per_s_proxy": 4.006238809954894
+    },
+    {
+      "start": 5800,
+      "end_exclusive": 6000,
+      "reward": 81.93305534362793,
+      "duration_s": 17.780338027343753,
+      "terrain_row": 6.339841079711914,
+      "tracking_error_mps": 0.06838166676461696,
+      "stall_fraction": 0.03785908613819629,
+      "noise_std": 0.08772986754775047,
+      "value_loss": 0.009963807456661016,
+      "surrogate_loss": 0.11795563094317912,
+      "symmetry_loss": 0.08607874650508165,
+      "terminations": {
+        "time_out": 0.26000144958496096,
+        "base_contact": 0.0414312744140625,
+        "terrain_boundary": 0.6644283294677734,
+        "excessive_tilt": 0.034138946533203124
+      },
+      "by_type": {
+        "flat": {
+          "mean_row": 9.0,
+          "attempts": 516.25,
+          "successes": 516.25,
+          "success_rate": 1.0,
+          "top_attempts": 516.25,
+          "top_successes": 516.25,
+          "top_success_rate": 1.0
+        },
+        "slope": {
+          "mean_row": 9.0,
+          "attempts": 269.0,
+          "successes": 269.0,
+          "success_rate": 1.0,
+          "top_attempts": 269.0,
+          "top_successes": 269.0,
+          "top_success_rate": 1.0
+        },
+        "slope_inverted": {
+          "mean_row": 9.0,
+          "attempts": 248.5,
+          "successes": 248.5,
+          "success_rate": 1.0,
+          "top_attempts": 248.5,
+          "top_successes": 248.5,
+          "top_success_rate": 1.0
+        },
+        "pyramid_stairs": {
+          "mean_row": 9.0,
+          "attempts": 783.375,
+          "successes": 783.375,
+          "success_rate": 1.0,
+          "top_attempts": 783.375,
+          "top_successes": 783.375,
+          "top_success_rate": 1.0
+        },
+        "pyramid_stairs_inverted": {
+          "mean_row": 6.696088352203369,
+          "attempts": 1182.3125,
+          "successes": 912.90625,
+          "success_rate": 0.7721361738119152,
+          "top_attempts": 1.0,
+          "top_successes": 0.0,
+          "top_success_rate": 0.0
+        },
+        "rough": {
+          "mean_row": 3.20583251953125,
+          "attempts": 1474.8125,
+          "successes": 1060.21875,
+          "success_rate": 0.7188837564097131,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "wave": {
+          "mean_row": 8.466750102043152,
+          "attempts": 237.0,
+          "successes": 229.0,
+          "success_rate": 0.9662447257383966,
+          "top_attempts": 141.0,
+          "top_successes": 138.0,
+          "top_success_rate": 0.9787234042553191
+        },
+        "discrete_obstacles": {
+          "mean_row": 5.590856146812439,
+          "attempts": 1360.1875,
+          "successes": 1003.09375,
+          "success_rate": 0.7374672609474797,
+          "top_attempts": 294.3125,
+          "top_successes": 218.65625,
+          "top_success_rate": 0.7429390528774686
+        }
+      },
+      "reward_components": {
+        "track_lin_vel_xy_exp": 2.4122682547569276,
+        "track_ang_vel_z_exp": 0.8116583168506623,
+        "alive": 0.8883376249670982,
+        "forward_progress": 0.4895374928414822,
+        "supported_ascent": 0.005439886935055256,
+        "commanded_stall": -0.0198836868617218,
+        "lateral_deviation": -0.006962334043346345,
+        "termination_penalty": -0.0015116146903892513,
+        "lin_vel_z_l2": -0.0002165913662975072,
+        "ang_vel_xy_l2": -0.003224818187300116,
+        "energy": -0.0012921611045021563,
+        "dof_acc_l2": -0.0006436707879765891,
+        "action_rate_l2": -0.0033482759678736328,
+        "flat_orientation_l2": -0.004067737475270406,
+        "undesired_contacts": -1.6192709377946812e-05,
+        "dof_pos_limits": 0.0,
+        "joint_deviation_legs": -0.3227321380376816,
+        "leg_joint_vel": -0.004510707399458624,
+        "leg_joint_acc_l2": -0.002565167586435564,
+        "mirrored_legs": -0.02677587574813515,
+        "mirrored_leg_velocity": -0.002228807677747682,
+        "mirrored_leg_action": -0.1078449723497033,
+        "mirrored_leg_action_rate": -0.0013290578569285572,
+        "straight_wheel_balance": -0.0008802284218836576,
+        "wheel_slip": -3.354182254497573e-05,
+        "single_side_support": -0.00121966374485055,
+        "straight_yaw_drift": -0.0008970098846475594
+      },
+      "physical_failure_log_fraction": 0.07557022094726562,
+      "return_per_s_proxy": 4.608070736204564
+    },
+    {
+      "start": 7800,
+      "end_exclusive": 8000,
+      "reward": 78.13065319061279,
+      "duration_s": 17.5021331640625,
+      "terrain_row": 6.280450210571289,
+      "tracking_error_mps": 0.08636782646179199,
+      "stall_fraction": 0.09152118762023748,
+      "noise_std": 0.08815211951732635,
+      "value_loss": 0.013433764227665962,
+      "surrogate_loss": 0.1135979101806879,
+      "symmetry_loss": 0.07865662328898906,
+      "terminations": {
+        "time_out": 0.27908973693847655,
+        "base_contact": 0.024546966552734376,
+        "terrain_boundary": 0.6612174987792969,
+        "excessive_tilt": 0.03514579772949219
+      },
+      "by_type": {
+        "flat": {
+          "mean_row": 9.0,
+          "attempts": 538.21875,
+          "successes": 538.21875,
+          "success_rate": 1.0,
+          "top_attempts": 538.21875,
+          "top_successes": 538.21875,
+          "top_success_rate": 1.0
+        },
+        "slope": {
+          "mean_row": 8.99963662147522,
+          "attempts": 273.1875,
+          "successes": 272.1875,
+          "success_rate": 0.9963395104095173,
+          "top_attempts": 273.1875,
+          "top_successes": 272.1875,
+          "top_success_rate": 0.9963395104095173
+        },
+        "slope_inverted": {
+          "mean_row": 9.0,
+          "attempts": 257.34375,
+          "successes": 257.34375,
+          "success_rate": 1.0,
+          "top_attempts": 257.34375,
+          "top_successes": 257.34375,
+          "top_success_rate": 1.0
+        },
+        "pyramid_stairs": {
+          "mean_row": 8.991638793945313,
+          "attempts": 768.21875,
+          "successes": 764.21875,
+          "success_rate": 0.9947931497376236,
+          "top_attempts": 762.21875,
+          "top_successes": 758.21875,
+          "top_success_rate": 0.9947521626829569
+        },
+        "pyramid_stairs_inverted": {
+          "mean_row": 6.794148192405701,
+          "attempts": 1260.84375,
+          "successes": 866.0625,
+          "success_rate": 0.6868912186779687,
+          "top_attempts": 18.0,
+          "top_successes": 0.0,
+          "top_success_rate": 0.0
+        },
+        "rough": {
+          "mean_row": 2.7523312377929687,
+          "attempts": 1577.6875,
+          "successes": 1032.875,
+          "success_rate": 0.6546765439923939,
+          "top_attempts": 0.0,
+          "top_successes": 0.0,
+          "top_success_rate": null
+        },
+        "wave": {
+          "mean_row": 8.182610347270966,
+          "attempts": 295.03125,
+          "successes": 163.4375,
+          "success_rate": 0.5539667408113548,
+          "top_attempts": 142.4375,
+          "top_successes": 77.4375,
+          "top_success_rate": 0.5436594997806056
+        },
+        "discrete_obstacles": {
+          "mean_row": 5.813889451026917,
+          "attempts": 1298.8125,
+          "successes": 950.4375,
+          "success_rate": 0.7317742168326837,
+          "top_attempts": 341.65625,
+          "top_successes": 260.84375,
+          "top_success_rate": 0.7634683984267813
+        }
+      },
+      "reward_components": {
+        "track_lin_vel_xy_exp": 2.283875905275345,
+        "track_ang_vel_z_exp": 0.8201656478643418,
+        "alive": 0.8748742359876632,
+        "forward_progress": 0.4502447497844696,
+        "supported_ascent": 0.005336847339058295,
+        "commanded_stall": -0.04250913886353373,
+        "lateral_deviation": -0.004732253871625289,
+        "termination_penalty": -0.0015779986220877617,
+        "lin_vel_z_l2": -0.0002981404835372814,
+        "ang_vel_xy_l2": -0.0021989660485996865,
+        "energy": -0.0013106610340764746,
+        "dof_acc_l2": -0.0006284481196780689,
+        "action_rate_l2": -0.0034588053042534737,
+        "flat_orientation_l2": -0.004942678232910111,
+        "undesired_contacts": -1.19147329144198e-05,
+        "dof_pos_limits": 0.0,
+        "joint_deviation_legs": -0.3097411098331213,
+        "leg_joint_vel": -0.004339099581702612,
+        "leg_joint_acc_l2": -0.002486466241534799,
+        "mirrored_legs": -0.04652183369733393,
+        "mirrored_leg_velocity": -0.0018338354345178232,
+        "mirrored_leg_action": -0.09505313735455274,
+        "mirrored_leg_action_rate": -0.0010979346351814457,
+        "straight_wheel_balance": -0.0008809322532033547,
+        "wheel_slip": -3.638500453234883e-05,
+        "single_side_support": -0.001430005239089951,
+        "straight_yaw_drift": -0.0006681557011324912
+      },
+      "physical_failure_log_fraction": 0.059692764282226564,
+      "return_per_s_proxy": 4.464064606195553
+    }
+  ],
+  "notes": [
+    "Termination logs average the latest outcome stored for each environment; they are not counts of ended episodes in this window.",
+    "Curriculum cumulative counters are averaged over collection steps before TensorBoard logging; their differences approximate window rates.",
+    "Train/mean_reward averages the most recent 100 ended episodes; the chart adds a separate 100-iteration smoothing."
+  ],
+  "late_reward_duration_correlation": 0.7967536242844838,
+  "peak_ma200_reward": 83.13985473632813,
+  "peak_ma200_ending_iteration": 5858,
+  "wall_time_seconds": 18729.124302625656
+}

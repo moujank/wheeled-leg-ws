@@ -1,0 +1,42 @@
+{
+  "selected_checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+  "selection_protocol": "seed42, geometry43, 192 first episodes per row, .25m/s, rows4/7/9, stats frozen",
+  "selection_scope": "four representative candidates, one map, not all historical checkpoints",
+  "phases": [
+    {
+      "name": "focus",
+      "iterations": 2000,
+      "num_envs": 4096,
+      "seed": 42
+    },
+    {
+      "name": "retention",
+      "iterations": [
+        1000,
+        2000
+      ],
+      "initialize_from": "best fixed-evaluation focus checkpoint; not yet trained"
+    }
+  ],
+  "evaluation": {
+    "rows": [
+      0,
+      4,
+      7,
+      9
+    ],
+    "reset_seeds": [
+      42,
+      43,
+      44
+    ],
+    "geometry_seeds": [
+      43,
+      44,
+      45
+    ],
+    "speed_mps": 0.25,
+    "min_hard_type_episodes_per_seed_row": 100
+  },
+  "full_training_completed": false
+}

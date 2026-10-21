@@ -107,12 +107,34 @@ def mirrored_joint_deviation_l1(
     env: ManagerBasedRLEnv,
     left_asset_cfg: SceneEntityCfg,
     right_asset_cfg: SceneEntityCfg,
+    deadband: float = 0.0,
 ) -> torch.Tensor:
     """Penalize deviation from mirrored left/right leg configurations."""
     asset: Articulation = env.scene[left_asset_cfg.name]
     left_joint_pos = wrap_to_pi(asset.data.joint_pos[:, left_asset_cfg.joint_ids])
     right_joint_pos = wrap_to_pi(asset.data.joint_pos[:, right_asset_cfg.joint_ids])
-    return torch.sum(torch.abs(left_joint_pos + right_joint_pos), dim=1)
+    return torch.sum(torch.clamp(torch.abs(left_joint_pos + right_joint_pos) - deadband, min=0.0), dim=1)
+
+
+def mirrored_joint_velocity_l2(
+    env: ManagerBasedRLEnv,
+    left_asset_cfg: SceneEntityCfg,
+    right_asset_cfg: SceneEntityCfg,
+) -> torch.Tensor:
+    """Penalize asymmetric leg motion; mirrored joint velocities have opposite signs."""
+    asset: Articulation = env.scene[left_asset_cfg.name]
+    left_vel = asset.data.joint_vel[:, left_asset_cfg.joint_ids]
+    right_vel = asset.data.joint_vel[:, right_asset_cfg.joint_ids]
+    return torch.sum(torch.square(left_vel + right_vel), dim=1)
+
+
+def action_rate_l2_selected(env: ManagerBasedRLEnv, action_name: str) -> torch.Tensor:
+    """Penalize changes of a named action group without depending on joint ordering."""
+    manager = env.action_manager
+    index = manager.active_terms.index(action_name)
+    start = sum(manager.action_term_dim[:index])
+    end = start + manager.action_term_dim[index]
+    return torch.sum(torch.square(manager.action[:, start:end] - manager.prev_action[:, start:end]), dim=1)
 
 
 def joint_vel_l2_selected(

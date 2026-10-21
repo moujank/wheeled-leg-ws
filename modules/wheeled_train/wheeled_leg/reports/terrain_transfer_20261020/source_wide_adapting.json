@@ -1,0 +1,30 @@
+{
+  "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-17_17-43-03/model_7999.pt",
+  "scene": "terrain-flat",
+  "leg_clips": "terrain",
+  "seed": 42,
+  "level": 0,
+  "speed": 0.25,
+  "normalizer_updates": true,
+  "num_envs": 64,
+  "completed": 64,
+  "failure_fraction": 1.0,
+  "mean_first_episode_s": 1.211875,
+  "tracking_error_mps": 0.5405764579772949,
+  "zero_update_action_max_error": 0.0,
+  "termination_counts": {
+    "time_out": 0,
+    "base_contact": 64,
+    "terrain_boundary": 0,
+    "excessive_tilt": 0
+  },
+  "normalizer_count": 30224.0,
+  "traversal_counts_all_completed": {
+    "flat": [
+      64.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+}

@@ -15,6 +15,8 @@ readonly GITHUB_FILE_LIMIT=$((100 * 1024 * 1024))
 readonly INDEX_CLEAN_PATTERNS=(
   ".vscode/*.db"
   ".vscode/*.db-*"
+  "**/.vscode/*.db"
+  "**/.vscode/*.db-*"
 )
 
 log() {
@@ -81,12 +83,12 @@ drop_indexed_local_databases() {
   local removed=0
   local path
 
-  while IFS= read -r path; do
+  while IFS= read -r -d '' path; do
     [[ -z "$path" ]] && continue
     git rm --cached --quiet --ignore-unmatch -- "$path"
     removed=1
   done < <(
-    git ls-files -- "${INDEX_CLEAN_PATTERNS[@]}"
+    git ls-files -z -- "${INDEX_CLEAN_PATTERNS[@]}"
   )
 
   if (( removed )); then
@@ -94,8 +96,8 @@ drop_indexed_local_databases() {
   fi
 }
 
-drop_indexed_local_databases
 git add -A
+drop_indexed_local_databases
 
 if git diff --cached --quiet; then
   log "No new changes to commit on $MAIN_BRANCH."

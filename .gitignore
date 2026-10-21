@@ -2,3 +2,5 @@
 .codex/
 .vscode/*.db
 .vscode/*.db-*
+**/.vscode/*.db
+**/.vscode/*.db-*

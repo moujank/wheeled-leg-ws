@@ -1,0 +1,381 @@
+[
+  {
+    "field": ".rewards.leg_action_rate_l2",
+    "source": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.rewards:action_rate_l2_selected",
+      "params": {
+        "action_name": "joint_pos"
+      },
+      "weight": "-0.07"
+    },
+    "target": null
+  },
+  {
+    "field": ".rewards.lateral_deviation",
+    "source": null,
+    "target": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.traversal:traversal_lateral_deviation",
+      "params": {},
+      "weight": "-0.1"
+    }
+  },
+  {
+    "field": ".rewards.forward_progress",
+    "source": null,
+    "target": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.traversal:traversal_progress",
+      "params": {},
+      "weight": "3.0"
+    }
+  },
+  {
+    "field": ".rewards.joint_deviation_legs.func",
+    "source": "isaaclab.envs.mdp.rewards:joint_deviation_l1",
+    "target": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:terrain_leg_deviation_l1"
+  },
+  {
+    "field": ".rewards.commanded_stall",
+    "source": null,
+    "target": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:commanded_stall",
+      "params": {},
+      "weight": "-0.5"
+    }
+  },
+  {
+    "field": ".rewards.mirrored_leg_velocity.params.mode",
+    "source": "terrain",
+    "target": "obstacle"
+  },
+  {
+    "field": ".rewards.supported_ascent",
+    "source": null,
+    "target": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:SupportedAscent",
+      "params": {},
+      "weight": "3.0"
+    }
+  },
+  {
+    "field": ".rewards.high_speed_orientation_l2",
+    "source": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:high_speed_orientation_l2",
+      "params": {
+        "command_name": "base_velocity",
+        "start_speed": "0.35",
+        "full_speed": "0.5"
+      },
+      "weight": "-2.0"
+    },
+    "target": null
+  },
+  {
+    "field": ".rewards.mirrored_leg_action_rate.params.mode",
+    "source": "terrain",
+    "target": "obstacle"
+  },
+  {
+    "field": ".rewards.flat_orientation_l2.func",
+    "source": "isaaclab.envs.mdp.rewards:flat_orientation_l2",
+    "target": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:terrain_stability_orientation"
+  },
+  {
+    "field": ".rewards.high_speed_ang_vel_l2",
+    "source": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:high_speed_ang_vel_l2",
+      "params": {
+        "command_name": "base_velocity",
+        "start_speed": "0.35",
+        "full_speed": "0.5"
+      },
+      "weight": "-0.35"
+    },
+    "target": null
+  },
+  {
+    "field": ".rewards.leg_joint_vel.func",
+    "source": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.rewards:joint_vel_l2_selected",
+    "target": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.traversal:traversal_flat_leg_motion"
+  },
+  {
+    "field": ".rewards.lin_vel_z_l2.func",
+    "source": "isaaclab.envs.mdp.rewards:lin_vel_z_l2",
+    "target": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:grounded_vertical_motion"
+  },
+  {
+    "field": ".rewards.lin_vel_z_l2.weight",
+    "source": "-6.0",
+    "target": "-2.0"
+  },
+  {
+    "field": ".rewards.mirrored_legs.params.mode",
+    "source": "terrain",
+    "target": "obstacle"
+  },
+  {
+    "field": ".rewards.mirrored_leg_action.params.mode",
+    "source": "terrain",
+    "target": "obstacle"
+  },
+  {
+    "field": ".rewards.ang_vel_xy_l2.func",
+    "source": "isaaclab.envs.mdp.rewards:ang_vel_xy_l2",
+    "target": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:terrain_stability_ang_vel"
+  },
+  {
+    "field": ".rewards.high_speed_vertical_motion_l2",
+    "source": {
+      "func": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:high_speed_vertical_motion_l2",
+      "params": {
+        "command_name": "base_velocity",
+        "start_speed": "0.35",
+        "full_speed": "0.5"
+      },
+      "weight": "-0.8"
+    },
+    "target": null
+  },
+  {
+    "field": ".rewards.action_rate_l2.func",
+    "source": "isaaclab.envs.mdp.rewards:action_rate_l2",
+    "target": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.stability:terrain_action_rate"
+  },
+  {
+    "field": ".curriculum.speed_levels.params.successes_to_promote",
+    "source": "8",
+    "target": "4"
+  },
+  {
+    "field": ".curriculum.speed_levels.params.min_episode_duration",
+    "source": "12.0",
+    "target": "8.0"
+  },
+  {
+    "field": ".curriculum.speed_levels.params.min_command_speed",
+    "source": "0.15",
+    "target": "0.18"
+  },
+  {
+    "field": ".curriculum.speed_levels.params.tracking_error_threshold",
+    "source": "0.45",
+    "target": "0.07"
+  },
+  {
+    "field": ".curriculum.terrain_levels.func",
+    "source": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.curriculums:terrain_levels_stable_tracking",
+    "target": "wheeled_leg.tasks.manager_based.wheeled_leg.mdp.curriculums:terrain_levels_forward_traversal"
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.tracking_threshold",
+    "source": "0.75",
+    "target": null
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.distance_fraction",
+    "source": "0.6",
+    "target": "0.65"
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.successes_to_promote",
+    "source": null,
+    "target": "2"
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.min_episode_duration",
+    "source": "5.0",
+    "target": "8.0"
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.min_traversal_distance",
+    "source": "0.75",
+    "target": null
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.min_command_speed",
+    "source": "0.1",
+    "target": null
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.tracking_error_threshold",
+    "source": null,
+    "target": "0.1"
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.min_distance",
+    "source": "2.0",
+    "target": "2.6"
+  },
+  {
+    "field": ".curriculum.terrain_levels.params.yaw_tracking_threshold",
+    "source": "0.7",
+    "target": null
+  },
+  {
+    "field": ".commands.base_velocity.speed_training_stride",
+    "source": null,
+    "target": "5"
+  },
+  {
+    "field": ".commands.base_velocity.slow_terrain_level",
+    "source": null,
+    "target": "3"
+  },
+  {
+    "field": ".commands.base_velocity.early_ang_vel_max",
+    "source": "0.2",
+    "target": null
+  },
+  {
+    "field": ".commands.base_velocity.max_heading_rate",
+    "source": null,
+    "target": "0.3"
+  },
+  {
+    "field": ".commands.base_velocity.final_standing_probability",
+    "source": "0.05",
+    "target": null
+  },
+  {
+    "field": ".commands.base_velocity.stage_max_speeds",
+    "source": [
+      "0.25",
+      "0.35",
+      "0.45",
+      "0.5"
+    ],
+    "target": [
+      "0.25",
+      "0.3",
+      "0.35",
+      "0.4"
+    ]
+  },
+  {
+    "field": ".commands.base_velocity.max_acceleration",
+    "source": null,
+    "target": "0.3"
+  },
+  {
+    "field": ".commands.base_velocity.final_resampling_time_range",
+    "source": [
+      "4.0",
+      "8.0"
+    ],
+    "target": null
+  },
+  {
+    "field": ".commands.base_velocity.ranges.lin_vel_x",
+    "source": [
+      "-0.5",
+      "0.5"
+    ],
+    "target": [
+      "0.22",
+      "0.4"
+    ]
+  },
+  {
+    "field": ".commands.base_velocity.ranges.ang_vel_z",
+    "source": [
+      "-0.5",
+      "0.5"
+    ],
+    "target": [
+      "-0.3",
+      "0.3"
+    ]
+  },
+  {
+    "field": ".commands.base_velocity.resampling_time_range",
+    "source": [
+      "8.0",
+      "12.0"
+    ],
+    "target": [
+      "25.0",
+      "30.0"
+    ]
+  },
+  {
+    "field": ".commands.base_velocity.rel_standing_envs",
+    "source": "0.1",
+    "target": "0.05"
+  },
+  {
+    "field": ".commands.base_velocity.final_ang_vel_max",
+    "source": "0.25",
+    "target": null
+  },
+  {
+    "field": ".commands.base_velocity.min_speed_change",
+    "source": "0.25",
+    "target": null
+  },
+  {
+    "field": ".commands.base_velocity.hard_terrain_max_speed",
+    "source": null,
+    "target": "0.25"
+  },
+  {
+    "field": ".commands.base_velocity.early_resampling_time_range",
+    "source": [
+      "8.0",
+      "12.0"
+    ],
+    "target": null
+  },
+  {
+    "field": ".commands.base_velocity.heading_control_stiffness",
+    "source": "0.5",
+    "target": "1.0"
+  },
+  {
+    "field": ".commands.base_velocity.min_forward_speed",
+    "source": null,
+    "target": "0.22"
+  },
+  {
+    "field": ".actions.joint_pos.clip.KneeL",
+    "source": [
+      "0.9",
+      "1.7"
+    ],
+    "target": [
+      "0.4",
+      "2.2"
+    ]
+  },
+  {
+    "field": ".actions.joint_pos.clip.HipR",
+    "source": [
+      "-1.0",
+      "-0.3"
+    ],
+    "target": [
+      "-1.25",
+      "-0.15"
+    ]
+  },
+  {
+    "field": ".actions.joint_pos.clip.KneeR",
+    "source": [
+      "-1.7",
+      "-0.9"
+    ],
+    "target": [
+      "-2.2",
+      "-0.4"
+    ]
+  },
+  {
+    "field": ".actions.joint_pos.clip.HipL",
+    "source": [
+      "0.3",
+      "1.0"
+    ],
+    "target": [
+      "0.15",
+      "1.25"
+    ]
+  }
+]

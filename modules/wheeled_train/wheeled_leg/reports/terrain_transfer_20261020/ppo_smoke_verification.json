@@ -1,0 +1,32 @@
+{
+  "run": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_19-50-52_low_speed_traversal_smoke",
+  "updates": 2,
+  "num_envs": 64,
+  "source": {
+    "mode": "warm_start",
+    "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+    "sha256": "f511d003083449c8e3c32b14aee35c7aafc83e1dd0a53e1d8a7ec822be65df2e",
+    "preserve_normalizer_count": true,
+    "policy_normalizer_count_after_load": 100003840.0,
+    "terrain_phase": "focus"
+  },
+  "source_count": 100003840.0,
+  "end_count": 100003840.0,
+  "actor_inputs": 82,
+  "critic_inputs": 89,
+  "max_actor_weight_change": 0.0018200846388936043,
+  "finite_policy": true,
+  "phase": "focus",
+  "proportions": {
+    "flat": "0.08333333333333333",
+    "slope": "0.041666666666666664",
+    "slope_inverted": "0.041666666666666664",
+    "pyramid_stairs": "0.125",
+    "pyramid_stairs_inverted": "0.20833333333333334",
+    "rough": "0.25",
+    "wave": "0.041666666666666664",
+    "discrete_obstacles": "0.20833333333333334"
+  },
+  "learning_rate": "0.0001",
+  "schedule": "fixed"
+}

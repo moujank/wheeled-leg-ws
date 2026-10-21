@@ -72,7 +72,7 @@
         name="">
         <color
           rgba="0.75294 0.75294 0.75294 1" />
-      </material>
+      </material>DistillationRunnerCfg
     </visual>
     <collision>
       <origin
@@ -213,7 +213,7 @@
     <axis
       xyz="0 0 -1" />
     <limit
-      effort="9.6"
+      effort="17"
       velocity="115" />
   </joint>
   <link
@@ -385,7 +385,7 @@
     <axis
       xyz="0 0 -1" />
     <limit
-      effort="9.6"
+      effort="17"
       velocity="115" />
   </joint>
 </robot>

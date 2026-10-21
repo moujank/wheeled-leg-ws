@@ -28,6 +28,12 @@ parser.add_argument(
 )
 parser.add_argument("--seed", type=int, default=None, help="Seed used for the environment")
 parser.add_argument("--max_iterations", type=int, default=None, help="RL Policy training iterations.")
+parser.add_argument("--init_checkpoint", type=str, default=None,
+                    help="Initialize a fresh experiment from compatible PPO weights and observation statistics.")
+parser.add_argument("--terrain_phase", choices=["foundation", "focus", "retention"], default=None,
+                    help="Terrains-only low-speed sampling phase; recorded in the environment config.")
+parser.add_argument("--teacher_checkpoint", type=str, default=None,
+                    help="PPO checkpoint path used as the frozen teacher for a new distillation run.")
 parser.add_argument(
     "--distributed", action="store_true", default=False, help="Run training with multiple GPUs or nodes."
 )
@@ -36,6 +42,10 @@ cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
 args_cli, hydra_args = parser.parse_known_args()
+if args_cli.init_checkpoint and args_cli.resume:
+    parser.error("--init_checkpoint starts a new experiment; it cannot be combined with --resume.")
+if args_cli.teacher_checkpoint and (args_cli.resume or args_cli.init_checkpoint):
+    parser.error("--teacher_checkpoint starts a new student; use --resume alone to continue distillation.")
 
 # always enable cameras to record video
 if args_cli.video:
@@ -73,9 +83,14 @@ if args_cli.distributed and version.parse(installed_version) < version.parse(RSL
 """Rest everything follows."""
 
 import gymnasium as gym
+import hashlib
+import json
 import os
 import torch
 from datetime import datetime
+from pathlib import Path
+from warm_start import warm_start_runner
+from distillation_runner import DistillationRunner
 
 from rsl_rl.algorithms.ppo import PPO
 from rsl_rl.modules.actor_critic import ActorCritic
@@ -219,10 +234,39 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     """Train with RSL-RL agent."""
     # override configurations with non-hydra CLI arguments
     agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli)
+    if args_cli.terrain_phase is not None:
+        from wheeled_leg.tasks.manager_based.wheeled_leg.terrain_training import configure_traversal_phase
+        configure_traversal_phase(env_cfg, args_cli.terrain_phase)
     env_cfg.scene.num_envs = args_cli.num_envs if args_cli.num_envs is not None else env_cfg.scene.num_envs
     agent_cfg.max_iterations = (
         args_cli.max_iterations if args_cli.max_iterations is not None else agent_cfg.max_iterations
     )
+    is_distillation = agent_cfg.algorithm.class_name == "Distillation"
+    if is_distillation and args_cli.init_checkpoint:
+        raise ValueError("Distillation uses --teacher_checkpoint for a new student, or --resume for an existing student.")
+    if args_cli.teacher_checkpoint:
+        if not is_distillation:
+            raise ValueError("--teacher_checkpoint requires a registered Distillation task.")
+        if agent_cfg.resume:
+            raise ValueError("--teacher_checkpoint cannot be combined with resume=True.")
+        args_cli.teacher_checkpoint = os.path.abspath(os.path.expanduser(args_cli.teacher_checkpoint))
+        if not os.path.isfile(args_cli.teacher_checkpoint):
+            raise FileNotFoundError(f"--teacher_checkpoint does not exist: {args_cli.teacher_checkpoint}")
+    elif is_distillation and not agent_cfg.resume:
+        raise ValueError("A new distillation run requires --teacher_checkpoint /path/to/ppo/model.pt; "
+                         "use --resume --load_run <student_run> to continue a student.")
+
+    # ``--init_checkpoint`` is a warm start for a *new* experiment (for
+    # example v1 -> Terrains).  It is already a complete path and must not be
+    # passed through Isaac Lab's resume resolver, which searches inside the
+    # destination experiment directory.  Some saved/configured runner cfgs
+    # may carry ``resume=True``; override that state explicitly here.
+    if args_cli.init_checkpoint:
+        init_checkpoint = os.path.abspath(os.path.expanduser(args_cli.init_checkpoint))
+        if not os.path.isfile(init_checkpoint):
+            raise FileNotFoundError(f"--init_checkpoint does not exist: {init_checkpoint}")
+        agent_cfg.resume = False
+        args_cli.init_checkpoint = init_checkpoint
 
     # set the environment seed
     # note: certain randomizations occur in the environment initialization so we set the seed here
@@ -240,7 +284,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         agent_cfg.seed = seed
 
     # specify directory for logging experiments
-    log_root_path = os.path.join("logs", "rsl_rl", agent_cfg.experiment_name)
+    log_root_path = os.path.join(Path(__file__).resolve().parents[2], "logs", "rsl_rl", agent_cfg.experiment_name)
     log_root_path = os.path.abspath(log_root_path)
     print(f"[INFO] Logging experiment in directory: {log_root_path}")
     # specify directory for logging runs: {time-stamp}_{run_name}
@@ -259,7 +303,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         env = multi_agent_to_single_agent(env)
 
     # save resume path before creating a new log_dir
-    if agent_cfg.resume or agent_cfg.algorithm.class_name == "Distillation":
+    resume_path = None
+    if not args_cli.init_checkpoint and agent_cfg.resume:
         resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 
     # wrap for video recording
@@ -277,17 +322,50 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # wrap around environment for rsl-rl
     env = RslRlVecEnvWrapper(env, clip_actions=agent_cfg.clip_actions)
 
-    _install_rsl_rl_numerics_guard()
+    if not is_distillation:
+        _install_rsl_rl_numerics_guard()
 
     # create runner from rsl-rl
-    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
+    runner_class = DistillationRunner if is_distillation else OnPolicyRunner
+    runner = runner_class(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
     # write git state to logs
     runner.add_git_repo_to_log(__file__)
+    if args_cli.teacher_checkpoint:
+        runner.load_teacher(args_cli.teacher_checkpoint)
+        print(f"[INFO] Loaded frozen PPO teacher from: {args_cli.teacher_checkpoint}")
+    if args_cli.init_checkpoint:
+        source = warm_start_runner(runner, args_cli.init_checkpoint,
+                                   appended_observations=getattr(env_cfg, "warm_start_appended_observations", 0),
+                                   env=env,
+                                   preserve_normalizer_count=getattr(env_cfg, "warm_start_preserve_normalizer_count", False))
+        print(f"[INFO] Initialized fresh experiment from: {source}")
+        # Keep checkpoint provenance alongside the run; env/agent YAML alone
+        # cannot distinguish scratch training from a warm start.
+        with open(source, "rb") as checkpoint_stream:
+            source_hash = hashlib.file_digest(checkpoint_stream, "sha256").hexdigest()
+        initialization = {
+            "mode": "warm_start",
+            "checkpoint": source,
+            "sha256": source_hash,
+            "preserve_normalizer_count": getattr(env_cfg, "warm_start_preserve_normalizer_count", False),
+            "policy_normalizer_count_after_load": float(runner.obs_normalizer.count)
+                if runner.empirical_normalization else None,
+            "terrain_phase": getattr(env_cfg, "traversal_phase", None),
+        }
+        # The runner creates its log directory lazily at the first learning step.
+        Path(log_dir).mkdir(parents=True, exist_ok=True)
+        Path(log_dir, "initialization.json").write_text(json.dumps(initialization, indent=2))
     # load the checkpoint
-    if agent_cfg.resume or agent_cfg.algorithm.class_name == "Distillation":
+    if resume_path is not None:
         print(f"[INFO]: Loading model checkpoint from: {resume_path}")
         # load previously trained model
         runner.load(resume_path)
+
+    # Resolve reflection maps and migrate normalization only after all checkpoint
+    # loading. v0 has no symmetry configuration and keeps its original path.
+    if getattr(agent_cfg.algorithm, "symmetry_cfg", None) is not None:
+        from wheeled_leg.tasks.manager_based.wheeled_leg.mdp.symmetry import install_symmetry_normalization
+        install_symmetry_normalization(runner, env)
 
     # dump the configuration into log-directory
     dump_yaml(os.path.join(log_dir, "params", "env.yaml"), env_cfg)

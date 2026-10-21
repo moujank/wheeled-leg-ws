@@ -213,7 +213,7 @@
     <axis
       xyz="0 0 -1" />
     <limit
-      effort="9.6"
+      effort="17"
       velocity="115" />
   </joint>
   <link
@@ -385,7 +385,7 @@
     <axis
       xyz="0 0 -1" />
     <limit
-      effort="9.6"
+      effort="17"
       velocity="115" />
   </joint>
   <link
@@ -443,7 +443,7 @@
     <limit
       lower="-3.14"
       upper="3.14"
-      effort="9"
+      effort="27"
       velocity="0" />
   </joint>
   <link
@@ -501,7 +501,7 @@
     <limit
       lower="-1.57"
       upper="1.57"
-      effort="9"
+      effort="27"
       velocity="0" />
   </joint>
   <link
@@ -559,7 +559,7 @@
     <limit
       lower="-1.57"
       upper="1.57"
-      effort="9"
+      effort="27"
       velocity="0" />
   </joint>
   <link
@@ -617,7 +617,7 @@
     <limit
       lower="-1.57"
       upper="1.57"
-      effort="9"
+      effort="27"
       velocity="0" />
   </joint>
   <link
@@ -675,7 +675,7 @@
     <limit
       lower="-1.57"
       upper="1.57"
-      effort="9"
+      effort="27"
       velocity="0" />
   </joint>
   <link
@@ -733,7 +733,7 @@
     <limit
       lower="-1.57"
       upper="1.57"
-      effort="9"
+      effort="27"
       velocity="0" />
   </joint>
 </robot>

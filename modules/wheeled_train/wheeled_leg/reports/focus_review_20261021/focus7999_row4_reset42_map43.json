@@ -1,0 +1,124 @@
+{
+  "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-21_11-14-05_low_speed_focus/model_7999.pt",
+  "scene": "terrain",
+  "leg_clips": "terrain",
+  "seed": 42,
+  "terrain_seed": 43,
+  "level": 4,
+  "speed": 0.25,
+  "normalizer_updates": false,
+  "num_envs": 192,
+  "preserve_count": true,
+  "completed": 192,
+  "failure_fraction": 0.2135416716337204,
+  "mean_first_episode_s": 14.630333984375,
+  "tracking_error_mps": 0.06631936132907867,
+  "zero_update_action_max_error": 0.0,
+  "termination_counts": {
+    "time_out": 7,
+    "base_contact": 1,
+    "terrain_boundary": 144,
+    "excessive_tilt": 40
+  },
+  "normalizer_count": 100001552.0,
+  "first_episode_by_type": {
+    "flat": {
+      "episodes": 16,
+      "completed": 16,
+      "successes": 16,
+      "falls": 0
+    },
+    "slope": {
+      "episodes": 8,
+      "completed": 8,
+      "successes": 8,
+      "falls": 0
+    },
+    "slope_inverted": {
+      "episodes": 8,
+      "completed": 8,
+      "successes": 8,
+      "falls": 0
+    },
+    "pyramid_stairs": {
+      "episodes": 24,
+      "completed": 24,
+      "successes": 24,
+      "falls": 0
+    },
+    "pyramid_stairs_inverted": {
+      "episodes": 40,
+      "completed": 40,
+      "successes": 40,
+      "falls": 0
+    },
+    "rough": {
+      "episodes": 48,
+      "completed": 48,
+      "successes": 13,
+      "falls": 27
+    },
+    "wave": {
+      "episodes": 8,
+      "completed": 8,
+      "successes": 8,
+      "falls": 0
+    },
+    "discrete_obstacles": {
+      "episodes": 40,
+      "completed": 40,
+      "successes": 23,
+      "falls": 14
+    }
+  },
+  "traversal_counts_all_completed": {
+    "flat": [
+      16.0,
+      16.0,
+      0.0,
+      0.0
+    ],
+    "slope": [
+      8.0,
+      8.0,
+      0.0,
+      0.0
+    ],
+    "slope_inverted": [
+      8.0,
+      8.0,
+      0.0,
+      0.0
+    ],
+    "pyramid_stairs": [
+      24.0,
+      24.0,
+      0.0,
+      0.0
+    ],
+    "pyramid_stairs_inverted": [
+      40.0,
+      40.0,
+      0.0,
+      0.0
+    ],
+    "rough": [
+      68.0,
+      13.0,
+      0.0,
+      0.0
+    ],
+    "wave": [
+      8.0,
+      8.0,
+      0.0,
+      0.0
+    ],
+    "discrete_obstacles": [
+      40.0,
+      23.0,
+      0.0,
+      0.0
+    ]
+  }
+}

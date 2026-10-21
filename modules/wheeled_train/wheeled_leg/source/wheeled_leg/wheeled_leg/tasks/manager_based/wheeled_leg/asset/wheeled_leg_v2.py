@@ -32,10 +32,10 @@ WHEELED_CFG = ArticulationCfg(
         # 修复资产限位后，再恢复和验证屈腿初始姿态。
         pos=(0.0, 0.0, 0.7),
         joint_pos={
-            "HipL": 1.0,
-            "HipR": -1.0,
-            "KneeL": 1.0,
-            "KneeR": -1.0,
+            "HipL": 0.65,
+            "HipR": -0.65,
+            "KneeL": 1.3,
+            "KneeR": -1.3,
             "Hub.*": 0.0,
         }
     ),
@@ -62,5 +62,27 @@ WHEELED_CFG = ArticulationCfg(
             stiffness=0.0,
             damping=1.5,
         ),
+    },
+)
+
+# Dedicated instance: keep the trained robot's pose and physical motor limits.
+WHEELED_LEG_OBSTACLE_JUMP_CFG = WHEELED_CFG.replace(
+    init_state=WHEELED_CFG.init_state.replace(
+        pos=(0.0, 0.0, 0.58),
+        joint_pos={
+            "HipL": 0.65,
+            "HipR": -0.65,
+            "KneeL": 1.30,
+            "KneeR": -1.30,
+            "Hub.*": 0.0,
+        },
+    ),
+    actuators={
+        name: actuator.replace(
+            velocity_limit=None,
+            velocity_limit_sim=2.0 * math.pi,
+            damping=2.5 if name in ("hip_act", "knee_act") else actuator.damping,
+        )
+        for name, actuator in WHEELED_CFG.actuators.items()
     },
 )

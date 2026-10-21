@@ -1,0 +1,10 @@
+train
+python scripts/rsl_rl/train.py --task Wheeled-Leg-Obstacle-Jump --max_iterations 20000 --num_envs 2048
+plot_mean_reward
+python tools/plot_mean_reward.py --task wheeled_leg_obstacle_jump --smoothing 20
+update_best_policy
+python scripts/rsl_rl/update_best_policy.py --experiment wheeled_leg_obstacle_jump --run 2026-10-15_20-30-18 --checkpoint model_19300.pt --task Wheeled-Leg-Obstacle-Jump --play-task Wheeled-Leg-Obstacle-Jump-Play
+play
+python scripts/rsl_rl/play.py --task Wheeled-Leg-Obstacle-Jump-Play --load_run best --checkpoint model.pt --num_envs 50
+plot_joint_torque
+python modules/wheeled_train/wheeled_leg/tools/plot_joint_torque.py /home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_base_locked_simple/2026-07-09_19-59-32/play_joint_torque/2026-07-09_22-12-21/joint_torque.csv

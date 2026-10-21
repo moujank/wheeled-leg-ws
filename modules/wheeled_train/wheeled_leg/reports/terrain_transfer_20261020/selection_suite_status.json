@@ -1,0 +1,230 @@
+[
+  {
+    "name": "scratch6000_row4",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/scratch6000_row4.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "4",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "scratch6000_row7",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/scratch6000_row7.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "7",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "scratch6000_row9",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/scratch6000_row9.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "9",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "scratch7999_row4",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_7999.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/scratch7999_row4.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "4",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "scratch7999_row7",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_7999.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/scratch7999_row7.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "7",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "scratch7999_row9",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_7999.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/scratch7999_row9.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "9",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "transfer7000_row4",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/transfer7000_row4.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "4",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "transfer7000_row7",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/transfer7000_row7.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "7",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "transfer7000_row9",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7000.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/transfer7000_row9.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "9",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "transfer7999_row4",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7999.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/transfer7999_row4.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "4",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "transfer7999_row7",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7999.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/transfer7999_row7.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "7",
+      "--num_envs",
+      "192"
+    ]
+  },
+  {
+    "name": "transfer7999_row9",
+    "returncode": 0,
+    "command": [
+      "/home/moujank/miniconda3/envs/env_isaaclab/bin/python",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/scripts/rsl_rl/probe_terrain_transfer.py",
+      "--headless",
+      "--checkpoint",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7999.pt",
+      "--output",
+      "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/reports/terrain_transfer_20261020/transfer7999_row9.json",
+      "--scene",
+      "terrain",
+      "--level",
+      "9",
+      "--num_envs",
+      "192"
+    ]
+  }
+]

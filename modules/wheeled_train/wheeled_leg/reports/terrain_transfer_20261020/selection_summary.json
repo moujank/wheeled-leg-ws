@@ -1,0 +1,733 @@
+{
+  "protocol": "seed42, geometry43, 192 first episodes per row, .25m/s, rows4/7/9, stats frozen",
+  "rows": [
+    {
+      "label": "scratch6000",
+      "row": 4,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+      "hard_macro_success": 0.7402777777777777,
+      "failure_fraction": 0.125,
+      "total_success_fraction": 0.8229166666666666,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 40,
+          "falls": 0
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 31,
+          "falls": 7
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 23,
+          "falls": 17
+        }
+      }
+    },
+    {
+      "label": "scratch6000",
+      "row": 7,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+      "hard_macro_success": 0.5791666666666667,
+      "failure_fraction": 0.25,
+      "total_success_fraction": 0.6979166666666666,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 39,
+          "falls": 1
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 3,
+          "falls": 38
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 28,
+          "falls": 9
+        }
+      }
+    },
+    {
+      "label": "scratch6000",
+      "row": 9,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+      "hard_macro_success": 0.15833333333333333,
+      "failure_fraction": 0.515625,
+      "total_success_fraction": 0.4322916666666667,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 10,
+          "falls": 29
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 0,
+          "falls": 44
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 9,
+          "falls": 26
+        }
+      }
+    },
+    {
+      "label": "scratch7999",
+      "row": 4,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_7999.pt",
+      "hard_macro_success": 0.7958333333333334,
+      "failure_fraction": 0.1354166716337204,
+      "total_success_fraction": 0.8645833333333334,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 40,
+          "falls": 0
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 39,
+          "falls": 9
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 23,
+          "falls": 17
+        }
+      }
+    },
+    {
+      "label": "scratch7999",
+      "row": 7,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_7999.pt",
+      "hard_macro_success": 0.525,
+      "failure_fraction": 0.3177083432674408,
+      "total_success_fraction": 0.6614583333333334,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 39,
+          "falls": 1
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 0,
+          "falls": 44
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 24,
+          "falls": 16
+        }
+      }
+    },
+    {
+      "label": "scratch7999",
+      "row": 9,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_7999.pt",
+      "hard_macro_success": 0.125,
+      "failure_fraction": 0.5885416865348816,
+      "total_success_fraction": 0.4114583333333333,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 6,
+          "falls": 34
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 0,
+          "falls": 48
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 9,
+          "falls": 31
+        }
+      }
+    },
+    {
+      "label": "transfer7000",
+      "row": 4,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7000.pt",
+      "hard_macro_success": 0.8375,
+      "failure_fraction": 0.1041666716337204,
+      "total_success_fraction": 0.8958333333333334,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 40,
+          "falls": 0
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 45,
+          "falls": 3
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 23,
+          "falls": 17
+        }
+      }
+    },
+    {
+      "label": "transfer7000",
+      "row": 7,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7000.pt",
+      "hard_macro_success": 0.4472222222222222,
+      "failure_fraction": 0.3697916865348816,
+      "total_success_fraction": 0.6145833333333334,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 35,
+          "falls": 5
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 2,
+          "falls": 43
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 17,
+          "falls": 23
+        }
+      }
+    },
+    {
+      "label": "transfer7000",
+      "row": 9,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7000.pt",
+      "hard_macro_success": 0.125,
+      "failure_fraction": 0.5677083730697632,
+      "total_success_fraction": 0.4114583333333333,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 5,
+          "falls": 35
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 0,
+          "falls": 47
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 10,
+          "falls": 27
+        }
+      }
+    },
+    {
+      "label": "transfer7999",
+      "row": 4,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7999.pt",
+      "hard_macro_success": 0.8527777777777779,
+      "failure_fraction": 0.0833333358168602,
+      "total_success_fraction": 0.90625,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 40,
+          "falls": 0
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 46,
+          "falls": 0
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 24,
+          "falls": 16
+        }
+      }
+    },
+    {
+      "label": "transfer7999",
+      "row": 7,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7999.pt",
+      "hard_macro_success": 0.4486111111111111,
+      "failure_fraction": 0.3333333432674408,
+      "total_success_fraction": 0.6145833333333334,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 36,
+          "falls": 4
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 1,
+          "falls": 39
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 17,
+          "falls": 21
+        }
+      }
+    },
+    {
+      "label": "transfer7999",
+      "row": 9,
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7999.pt",
+      "hard_macro_success": 0.075,
+      "failure_fraction": 0.578125,
+      "total_success_fraction": 0.3802083333333333,
+      "by_type": {
+        "flat": {
+          "episodes": 16,
+          "completed": 16,
+          "successes": 16,
+          "falls": 0
+        },
+        "slope": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "slope_inverted": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "pyramid_stairs": {
+          "episodes": 24,
+          "completed": 24,
+          "successes": 24,
+          "falls": 0
+        },
+        "pyramid_stairs_inverted": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 1,
+          "falls": 39
+        },
+        "rough": {
+          "episodes": 48,
+          "completed": 48,
+          "successes": 0,
+          "falls": 40
+        },
+        "wave": {
+          "episodes": 8,
+          "completed": 8,
+          "successes": 8,
+          "falls": 0
+        },
+        "discrete_obstacles": {
+          "episodes": 40,
+          "completed": 40,
+          "successes": 8,
+          "falls": 32
+        }
+      }
+    }
+  ],
+  "ranking": [
+    {
+      "label": "scratch6000",
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt",
+      "hard_macro_success": 0.36875,
+      "mean_failure_fraction": 0.3828125,
+      "row4_total_success": 0.8229166666666666
+    },
+    {
+      "label": "scratch7999",
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_7999.pt",
+      "hard_macro_success": 0.325,
+      "mean_failure_fraction": 0.4531250149011612,
+      "row4_total_success": 0.8645833333333334
+    },
+    {
+      "label": "transfer7000",
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7000.pt",
+      "hard_macro_success": 0.2861111111111111,
+      "mean_failure_fraction": 0.4687500298023224,
+      "row4_total_success": 0.8958333333333334
+    },
+    {
+      "label": "transfer7999",
+      "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-19_19-59-28/model_7999.pt",
+      "hard_macro_success": 0.26180555555555557,
+      "mean_failure_fraction": 0.4557291716337204,
+      "row4_total_success": 0.90625
+    }
+  ],
+  "complete": true,
+  "selected_checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_terrains/2026-10-20_09-29-55/model_6000.pt"
+}

@@ -1,0 +1,22 @@
+{
+  "checkpoint": "/home/moujank/project/wheeled-leg-ws/modules/wheeled_train/wheeled_leg/logs/rsl_rl/wheeled_leg_v1/2026-10-17_10-52-09_v1_stable_baseline/model_7999.pt",
+  "scene": "v1",
+  "leg_clips": "v1",
+  "seed": 42,
+  "level": 0,
+  "speed": 0.25,
+  "normalizer_updates": false,
+  "num_envs": 64,
+  "preserve_count": false,
+  "completed": 64,
+  "failure_fraction": 0.0,
+  "mean_first_episode_s": 20.0,
+  "tracking_error_mps": 0.018669962882995605,
+  "zero_update_action_max_error": 0.0,
+  "termination_counts": {
+    "time_out": 64,
+    "base_contact": 0,
+    "excessive_tilt": 0
+  },
+  "normalizer_count": 10000.0
+}
