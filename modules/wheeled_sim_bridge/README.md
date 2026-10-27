@@ -2,7 +2,7 @@
 
 [中文](README.zh.md) · [Parent directory](../README.md)
 
-This directory is reserved for system integration and simulator bridging work. It currently contains documentation only.
+This directory now contains the standalone Isaac Sim scene/sensor demo and an optional ROS 2 bridge. See [the demo guide](../wheeled_navigation/DEMO.zh.md).
 
 ## Intended scope
 
@@ -13,6 +13,10 @@ This directory is reserved for system integration and simulator bridging work. I
 
 ## Current status
 
-- no bridge package, launch tree, or runtime node implementation is present yet
+- `run_navigation_demo.ps1`: Windows entry point
+- `scripts/run_isaac_mapping.py`: create the scene, mount the robot/lidar, collect scans, validate planning and demo motion
+- `scripts/ros2_sensor_bridge.py`: live clock, scan, ideal odometry, TF, map and path publishing; command subscription with timeout
+- `scripts/view_navigation_scene.py`: open the exported scene in Isaac Sim's GUI
+- Existing RL training and MuJoCo runtime code is unchanged. The new kinematic driver does not validate RL locomotion.
 
 The existing MuJoCo package under `modules/wheeled_mujoco` already contains placeholder ROS-facing interfaces. If this module becomes active later, it should define the cross-process boundary rather than duplicate sim-internal code.

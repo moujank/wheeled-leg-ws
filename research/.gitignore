@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.log
+scene_audit/
+runtime/
+video_deps/
+ros2_runtime/.pixi/
+ros2_runtime/*.log
+*.npy
+*_audit.json
+*_diagnosis.json
+word_navigation_section/

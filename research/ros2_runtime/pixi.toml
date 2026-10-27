@@ -1,0 +1,23 @@
+[workspace]
+name = "wheeled-autonomous-navigation"
+version = "0.1.0"
+description = "Isolated Windows ROS 2 Humble, SLAM Toolbox and Nav2 runtime"
+channels = ["https://prefix.dev/conda-forge", "https://prefix.dev/robostack-humble"]
+platforms = ["win-64"]
+
+[dependencies]
+python = "3.12.*"
+ros-humble-ros-base = "*"
+ros-humble-nav2-bringup = "*"
+ros-humble-slam-toolbox = "*"
+ros-humble-rmw-fastrtps-cpp = "*"
+ros-humble-nav2-msgs = "*"
+numpy = "*"
+scipy = "*"
+pyyaml = "*"
+pillow = "*"
+
+[activation.env]
+ROS_DOMAIN_ID = "42"
+ROS_LOCALHOST_ONLY = "1"
+RMW_IMPLEMENTATION = "rmw_fastrtps_cpp"
