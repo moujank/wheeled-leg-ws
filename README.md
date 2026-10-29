@@ -2,12 +2,13 @@
 
 [中文](README.zh.md) · [Documentation index](docs/README.md) · [Modules](modules/README.md) · [TODO](docs/TODO.md)
 
-This repository is the main workspace for a wheeled-leg robot stack. It currently contains two active implementation tracks:
+This repository is the main workspace for a wheeled-leg robot stack. It contains the following implementation tracks:
 
 - `modules/wheeled_train/wheeled_leg`: Isaac Lab training tasks, scripts, and experiment outputs.
 - `modules/wheeled_mujoco`: MuJoCo assets and sim-to-sim validation tools that reuse policies exported from training.
+- `modules/wheeled_navigation` and `modules/wheeled_sim_bridge`: measured Isaac lidar, online exploration with SLAM Toolbox / Nav2, and point-cloud exports. Execution is currently kinematic; RL tracking and balancing have not been validated. See the [navigation progress report](docs/NAVIGATION_PROGRESS.zh.md) and [reproduction guide](research/README.zh.md).
 
-The remaining `modules/wheeled_*` directories are present as reserved module boundaries for future hardware, deployment, navigation, teleoperation, and ROS bridge work. At the moment they only contain module-level README files.
+Other module directories primarily retain boundaries and documentation for future hardware, deployment, teleoperation and firmware work. Navigation and simulation bridging now contain implementations; this does not establish successful physical robot navigation.
 
 ## Workspace layout
 
@@ -18,10 +19,10 @@ wheeled-leg-ws/
 ├── modules/
 │   ├── wheeled_train/             # Isaac Lab training workspace
 │   ├── wheeled_mujoco/            # MuJoCo sim2sim workspace
-│   ├── wheeled_sim_bridge/        # Reserved ROS / system integration module
+│   ├── wheeled_sim_bridge/        # Isaac sensors and ROS integration
 │   ├── wheeled_deploy/            # Reserved on-robot deployment module
 │   ├── wheeled_description/       # Reserved source-of-truth description module
-│   ├── wheeled_navigation/        # Reserved navigation module
+│   ├── wheeled_navigation/        # Scan mapping, exploration and Nav2
 │   ├── wheeled_teleop/            # Reserved teleoperation and UI module
 │   ├── wheeled_hardware/          # Reserved hardware data module
 │   └── wheeled_firmware/          # Reserved firmware module

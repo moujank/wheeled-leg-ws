@@ -2,12 +2,13 @@
 
 [English](README.md) · [文档索引](docs/README.md) · [模块导航](modules/README.md) · [待办](docs/TODO.md)
 
-这个仓库是轮腿机器人项目的主工作区。目前有两条真正落地的实现主线：
+这个仓库是轮腿机器人项目的主工作区。目前有以下实现主线：
 
 - `modules/wheeled_train/wheeled_leg`：Isaac Lab 训练任务、脚本与实验输出。
 - `modules/wheeled_mujoco`：MuJoCo 资产与 sim2sim 验证工具，直接复用训练导出的策略。
+- `modules/wheeled_navigation` 与 `modules/wheeled_sim_bridge`：Isaac Sim 传感器、SLAM Toolbox / Nav2 自主探索及点云展示。当前采用速度积分执行器，尚未接入 RL 策略验证平衡动力学。详见[本次导航工作总结](docs/NAVIGATION_PROGRESS.zh.md)和[复现入口](research/README.zh.md)。
 
-其余 `modules/wheeled_*` 目录目前都还是预留模块边界，用于后续接入硬件、部署、导航、遥操作和 ROS 桥接；现在这些目录里只有模块级 README。
+硬件、部署、遥操作和固件等其他目录仍以模块边界与资料整理为主。导航与仿真桥接目录已包含实际实现，不能据此理解为实物自主导航已经验证完成。
 
 ## 工作区结构
 
@@ -18,10 +19,10 @@ wheeled-leg-ws/
 ├── modules/
 │   ├── wheeled_train/             # Isaac Lab 训练工作区
 │   ├── wheeled_mujoco/            # MuJoCo sim2sim 工作区
-│   ├── wheeled_sim_bridge/        # 预留 ROS / 系统集成模块
+│   ├── wheeled_sim_bridge/        # Isaac 传感器与 ROS 桥接
 │   ├── wheeled_deploy/            # 预留真机部署模块
 │   ├── wheeled_description/       # 预留统一描述真源模块
-│   ├── wheeled_navigation/        # 预留导航模块
+│   ├── wheeled_navigation/        # 扫描建图、在线探索与 Nav2
 │   ├── wheeled_teleop/            # 预留遥操作与界面模块
 │   ├── wheeled_hardware/          # 预留硬件资料模块
 │   └── wheeled_firmware/          # 预留固件模块

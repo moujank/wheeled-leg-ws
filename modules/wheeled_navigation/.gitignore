@@ -1,0 +1,5 @@
+__pycache__/
+artifacts/
+tests/__pycache__/
+scan_nav/__pycache__/
+launch/__pycache__/

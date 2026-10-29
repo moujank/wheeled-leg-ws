@@ -1,0 +1,8 @@
+# Optional CPU analysis/video environment. Isaac and ROS use their own Python.
+numpy>=1.23
+scipy>=1.9
+matplotlib>=3.6
+Pillow>=9
+PyYAML>=6
+imageio>=2.31
+imageio-ffmpeg>=0.4

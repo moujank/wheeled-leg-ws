@@ -1,0 +1,195 @@
+{
+  "runs": [
+    {
+      "run": "autonomy_ros_code_room_v2",
+      "phase": "budget_reached",
+      "seconds": 300.0,
+      "distance_m": 41.52055925690007,
+      "goals_selected": 27,
+      "goals_reached": 26,
+      "floor_area_m2": 54.0,
+      "observed_floor_projection_m2": 22.172500000000003,
+      "observed_fraction": 0.4106018518518519,
+      "polygon_aabb_overlap_samples": null,
+      "pose_evaluation": {
+        "samples": 289,
+        "slam_position_rmse_m": 0.018094967664944107,
+        "odometry_position_rmse_m": 0.20490153179711434,
+        "slam_final_position_error_m": 0.005640701703966649,
+        "odometry_final_position_error_m": 0.4519977840949951,
+        "alignment": "One initial SE(2) transform only; live TF sampling includes communication latency.",
+        "loop_closure_observed": "Not inferred from enabling the parameter; requires separate pose-graph evidence."
+      },
+      "kinematic_actuator": true,
+      "policy_checkpoint_used": false,
+      "ground_truth_map_used_for_decisions": false
+    },
+    {
+      "run": "autonomy_ros_polygon_v5",
+      "phase": "complete",
+      "seconds": 138.70000000000002,
+      "distance_m": 13.614561107412753,
+      "goals_selected": 11,
+      "goals_reached": 5,
+      "floor_area_m2": 54.0,
+      "observed_floor_projection_m2": 22.730000000000004,
+      "observed_fraction": 0.420925925925926,
+      "polygon_aabb_overlap_samples": 0,
+      "pose_evaluation": {
+        "samples": 137,
+        "slam_position_rmse_m": 0.014401614957416743,
+        "odometry_position_rmse_m": 0.14142680348563377,
+        "slam_final_position_error_m": 0.002106688105671551,
+        "odometry_final_position_error_m": 0.19210239562519085,
+        "alignment": "One initial SE(2) transform only; live TF sampling includes communication latency.",
+        "loop_closure_observed": "Not inferred from enabling the parameter; requires separate pose-graph evidence."
+      },
+      "kinematic_actuator": true,
+      "policy_checkpoint_used": false,
+      "ground_truth_map_used_for_decisions": false
+    },
+    {
+      "run": "autonomy_ros_polygon_v12",
+      "phase": "complete",
+      "seconds": 86.60000000000001,
+      "distance_m": 5.016999999999992,
+      "goals_selected": 7,
+      "goals_reached": 4,
+      "floor_area_m2": 54.0,
+      "observed_floor_projection_m2": 19.060000000000002,
+      "observed_fraction": 0.352962962962963,
+      "polygon_aabb_overlap_samples": 0,
+      "pose_evaluation": {
+        "samples": 85,
+        "slam_position_rmse_m": 0.00978823810659531,
+        "odometry_position_rmse_m": 0.024597770197298554,
+        "slam_final_position_error_m": 0.01262021541460407,
+        "odometry_final_position_error_m": 0.02403978854629413,
+        "alignment": "One initial SE(2) transform only; live TF sampling includes communication latency.",
+        "loop_closure_observed": "Not inferred from enabling the parameter; requires separate pose-graph evidence."
+      },
+      "kinematic_actuator": true,
+      "policy_checkpoint_used": false,
+      "ground_truth_map_used_for_decisions": false
+    },
+    {
+      "run": "autonomy_ros_open_passages_v1",
+      "phase": "return_failed",
+      "seconds": 212.5,
+      "distance_m": 16.226428571428812,
+      "goals_selected": 16,
+      "goals_reached": 13,
+      "floor_area_m2": 65.69999999999999,
+      "observed_floor_projection_m2": 39.830000000000005,
+      "observed_fraction": 0.6062404870624051,
+      "polygon_aabb_overlap_samples": 0,
+      "pose_evaluation": {
+        "samples": 208,
+        "slam_position_rmse_m": 0.01535285191025125,
+        "odometry_position_rmse_m": 0.17896794896513496,
+        "slam_final_position_error_m": 0.010356922449882306,
+        "odometry_final_position_error_m": 0.2693918015849981,
+        "alignment": "One initial SE(2) transform only; live TF sampling includes communication latency.",
+        "loop_closure_observed": "Not inferred from enabling the parameter; requires separate pose-graph evidence."
+      },
+      "kinematic_actuator": true,
+      "policy_checkpoint_used": false,
+      "ground_truth_map_used_for_decisions": false
+    },
+    {
+      "run": "autonomy_ros_open_passages_v2",
+      "phase": "complete",
+      "seconds": 190.5,
+      "distance_m": 17.11302048068034,
+      "goals_selected": 16,
+      "goals_reached": 14,
+      "floor_area_m2": 65.69999999999999,
+      "observed_floor_projection_m2": 42.00000000000001,
+      "observed_fraction": 0.6392694063926943,
+      "polygon_aabb_overlap_samples": 0,
+      "pose_evaluation": {
+        "samples": 187,
+        "slam_position_rmse_m": 0.01545907821768348,
+        "odometry_position_rmse_m": 0.2718206559149379,
+        "slam_final_position_error_m": 0.00308914716178606,
+        "odometry_final_position_error_m": 0.31349263654554577,
+        "alignment": "One initial SE(2) transform only; live TF sampling includes communication latency.",
+        "loop_closure_observed": "Not inferred from enabling the parameter; requires separate pose-graph evidence."
+      },
+      "kinematic_actuator": true,
+      "policy_checkpoint_used": false,
+      "ground_truth_map_used_for_decisions": false
+    },
+    {
+      "run": "autonomy_ros_no_table_v1",
+      "phase": "return_failed",
+      "seconds": 168.3,
+      "distance_m": 11.678663830644352,
+      "goals_selected": 12,
+      "goals_reached": 7,
+      "floor_area_m2": 65.69999999999999,
+      "observed_floor_projection_m2": 43.25750000000001,
+      "observed_fraction": 0.6584094368340946,
+      "polygon_aabb_overlap_samples": 0,
+      "pose_evaluation": {
+        "samples": 163,
+        "slam_position_rmse_m": 0.014368699817730165,
+        "odometry_position_rmse_m": 0.31472622909326037,
+        "slam_final_position_error_m": 0.019140888113575904,
+        "odometry_final_position_error_m": 0.5023195148630217,
+        "alignment": "One initial SE(2) transform only; live TF sampling includes communication latency.",
+        "loop_closure_observed": "Not inferred from enabling the parameter; requires separate pose-graph evidence."
+      },
+      "kinematic_actuator": true,
+      "policy_checkpoint_used": false,
+      "ground_truth_map_used_for_decisions": false
+    },
+    {
+      "run": "autonomy_ros_no_table_v2",
+      "phase": "return_failed",
+      "seconds": 195.20000000000002,
+      "distance_m": 10.808714285714332,
+      "goals_selected": 11,
+      "goals_reached": 9,
+      "floor_area_m2": 65.69999999999999,
+      "observed_floor_projection_m2": 44.14750000000001,
+      "observed_fraction": 0.6719558599695589,
+      "polygon_aabb_overlap_samples": 0,
+      "pose_evaluation": {
+        "samples": 193,
+        "slam_position_rmse_m": 0.025188311338002124,
+        "odometry_position_rmse_m": 0.24283484761818083,
+        "slam_final_position_error_m": 0.026237936563713208,
+        "odometry_final_position_error_m": 0.289664119975229,
+        "alignment": "One initial SE(2) transform only; live TF sampling includes communication latency.",
+        "loop_closure_observed": "Not inferred from enabling the parameter; requires separate pose-graph evidence."
+      },
+      "kinematic_actuator": true,
+      "policy_checkpoint_used": false,
+      "ground_truth_map_used_for_decisions": false
+    }
+  ],
+  "pointcloud": {
+    "points": 248330,
+    "direct_rgb_points": 248033,
+    "nearby_rgb_points": 129,
+    "uncolored_neutral_gray_points": 168,
+    "point_positions_unchanged": true
+  },
+  "definition": "Observed XY projection within each actual floor boundary, not traversable area or full 3D reconstruction.",
+  "evidence_scope": "Compact historical records copied from saved evaluation files; raw recordings remain local and are not versioned.",
+  "packaging_validation": {
+    "navigation_tests_passed": 12,
+    "compile_check_passed": true,
+    "robot_visual_rebuilt_from_repository_urdf": true,
+    "native_smoke": {
+      "scene": "validation",
+      "sim_seconds": 12.0,
+      "distance_m": 2.5724030941054328,
+      "replans": 12,
+      "phase": "exploring",
+      "execution_finished": true
+    },
+    "scope": "Short startup/sensor/persistence check only; time-limited incomplete status is expected, not a completed exploration claim."
+  }
+}
